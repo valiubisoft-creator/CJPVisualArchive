@@ -15,6 +15,7 @@
     "filter": "node scripts/filter-relevance.mjs",
     "tag-suggest": "node scripts/tag-suggest.mjs",
     "review-tags": "node scripts/review-tags.mjs",
+    "viz-data": "node scripts/build-viz-data.mjs",
     "snapshot": "node scripts/snapshot-stats.mjs",
     "network": "node scripts/derive-network.mjs",
     "profile": "node scripts/profile-data.mjs",

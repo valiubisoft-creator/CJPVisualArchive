@@ -173,18 +173,19 @@
 	.interstitial {
 		flex-direction: column;
 		gap: var(--sp-1);
-		background: var(--fg);
-		color: var(--bg);
+		background: var(--surface);
+		color: var(--fg);
 	}
 	.interstitial:hover {
-		background: var(--fg);
-		color: var(--bg);
+		background: var(--surface);
+		color: var(--fg);
 	}
 	.warn-label {
 		font-weight: var(--fw-bold);
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		font-size: var(--fs-100);
+		color: var(--accent);
 	}
 	.warn-sub {
 		font-family: var(--font-mono);

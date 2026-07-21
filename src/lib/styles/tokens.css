@@ -7,34 +7,46 @@
  * hard-coded colour or size. To re-theme the entire app, edit THIS FILE ALONE.
  */
 :root {
-	/* ---- colour: high-contrast, a single accent ---- */
-	--bg: #ffffff;
-	--fg: #0a0a0a;
-	--muted: #6b6b6b;
-	--faint: #d8d8d8;
-	--surface: #f4f4f4;
-	--accent: #e2231a; /* the one red */
+	/* ---- colour: DARK (default) ----
+	   The UI ships dark to echo a dark moment and hold a little intrigue. A single
+	   red accent carries the tension. Everything is token-driven, so these values
+	   ARE the theme — flip them (or add a [data-theme] toggle) to re-skin. The prior
+	   light theme is preserved, commented, at the bottom of this block. */
+	color-scheme: dark;
+	--bg: #0b0b0c; /* near-black */
+	--fg: #ededed; /* off-white */
+	--muted: #8f9196;
+	--faint: #26262a; /* subtle hairline */
+	--surface: #161619; /* raised surface */
+	--accent: #e2231a; /* the one red — pops on dark */
 	--accent-fg: #ffffff;
-	--rule-color: #0a0a0a;
+	--rule-color: #3a3a40; /* visible divider on dark */
 	--video-letterbox: #000000; /* bars behind an embedded 16:9 player */
 
-	/* ---- verification-status colours (badge system) ---- */
-	--status-confirmed: #1a7f37;
-	--status-reported: #b26a00;
-	--status-recycled: #6b3fa0;
-	--status-unverified: #6b6b6b;
+	/* ---- verification-status colours (tuned for legibility on near-black) ---- */
+	--status-confirmed: #3fb950;
+	--status-reported: #d29922;
+	--status-recycled: #a371f7;
+	--status-unverified: #8b949e;
 
 	/* ---- source-type accents (subtle) ---- */
-	--source-citizen: #0a0a0a;
-	--source-mainstream-media: #1f5fa8;
-	--source-party-channel: #a8461f;
+	--source-citizen: #ededed;
+	--source-mainstream-media: #6cb6ff;
+	--source-party-channel: #ff8f6b;
+
+	/* --- previous LIGHT theme, kept for reference / a future toggle ---
+	   --bg:#fff; --fg:#0a0a0a; --muted:#6b6b6b; --faint:#d8d8d8; --surface:#f4f4f4;
+	   --rule-color:#0a0a0a; --status-confirmed:#1a7f37; --status-reported:#b26a00;
+	   --status-recycled:#6b3fa0; --status-unverified:#6b6b6b;
+	   --source-citizen:#0a0a0a; --source-mainstream-media:#1f5fa8; --source-party-channel:#a8461f; */
 
 	/* ---- type ----
-	   Datatype = Latin UI font. Yantramanav sits in the stack as the DEVANAGARI
+	   Datatype is THE primary Latin typeface — it drives both the proportional UI
+	   and the mono/label contexts. Yantramanav sits in the stack as the DEVANAGARI
 	   fallback: Latin renders in Datatype, Devanagari glyphs (absent from it) fall
 	   through to Yantramanav. Bilingual by construction — translation plugin in v2. */
 	--font-sans: 'Datatype', 'Yantramanav', system-ui, -apple-system, 'Segoe UI', sans-serif;
-	--font-mono: 'Space Mono', 'Yantramanav', ui-monospace, 'SF Mono', 'Menlo', monospace;
+	--font-mono: 'Datatype', 'Yantramanav', ui-monospace, 'SF Mono', 'Menlo', monospace;
 	--font-deva: 'Yantramanav', sans-serif; /* explicit Devanagari (utility classes) */
 	--fw-regular: 400;
 	--fw-medium: 500;

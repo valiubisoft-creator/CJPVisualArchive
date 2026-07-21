@@ -6,7 +6,7 @@
     "method": "credit-link",
     "score": 1,
     "confidence": "high",
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "IkyFl1KSztk",
@@ -15,7 +15,7 @@
     "method": "credit-link",
     "score": 1,
     "confidence": "high",
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "COOkRaoBQBs",
@@ -24,7 +24,7 @@
     "method": "credit-link",
     "score": 1,
     "confidence": "high",
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "OjPcPQkCxOM",
@@ -33,7 +33,7 @@
     "method": "credit-link",
     "score": 1,
     "confidence": "high",
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "EFtpMpHqZIo",
@@ -47,7 +47,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "NEX9HelVoJU",
@@ -61,7 +61,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "JifD58Z617c",
@@ -75,7 +75,35 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "eHSVzn5raLw",
+    "target": "WE8UB7FNXuQ",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": true,
+    "source_channel": "CNBC-TV18",
+    "target_channel": "CNBC-TV18",
+    "score": 0.969,
+    "distance": 2,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "eHSVzn5raLw",
+    "target": "s90eK_FSVAk",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "CNBC-TV18",
+    "target_channel": "Dainik Jagran - दैनिक जागरण",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "K9DkGy229xk",
@@ -89,7 +117,7 @@
     "distance": 2,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "bhKKIIpUdIw",
@@ -103,7 +131,21 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "2hZBejLgLLk",
+    "target": "bhKKIIpUdIw",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Mr Gyan Shorts",
+    "target_channel": "The Lallantop",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "wnjcIhP671w",
@@ -117,7 +159,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "wnjcIhP671w",
@@ -131,7 +173,63 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "sEfXvplCR1Q",
+    "target": "IWZxfZHiIFM",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": true,
+    "source_channel": "Hindustan Times",
+    "target_channel": "Hindustan Times",
+    "score": 1,
+    "distance": 0,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "YEIvTqQIQ1o",
+    "target": "bO0eRc7Ui9U",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "SumantRaj014",
+    "target_channel": "Hindustan Times",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "JzW4-8VUQ4A",
+    "target": "bO0eRc7Ui9U",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "sumantraj014",
+    "target_channel": "Hindustan Times",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "S-qfrrXg--U",
+    "target": "8fpQty8EmMI",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Mask With Facts",
+    "target_channel": "BBC News Hindi",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VEl0UO9JB5Y",
@@ -145,7 +243,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "6O9b8OwkGCA",
@@ -159,7 +257,21 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "gqWynRtQRg8",
+    "target": "6O9b8OwkGCA",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Msingh97_facts",
+    "target_channel": "The Indian Express",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "9tCoSrAjkZ8",
@@ -173,7 +285,35 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "xC74xQcty5U",
+    "target": "ukfPPbOvP6Q",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Mumbai Tak",
+    "target_channel": "Vedant Volunteer",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "OZ6x_wnXs3w",
+    "target": "xC74xQcty5U",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Student Dream Life ",
+    "target_channel": "Mumbai Tak",
+    "score": 0.922,
+    "distance": 5,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "2r7vYQFWQVI",
@@ -187,7 +327,21 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "dszflh8Thf8",
+    "target": "0_7eIaNA038",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Neon Man Shorts",
+    "target_channel": "Pudhari News",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "0_7eIaNA038",
@@ -201,7 +355,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "eAYdwFeg6Fs",
@@ -215,7 +369,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "8WFrDTShYQU",
@@ -229,7 +383,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "krpVgzwkMQQ",
@@ -243,7 +397,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "fQ-aP8Yci3c",
@@ -257,7 +411,21 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "gqWynRtQRg8",
+    "target": "2pprqBnHM-k",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Msingh97_facts",
+    "target_channel": "The Lallantop",
+    "score": 0.938,
+    "distance": 4,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "7EPHw6sa0vE",
@@ -271,7 +439,21 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "9dXdZGDcj2o",
+    "target": "UXQT3Pw6YiM",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": true,
+    "source_channel": "News18 Marathi",
+    "target_channel": "News18 Marathi",
+    "score": 0.969,
+    "distance": 2,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "SzXYdGB6IW8",
@@ -285,7 +467,7 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "Jnqm1reSqAM",
@@ -299,7 +481,21 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "SzXYdGB6IW8",
+    "target": "FrUhUauS9MI",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "The Indian Express",
+    "target_channel": "Hindustan Times",
+    "score": 0.938,
+    "distance": 4,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "53jsqDxSjAA",
@@ -313,7 +509,21 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "N0cHKjKtjmM",
+    "target": "zcILkq2RK4s",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Times Now Navbharat",
+    "target_channel": "The Public Mic ",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "fQ-aP8Yci3c",
@@ -327,7 +537,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "_3LV3bY2eQo",
@@ -341,7 +551,7 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "wnAx8aDWS0Y",
@@ -355,7 +565,7 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "aaaDdSv8CwY",
@@ -369,7 +579,21 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "EVTb0Gpbw48",
+    "target": "i4YakhhGWik",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Shahrukh365khan",
+    "target_channel": "newslaundry",
+    "score": 0.922,
+    "distance": 5,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "WE8UB7FNXuQ",
@@ -383,7 +607,21 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "O-f7k47dbUg",
+    "target": "sEfXvplCR1Q",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Mint",
+    "target_channel": "Hindustan Times",
+    "score": 1,
+    "distance": 0,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "mZHiDKHONUk",
@@ -397,7 +635,7 @@
     "distance": 2,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "fQ-aP8Yci3c",
@@ -411,7 +649,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "5YqOk5OH_3I",
@@ -425,7 +663,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "MZkRcb9Cxck",
@@ -439,7 +677,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "ewL6Z7XN_E4",
@@ -453,7 +691,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "ZDepIa-4WfI",
@@ -467,7 +705,7 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "p43tLTtQFOE",
@@ -481,7 +719,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "fCyWjKrlp0w",
@@ -495,7 +733,35 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "j3sCyL8Ougs",
+    "target": "7G7wErpHVSA",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "world National photography 📸🤟",
+    "target_channel": "The Indian Express",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "lYaRj02UxUQ",
+    "target": "C4sQy8Lq5l8",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Vlogs-r",
+    "target_channel": "The Lallantop",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "gUPAPjl5OWc",
@@ -509,7 +775,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "5Jq06rsZ7Gk",
@@ -523,7 +789,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "7hbp67x0V_o",
@@ -537,7 +803,21 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "N_B3xPCWoPg",
+    "target": "nb7yEdyisEg",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Rawl",
+    "target_channel": "The Indian Express",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "vF7UIXQYIeM",
@@ -551,7 +831,49 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "2-Ye6AKU8gM",
+    "target": "AnxjA3A8G_Y",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": true,
+    "source_channel": "IndiaTV",
+    "target_channel": "IndiaTV",
+    "score": 1,
+    "distance": 0,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "SVDxeOHUfEU",
+    "target": "RIe6avx3Eog",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "India Today",
+    "target_channel": "News18 Marathi",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "9zls9D8RS8w",
+    "target": "dRqPaLK8BJk",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Gourav Jagdishpuriya",
+    "target_channel": "DLS News",
+    "score": 0.969,
+    "distance": 2,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "FxT0lT0dOuw",
@@ -565,7 +887,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "61V9iMOjDXc",
@@ -579,7 +901,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "Nm9cJpMJ8g8",
@@ -593,7 +915,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "JbYdvkvV4tY",
@@ -607,7 +929,7 @@
     "distance": 2,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "JbYdvkvV4tY",
@@ -621,7 +943,7 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "JbYdvkvV4tY",
@@ -635,7 +957,7 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "JsyoUbmqvkE",
@@ -649,7 +971,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "AD8DPZEu9Jc",
@@ -663,7 +985,7 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "tpqK5d-XHak",
@@ -677,7 +999,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "eiidMK0Q5V0",
@@ -691,7 +1013,21 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "Jc-lVKBJc5g",
+    "target": "4YAUBW6sO1M",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "moneycontrol",
+    "target_channel": "CNN-News18",
+    "score": 0.922,
+    "distance": 5,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "zFj9HO6FLbw",
@@ -705,7 +1041,21 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "e1mwQfqF1kc",
+    "target": "mu_sKHyXa1k",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "News Eye Digital",
+    "target_channel": "Mr viraj poddar👑",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VfeJ0iZ4Yao",
@@ -719,7 +1069,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "2gRmma69Jok",
@@ -733,7 +1083,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "yl-t0iC3NiI",
@@ -747,7 +1097,21 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "UAB91hxeVl0",
+    "target": "a6e3LTJkRrw",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": true,
+    "source_channel": "News7 Todays Latest News™️",
+    "target_channel": "News7 Todays Latest News™️",
+    "score": 0.969,
+    "distance": 2,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "_cknvkax-oI",
@@ -761,7 +1125,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "Za08rGETTZ4",
@@ -775,7 +1139,21 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "nzsSvUTLFDs",
+    "target": "8eOr8vY9B_c",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": true,
+    "source_channel": "Rajasthan Patrika",
+    "target_channel": "Rajasthan Patrika",
+    "score": 0.969,
+    "distance": 2,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "RtTmycxuAS0",
@@ -789,7 +1167,21 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "tR_no2-Pmxs",
+    "target": "nF5OL7hDxx0",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Qais Ali Khan ",
+    "target_channel": "Hina ke facts",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "IaWy7Ef9jVI",
@@ -803,7 +1195,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "ePJ1T_NI-nU",
@@ -817,7 +1209,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "g1sw3J3zKnQ",
@@ -831,7 +1223,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "HnQBvcS_GX8",
@@ -845,7 +1237,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "iiPOF30EVno",
@@ -859,7 +1251,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "699lgQP_9XU",
@@ -873,7 +1265,21 @@
     "distance": 2,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "HYGfY1KM2lI",
+    "target": "gUPAPjl5OWc",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Idiot Box",
+    "target_channel": "That Jai Singh Shorts",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "7CZrzhUjG3s",
@@ -887,7 +1293,7 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "7CZrzhUjG3s",
@@ -901,7 +1307,7 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "doTiOPDjQx8",
@@ -915,7 +1321,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "hWBQDZ73Fis",
@@ -929,7 +1335,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "GSlu1UxaFDI",
@@ -943,7 +1349,7 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "LOHuieo2iJE",
@@ -957,7 +1363,7 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VfeJ0iZ4Yao",
@@ -971,7 +1377,7 @@
     "distance": 2,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "7XIzDnV1xvo",
@@ -985,7 +1391,21 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "jAVCyaAZaNM",
+    "target": "7XIzDnV1xvo",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "@kirpa shankar",
+    "target_channel": "ABP MAJHA",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "s6GVT6I3gDw",
@@ -999,7 +1419,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "6oGtmJeGMVk",
@@ -1013,7 +1433,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "s6GVT6I3gDw",
@@ -1027,7 +1447,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VcVXLkEBlt8",
@@ -1041,7 +1461,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "HnQBvcS_GX8",
@@ -1055,7 +1475,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "NBUsoAfWKqY",
@@ -1069,7 +1489,21 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "98etJR4Xzng",
+    "target": "HWnARsLO7Zg",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": true,
+    "source_channel": "News18 Marathi",
+    "target_channel": "News18 Marathi",
+    "score": 1,
+    "distance": 0,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "iFRpY-XhZgg",
@@ -1083,7 +1517,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "apTss3EKGjA",
@@ -1097,7 +1531,7 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "O9uJhGiwu-c",
@@ -1111,7 +1545,7 @@
     "distance": 1,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "MZkRcb9Cxck",
@@ -1125,7 +1559,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "Y2hvDKJI7Lo",
@@ -1139,7 +1573,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "JsyoUbmqvkE",
@@ -1153,7 +1587,35 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "mu_sKHyXa1k",
+    "target": "rXCCQF57h54",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Mr viraj poddar👑",
+    "target_channel": "The Wire",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "yO3Hu5zgxUQ",
+    "target": "sJWRqHbntdY",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "sk fact",
+    "target_channel": "CNN-News18",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "EDMHv2Ot0S4",
@@ -1167,7 +1629,21 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "v3G_y51Z6p4",
+    "target": "dp8-NdU_VcQ",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": true,
+    "source_channel": "News18 Marathi",
+    "target_channel": "News18 Marathi",
+    "score": 1,
+    "distance": 0,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "6oGtmJeGMVk",
@@ -1181,7 +1657,7 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VcVXLkEBlt8",
@@ -1195,7 +1671,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "1XzIVRy9vPM",
@@ -1209,7 +1685,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "zCRpN4IZZvk",
@@ -1223,7 +1699,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VcVXLkEBlt8",
@@ -1237,7 +1713,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "5O8RXb_h68Q",
@@ -1251,7 +1727,7 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "R88gCxqEzGg",
@@ -1265,7 +1741,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "Noz2vV0tyho",
@@ -1279,7 +1755,21 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "WbJ2-zQLPvs",
+    "target": "sQOAkfvdysk",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Cockroach Janta Party",
+    "target_channel": "Bhim Aryan",
+    "score": 0.969,
+    "distance": 2,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "oM2K_T-qvcs",
@@ -1293,7 +1783,7 @@
     "distance": 2,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "5QWnoLHj3nw",
@@ -1307,7 +1797,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "qFg_IsOB8Lc",
@@ -1321,7 +1811,7 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "iiPOF30EVno",
@@ -1335,7 +1825,7 @@
     "distance": 2,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VcVXLkEBlt8",
@@ -1349,7 +1839,7 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "zCRpN4IZZvk",
@@ -1363,7 +1853,7 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VcVXLkEBlt8",
@@ -1377,7 +1867,49 @@
     "distance": 5,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "gqWynRtQRg8",
+    "target": "nF5OL7hDxx0",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Msingh97_facts",
+    "target_channel": "Hina ke facts",
+    "score": 0.922,
+    "distance": 5,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "YEIvTqQIQ1o",
+    "target": "nF5OL7hDxx0",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "SumantRaj014",
+    "target_channel": "Hina ke facts",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "JzW4-8VUQ4A",
+    "target": "nF5OL7hDxx0",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "sumantraj014",
+    "target_channel": "Hina ke facts",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "GKxdp9kXooU",
@@ -1391,7 +1923,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "qFg_IsOB8Lc",
@@ -1405,7 +1937,7 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "QRRozu4D36A",
@@ -1419,7 +1951,7 @@
     "distance": 2,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "QRRozu4D36A",
@@ -1433,7 +1965,7 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "R88gCxqEzGg",
@@ -1447,7 +1979,77 @@
     "distance": 6,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "EVTb0Gpbw48",
+    "target": "Y2hvDKJI7Lo",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Shahrukh365khan",
+    "target_channel": "Cockroach Janta Party",
+    "score": 0.938,
+    "distance": 4,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "EVTb0Gpbw48",
+    "target": "NEX9HelVoJU",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Shahrukh365khan",
+    "target_channel": "Cockroach Janta Party",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "EVTb0Gpbw48",
+    "target": "lGQkiJAdsAc",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "Shahrukh365khan",
+    "target_channel": "NK GK LOVER",
+    "score": 0.922,
+    "distance": 5,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "KmU2UljzB0Y",
+    "target": "Y2hvDKJI7Lo",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "bavaliya jaypal",
+    "target_channel": "Cockroach Janta Party",
+    "score": 0.922,
+    "distance": 5,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "lQOMNs9N_D0",
+    "target": "Y2hvDKJI7Lo",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "zingabad",
+    "target_channel": "Cockroach Janta Party",
+    "score": 0.906,
+    "distance": 6,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "VcVXLkEBlt8",
@@ -1461,7 +2063,7 @@
     "distance": 4,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "l9HryphcbCY",
@@ -1475,7 +2077,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "2kJwJZz7CBM",
@@ -1489,7 +2091,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "l9HryphcbCY",
@@ -1503,7 +2105,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "l9HryphcbCY",
@@ -1517,7 +2119,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "uWMAhT2i4c8",
@@ -1531,7 +2133,7 @@
     "distance": 3,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "RyRErhqlHRU",
@@ -1545,7 +2147,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "RyRErhqlHRU",
@@ -1559,7 +2161,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "2kJwJZz7CBM",
@@ -1573,7 +2175,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "cLMYTdFotek",
@@ -1587,7 +2189,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "cLMYTdFotek",
@@ -1601,7 +2203,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "2kJwJZz7CBM",
@@ -1615,7 +2217,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "2kJwJZz7CBM",
@@ -1629,7 +2231,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "ufJRXh8n31g",
@@ -1643,7 +2245,7 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
   },
   {
     "source": "DA8C5Cn72oo",
@@ -1657,6 +2259,20 @@
     "distance": 0,
     "confidence": "high",
     "ambiguous_direction": false,
-    "detected_at": "2026-07-21T16:03:07Z"
+    "detected_at": "2026-07-21T17:31:22Z"
+  },
+  {
+    "source": "YEIvTqQIQ1o",
+    "target": "JzW4-8VUQ4A",
+    "relation": "shared-footage",
+    "method": "thumbnail-dhash",
+    "same_channel": false,
+    "source_channel": "SumantRaj014",
+    "target_channel": "sumantraj014",
+    "score": 1,
+    "distance": 0,
+    "confidence": "high",
+    "ambiguous_direction": false,
+    "detected_at": "2026-07-21T17:31:22Z"
   }
 ]

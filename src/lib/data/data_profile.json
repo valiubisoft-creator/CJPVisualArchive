@@ -1,158 +1,169 @@
 {
-  "generated_at": "2026-07-21T16:03:08Z",
+  "generated_at": "2026-07-21T17:31:32Z",
   "corpus": "curation/candidates_cjp.json",
-  "videos": 994,
-  "channels": 130,
+  "videos": 1244,
+  "channels": 310,
   "upload_range": {
     "first": "2026-05-23T05:30:06Z",
-    "last": "2026-07-21T15:15:36Z"
+    "last": "2026-07-21T17:25:57Z"
   },
   "verification_status": {},
   "source_type": {},
   "definition": {
-    "hd": 974,
-    "sd": 20
+    "hd": 1212,
+    "sd": 32
   },
   "license": {
-    "youtube": 992,
-    "creativeCommon": 2
+    "youtube": 1239,
+    "creativeCommon": 5
   },
   "captioned": 41,
-  "age_restricted": 0,
-  "geo_blocked": 4,
+  "age_restricted": 1,
+  "geo_blocked": 8,
   "category": {
-    "News & Politics": 901,
-    "People & Blogs": 67,
-    "Education": 13,
-    "Entertainment": 8,
-    "Travel & Events": 2,
-    "Science & Technology": 1,
-    "Comedy": 1,
-    "Sports": 1
+    "News & Politics": 1058,
+    "People & Blogs": 117,
+    "Education": 37,
+    "Entertainment": 18,
+    "Comedy": 4,
+    "Travel & Events": 3,
+    "Autos & Vehicles": 2,
+    "Sports": 2,
+    "Music": 2,
+    "Science & Technology": 1
   },
   "language": {
-    "hi": 400,
-    "en": 268,
-    "en-IN": 168,
-    "en-US": 80,
-    "en-GB": 39,
+    "hi": 538,
+    "en": 298,
+    "en-IN": 177,
+    "en-US": 108,
+    "en-GB": 43,
+    "mr": 38,
     "tr": 15,
-    "mr": 10,
-    "zxx": 6,
-    "hi-Latn": 2,
-    "ta": 2,
-    "te": 2,
-    "pa": 1,
-    "pt-PT": 1
+    "zxx": 7,
+    "ta": 4,
+    "hi-Latn": 3,
+    "te": 3,
+    "ml": 2,
+    "pa": 2,
+    "kn": 2,
+    "ur": 1,
+    "gu": 1,
+    "pt-PT": 1,
+    "bn": 1
   },
   "topic_categories": {
-    "Society": 976,
-    "Politics": 690,
+    "Society": 1213,
+    "Politics": 829,
     "Television_program": 22,
     "Health": 5,
-    "Entertainment": 4,
+    "Entertainment": 5,
     "Lifestyle_(sociology)": 2,
     "Film": 2,
     "Music": 1,
-    "Military": 1
+    "Military": 1,
+    "Music_of_Asia": 1
   },
   "duration_buckets": {
-    "4–20m": 325,
-    "1–4m": 320,
-    "<1m (Short)": 190,
-    ">20m": 140,
-    "unknown": 19
+    "1–4m": 363,
+    "4–20m": 358,
+    "<1m (Short)": 294,
+    ">20m": 198,
+    "unknown": 31
   },
   "duration_seconds": {
-    "n": 975,
+    "n": 1213,
     "min": 4,
-    "p25": 80,
-    "median": 220,
-    "p75": 537,
+    "p25": 61,
+    "median": 202,
+    "p75": 558,
     "max": 42901,
-    "mean": 1987
+    "mean": 2471
   },
   "views": {
-    "n": 994,
+    "n": 1244,
     "min": 0,
-    "p25": 5781,
-    "median": 26719,
-    "p75": 90200,
+    "p25": 4226,
+    "median": 21626,
+    "p75": 83708,
     "max": 8766400,
-    "mean": 99244
+    "mean": 94639
   },
   "uploads_by_month": {
-    "2026-07": 908,
+    "2026-07": 1158,
     "2026-06": 72,
     "2026-05": 14
   },
   "uploads_by_hour_utc": {
-    "08:00": 88,
-    "05:00": 73,
-    "13:00": 70,
-    "11:00": 66,
-    "10:00": 65,
-    "06:00": 64,
-    "07:00": 62,
-    "14:00": 60,
-    "15:00": 58,
-    "09:00": 55,
-    "16:00": 53,
-    "12:00": 52,
-    "04:00": 47,
-    "17:00": 44,
-    "02:00": 39,
-    "03:00": 30,
-    "18:00": 29,
-    "01:00": 11,
-    "19:00": 7,
-    "21:00": 6,
-    "00:00": 5,
-    "20:00": 5,
-    "22:00": 3,
-    "23:00": 2
+    "08:00": 101,
+    "15:00": 86,
+    "13:00": 85,
+    "11:00": 82,
+    "05:00": 80,
+    "10:00": 79,
+    "16:00": 76,
+    "06:00": 75,
+    "14:00": 71,
+    "07:00": 71,
+    "12:00": 69,
+    "09:00": 62,
+    "17:00": 57,
+    "04:00": 56,
+    "02:00": 49,
+    "03:00": 48,
+    "18:00": 36,
+    "01:00": 20,
+    "19:00": 10,
+    "00:00": 8,
+    "21:00": 7,
+    "22:00": 6,
+    "23:00": 5,
+    "20:00": 5
   },
   "channel_subscribers": {
-    "n": 130,
-    "min": 30,
-    "p25": 107000,
-    "median": 1660000,
-    "p75": 7550000,
+    "n": 310,
+    "min": 1,
+    "p25": 1080,
+    "median": 35000,
+    "p75": 1690000,
     "max": 75400000,
-    "mean": 6479842
+    "mean": 2995747
   },
   "channel_videos": {
-    "n": 130,
-    "min": 26,
-    "p25": 822,
-    "median": 21485,
-    "p75": 112328,
-    "max": 705105,
-    "mean": 95291
+    "n": 310,
+    "min": 1,
+    "p25": 163,
+    "median": 852,
+    "p75": 22527,
+    "max": 705174,
+    "mean": 49578
   },
   "channel_country": {
-    "IN": 115,
+    "IN": 247,
+    "US": 2,
     "DE": 1,
-    "US": 1
+    "HK": 1,
+    "AD": 1,
+    "AE": 1
   },
   "velocity": {
-    "tracked": 0,
+    "tracked": 2479,
     "withSeries": 0,
     "viewsPerDay": null
   },
   "network": {
-    "edges": 120,
+    "edges": 164,
     "byMethod": {
-      "thumbnail-dhash": 116,
+      "thumbnail-dhash": 160,
       "credit-link": 4
     },
     "credit_link": 4,
-    "shared_footage": 116,
-    "shared_same_channel": 94,
-    "shared_cross_channel": 22,
-    "clusters": 64,
+    "shared_footage": 160,
+    "shared_same_channel": 102,
+    "shared_cross_channel": 58,
+    "clusters": 81,
     "clusterSizes": {
-      "n": 64,
+      "n": 81,
       "min": 2,
       "p25": 2,
       "median": 2,
@@ -164,23 +175,23 @@
     "topReposted": [
       [
         "Cockroach Janta Party",
-        7
-      ],
-      [
-        "wry5_kU_YoI",
-        3
+        11
       ],
       [
         "The Indian Express",
-        2
+        5
       ],
       [
         "The Lallantop",
-        2
+        5
       ],
       [
-        "Aaj Tak",
-        2
+        "Hindustan Times",
+        4
+      ],
+      [
+        "Hina ke facts",
+        4
       ]
     ]
   },

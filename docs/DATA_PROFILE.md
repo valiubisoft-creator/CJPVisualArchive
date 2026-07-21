@@ -1,8 +1,8 @@
 # CJP archive — data profile
 
-_Generated 2026-07-21T16:03:08Z from `curation/candidates_cjp.json`. Companion reference: [DATA_DICTIONARY.md](DATA_DICTIONARY.md)._
+_Generated 2026-07-21T17:31:32Z from `curation/candidates_cjp.json`. Companion reference: [DATA_DICTIONARY.md](DATA_DICTIONARY.md)._
 
-**Corpus:** 994 videos · 130 channels · uploads 2026-05-23 → 2026-07-21
+**Corpus:** 1244 videos · 310 channels · uploads 2026-05-23 → 2026-07-21
 
 ---
 
@@ -20,17 +20,17 @@ _no data_
 
 | value | n | % | |
 |---|--:|--:|---|
-| hd | 974 | 98% | ████████████████████████ |
-| sd | 20 | 2% |  |
+| hd | 1212 | 97% | ████████████████████████ |
+| sd | 32 | 3% | █ |
 
 ### License
 
 | value | n | % | |
 |---|--:|--:|---|
-| youtube | 992 | 100% | ████████████████████████ |
-| creativeCommon | 2 | 0% |  |
+| youtube | 1239 | 100% | ████████████████████████ |
+| creativeCommon | 5 | 0% |  |
 
-Captioned: **41/994** (4%) · Age-restricted: **0** (0%) · Geo-blocked: **4** (0%)
+Captioned: **41/1244** (3%) · Age-restricted: **1** (0%) · Geo-blocked: **8** (1%)
 
 ## Topic, category & language
 
@@ -38,46 +38,54 @@ Captioned: **41/994** (4%) · Age-restricted: **0** (0%) · Geo-blocked: **4** (
 
 | value | n | % | |
 |---|--:|--:|---|
-| News & Politics | 901 | 91% | ████████████████████████ |
-| People & Blogs | 67 | 7% | ██ |
-| Education | 13 | 1% |  |
-| Entertainment | 8 | 1% |  |
-| Travel & Events | 2 | 0% |  |
+| News & Politics | 1058 | 85% | ████████████████████████ |
+| People & Blogs | 117 | 9% | ███ |
+| Education | 37 | 3% | █ |
+| Entertainment | 18 | 1% |  |
+| Comedy | 4 | 0% |  |
+| Travel & Events | 3 | 0% |  |
+| Autos & Vehicles | 2 | 0% |  |
+| Sports | 2 | 0% |  |
+| Music | 2 | 0% |  |
 | Science & Technology | 1 | 0% |  |
-| Comedy | 1 | 0% |  |
-| Sports | 1 | 0% |  |
 
 ### Topic categories
 
 | value | n | % | |
 |---|--:|--:|---|
-| Society | 976 | 98% | ████████████████████████ |
-| Politics | 690 | 69% | █████████████████ |
-| Television_program | 22 | 2% | █ |
-| Health | 5 | 1% |  |
-| Entertainment | 4 | 0% |  |
+| Society | 1213 | 98% | ████████████████████████ |
+| Politics | 829 | 67% | ████████████████ |
+| Television_program | 22 | 2% |  |
+| Health | 5 | 0% |  |
+| Entertainment | 5 | 0% |  |
 | Lifestyle_(sociology) | 2 | 0% |  |
 | Film | 2 | 0% |  |
 | Music | 1 | 0% |  |
 | Military | 1 | 0% |  |
+| Music_of_Asia | 1 | 0% |  |
 
 ### Audio language
 
 | value | n | % | |
 |---|--:|--:|---|
-| hi | 400 | 40% | ████████████████████████ |
-| en | 268 | 27% | ████████████████ |
-| en-IN | 168 | 17% | ██████████ |
-| en-US | 80 | 8% | █████ |
-| en-GB | 39 | 4% | ██ |
-| tr | 15 | 2% | █ |
-| mr | 10 | 1% | █ |
-| zxx | 6 | 1% |  |
-| hi-Latn | 2 | 0% |  |
-| ta | 2 | 0% |  |
-| te | 2 | 0% |  |
-| pa | 1 | 0% |  |
+| hi | 538 | 43% | ████████████████████████ |
+| en | 298 | 24% | █████████████ |
+| en-IN | 177 | 14% | ████████ |
+| en-US | 108 | 9% | █████ |
+| en-GB | 43 | 3% | ██ |
+| mr | 38 | 3% | ██ |
+| tr | 15 | 1% | █ |
+| zxx | 7 | 1% |  |
+| ta | 4 | 0% |  |
+| hi-Latn | 3 | 0% |  |
+| te | 3 | 0% |  |
+| ml | 2 | 0% |  |
+| pa | 2 | 0% |  |
+| kn | 2 | 0% |  |
+| ur | 1 | 0% |  |
+| gu | 1 | 0% |  |
 | pt-PT | 1 | 0% |  |
+| bn | 1 | 0% |  |
 
 ## Length & reach
 
@@ -85,23 +93,23 @@ Captioned: **41/994** (4%) · Age-restricted: **0** (0%) · Geo-blocked: **4** (
 
 | value | n | % | |
 |---|--:|--:|---|
-| 4–20m | 325 | 33% | ████████████████████████ |
-| 1–4m | 320 | 32% | ████████████████████████ |
-| <1m (Short) | 190 | 19% | ██████████████ |
-| >20m | 140 | 14% | ██████████ |
-| unknown | 19 | 2% | █ |
+| 1–4m | 363 | 29% | ████████████████████████ |
+| 4–20m | 358 | 29% | ████████████████████████ |
+| <1m (Short) | 294 | 24% | ███████████████████ |
+| >20m | 198 | 16% | █████████████ |
+| unknown | 31 | 2% | ██ |
 
 ### Duration (seconds)
 
 | n | min | p25 | median | p75 | max | mean |
 |--:|--:|--:|--:|--:|--:|--:|
-| 975 | 4 | 80 | 220 | 537 | 42901 | 1987 |
+| 1213 | 4 | 61 | 202 | 558 | 42901 | 2471 |
 
 ### View count
 
 | n | min | p25 | median | p75 | max | mean |
 |--:|--:|--:|--:|--:|--:|--:|
-| 994 | 0 | 5781 | 26719 | 90200 | 8766400 | 99244 |
+| 1244 | 0 | 4226 | 21626 | 83708 | 8766400 | 94639 |
 
 ## Timeline
 
@@ -109,38 +117,38 @@ Captioned: **41/994** (4%) · Age-restricted: **0** (0%) · Geo-blocked: **4** (
 
 | value | n | % | |
 |---|--:|--:|---|
-| 2026-07 | 908 | 91% | ████████████████████████ |
-| 2026-06 | 72 | 7% | ██ |
+| 2026-07 | 1158 | 93% | ████████████████████████ |
+| 2026-06 | 72 | 6% | █ |
 | 2026-05 | 14 | 1% |  |
 
 ### Uploads by hour (UTC — normalize by channel country for local time)
 
 | value | n | % | |
 |---|--:|--:|---|
-| 08:00 | 88 | 9% | ████████████████████████ |
-| 05:00 | 73 | 7% | ████████████████████ |
-| 13:00 | 70 | 7% | ███████████████████ |
-| 11:00 | 66 | 7% | ██████████████████ |
-| 10:00 | 65 | 7% | ██████████████████ |
-| 06:00 | 64 | 6% | █████████████████ |
-| 07:00 | 62 | 6% | █████████████████ |
-| 14:00 | 60 | 6% | ████████████████ |
-| 15:00 | 58 | 6% | ████████████████ |
-| 09:00 | 55 | 6% | ███████████████ |
-| 16:00 | 53 | 5% | ██████████████ |
-| 12:00 | 52 | 5% | ██████████████ |
-| 04:00 | 47 | 5% | █████████████ |
-| 17:00 | 44 | 4% | ████████████ |
-| 02:00 | 39 | 4% | ███████████ |
-| 03:00 | 30 | 3% | ████████ |
-| 18:00 | 29 | 3% | ████████ |
-| 01:00 | 11 | 1% | ███ |
-| 19:00 | 7 | 1% | ██ |
-| 21:00 | 6 | 1% | ██ |
-| 00:00 | 5 | 1% | █ |
-| 20:00 | 5 | 1% | █ |
-| 22:00 | 3 | 0% | █ |
-| 23:00 | 2 | 0% | █ |
+| 08:00 | 101 | 8% | ████████████████████████ |
+| 15:00 | 86 | 7% | ████████████████████ |
+| 13:00 | 85 | 7% | ████████████████████ |
+| 11:00 | 82 | 7% | ███████████████████ |
+| 05:00 | 80 | 6% | ███████████████████ |
+| 10:00 | 79 | 6% | ███████████████████ |
+| 16:00 | 76 | 6% | ██████████████████ |
+| 06:00 | 75 | 6% | ██████████████████ |
+| 14:00 | 71 | 6% | █████████████████ |
+| 07:00 | 71 | 6% | █████████████████ |
+| 12:00 | 69 | 6% | ████████████████ |
+| 09:00 | 62 | 5% | ███████████████ |
+| 17:00 | 57 | 5% | ██████████████ |
+| 04:00 | 56 | 5% | █████████████ |
+| 02:00 | 49 | 4% | ████████████ |
+| 03:00 | 48 | 4% | ███████████ |
+| 18:00 | 36 | 3% | █████████ |
+| 01:00 | 20 | 2% | █████ |
+| 19:00 | 10 | 1% | ██ |
+| 00:00 | 8 | 1% | ██ |
+| 21:00 | 7 | 1% | ██ |
+| 22:00 | 6 | 0% | █ |
+| 23:00 | 5 | 0% | █ |
+| 20:00 | 5 | 0% | █ |
 
 ## Channels (who is documenting)
 
@@ -148,21 +156,24 @@ Captioned: **41/994** (4%) · Age-restricted: **0** (0%) · Geo-blocked: **4** (
 
 | n | min | p25 | median | p75 | max | mean |
 |--:|--:|--:|--:|--:|--:|--:|
-| 130 | 30 | 107000 | 1660000 | 7550000 | 75400000 | 6479842 |
+| 310 | 1 | 1080 | 35000 | 1690000 | 75400000 | 2995747 |
 
 ### Videos per channel
 
 | n | min | p25 | median | p75 | max | mean |
 |--:|--:|--:|--:|--:|--:|--:|
-| 130 | 26 | 822 | 21485 | 112328 | 705105 | 95291 |
+| 310 | 1 | 163 | 852 | 22527 | 705174 | 49578 |
 
 ### Channel country
 
 | value | n | % | |
 |---|--:|--:|---|
-| IN | 115 | 88% | ████████████████████████ |
-| DE | 1 | 1% |  |
-| US | 1 | 1% |  |
+| IN | 247 | 80% | ████████████████████████ |
+| US | 2 | 1% |  |
+| DE | 1 | 0% |  |
+| HK | 1 | 0% |  |
+| AD | 1 | 0% |  |
+| AE | 1 | 0% |  |
 
 ## Reposting / shared-footage network
 
@@ -171,16 +182,16 @@ Derived without downloading media (credit-link regex + thumbnail dHash). **Preci
 | edge type | n | meaning |
 |---|--:|---|
 | credit-link | 4 | description cites another clip's id — high confidence |
-| shared-footage, cross-channel | 22 | same footage across different sources — **the repost candidates** |
-| shared-footage, same-channel | 94 | one channel's thumbnail template across its own videos — mostly noise |
+| shared-footage, cross-channel | 58 | same footage across different sources — **the repost candidates** |
+| shared-footage, same-channel | 102 | one channel's thumbnail template across its own videos — mostly noise |
 
-Footage clusters: **64** · **⚠ 0** misattribution candidate(s) _(fires only once clips carry curator-set date/location)_.
+Footage clusters: **81** · **⚠ 0** misattribution candidate(s) _(fires only once clips carry curator-set date/location)_.
 
-Most cited/reused-from (in-degree over meaningful edges): Cockroach Janta Party (7), wry5_kU_YoI (3), The Indian Express (2), The Lallantop (2), Aaj Tak (2)
+Most cited/reused-from (in-degree over meaningful edges): Cockroach Janta Party (11), The Indian Express (5), The Lallantop (5), Hindustan Times (4), Hina ke facts (4)
 
 ## View velocity (self-sampled)
 
-_Needs ≥2 `snapshot-stats` runs. Tracked 0 videos so far._
+_Needs ≥2 `snapshot-stats` runs. Tracked 2479 videos so far._
 
 ## Not available via the API (design around these)
 

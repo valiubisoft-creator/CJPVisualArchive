@@ -11,16 +11,22 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Env / secrets
+# Env / secrets — never commit API keys
 .env
-.env.local
-.env.*.local
+.env.*
+env.local
+!.env.example
 
 # Build output
 dist/
 build/
+.svelte-kit/
+.vercel/
 .cache/
 .parcel-cache/
+
+# Curation scratch — raw, unvetted API pulls (never the source of truth)
+curation/
 
 # Editor
 .vscode/

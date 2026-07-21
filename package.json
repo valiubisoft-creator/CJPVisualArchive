@@ -1,0 +1,29 @@
+{
+  "name": "cjp-protest-video-wall",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A static, manifest-driven tile wall of curated, verification-labelled YouTube footage from the 2026 CJP protests in Delhi.",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+    "validate": "node scripts/validate.mjs",
+    "add-event": "node scripts/add-event.mjs",
+    "ingest": "node scripts/ingest.mjs",
+    "prebuild": "node scripts/validate.mjs"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.20.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "svelte": "^5.20.0",
+    "svelte-check": "^4.1.4",
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  }
+}

@@ -1,0 +1,83 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://cjp-video-wall/event.schema.json",
+	"title": "CJP Protest Video Wall — event record",
+	"description": "One curated clip. Embedded by youtube_id, never rehosted. The array of these in events.json is the single source of truth.",
+	"type": "object",
+	"additionalProperties": false,
+	"required": [
+		"id",
+		"youtube_id",
+		"title",
+		"channel",
+		"source_type",
+		"verification_status",
+		"added_by",
+		"added_at"
+	],
+	"properties": {
+		"id": {
+			"type": "string",
+			"pattern": "^evt_[0-9]{4,}$",
+			"description": "Stable id, e.g. evt_0001."
+		},
+		"youtube_id": {
+			"type": "string",
+			"pattern": "^[A-Za-z0-9_-]{11}$",
+			"description": "11-char YouTube video id (embed target)."
+		},
+		"title": { "type": "string", "minLength": 1 },
+		"channel": { "type": "string" },
+		"published_at": {
+			"type": ["string", "null"],
+			"format": "date-time",
+			"description": "Upload time from videos.list snippet.publishedAt."
+		},
+		"date_claimed": {
+			"type": ["string", "null"],
+			"format": "date",
+			"description": "Curator-set event date (not upload date)."
+		},
+		"location_claimed": { "type": ["string", "null"] },
+		"theme": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Manual theme tags. Filter UI for these is deferred to a later launch."
+		},
+		"source_type": {
+			"type": "string",
+			"enum": ["citizen", "mainstream-media", "party-channel"]
+		},
+		"verification_status": {
+			"type": "string",
+			"enum": ["confirmed", "reported", "recycled-footage", "unverified"]
+		},
+		"verification_notes": { "type": "string" },
+		"graphic_content": {
+			"type": "boolean",
+			"description": "If true, the tile facade is held behind a click-to-reveal interstitial.",
+			"default": false
+		},
+		"reposted_from": {
+			"type": ["string", "null"],
+			"description": "youtube_id or URL this clip was reposted from (v2 network seed). Null if original/unknown."
+		},
+		"added_by": { "type": "string", "minLength": 1 },
+		"added_at": { "type": "string", "format": "date-time" },
+
+		"_duration_seconds": {
+			"type": ["number", "null"],
+			"description": "Machine-derived from videos.list contentDetails.duration. Non-authoritative."
+		},
+		"_thumbnail": {
+			"type": ["string", "null"],
+			"format": "uri",
+			"description": "Machine-derived thumbnail URL. Falls back to img.youtube.com convention if absent."
+		},
+		"_view_count": { "type": ["number", "null"] },
+		"_embeddable": {
+			"type": ["boolean", "null"],
+			"description": "videos.list status.embeddable at ingest time (authoritative embeddability)."
+		}
+	}
+}

@@ -1,0 +1,73 @@
+/*
+ * DESIGN TOKENS — the single source of truth for the look of the whole app.
+ * Forensic-Architecture-inspired: Swiss-utilitarian, high-contrast, one accent,
+ * hairline rules, no radius, dense-but-calm grid, minimal motion.
+ *
+ * v2 RE-SKIN RULE: every component styles itself from var(--…) only — never a
+ * hard-coded colour or size. To re-theme the entire app, edit THIS FILE ALONE.
+ */
+:root {
+	/* ---- colour: high-contrast, a single accent ---- */
+	--bg: #ffffff;
+	--fg: #0a0a0a;
+	--muted: #6b6b6b;
+	--faint: #d8d8d8;
+	--surface: #f4f4f4;
+	--accent: #e2231a; /* the one red */
+	--accent-fg: #ffffff;
+	--rule-color: #0a0a0a;
+	--video-letterbox: #000000; /* bars behind an embedded 16:9 player */
+
+	/* ---- verification-status colours (badge system) ---- */
+	--status-confirmed: #1a7f37;
+	--status-reported: #b26a00;
+	--status-recycled: #6b3fa0;
+	--status-unverified: #6b6b6b;
+
+	/* ---- source-type accents (subtle) ---- */
+	--source-citizen: #0a0a0a;
+	--source-mainstream-media: #1f5fa8;
+	--source-party-channel: #a8461f;
+
+	/* ---- type: mono-adjacent grotesque, few weights ---- */
+	--font-sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--font-mono: 'Space Mono', ui-monospace, 'SF Mono', 'Menlo', monospace;
+	--fw-regular: 400;
+	--fw-medium: 500;
+	--fw-bold: 700;
+	--lh-tight: 1.15;
+	--lh-body: 1.5;
+
+	/* modular type scale */
+	--fs-050: 0.6875rem; /* 11px — labels, meta */
+	--fs-100: 0.8125rem; /* 13px — small */
+	--fs-200: 1rem; /* 16px — body */
+	--fs-300: 1.1875rem; /* 19px */
+	--fs-400: 1.5rem; /* 24px */
+	--fs-700: 2.5rem; /* 40px — page title */
+
+	/* ---- space: 4-based scale ---- */
+	--sp-1: 0.25rem;
+	--sp-2: 0.5rem;
+	--sp-3: 1rem;
+	--sp-4: 1.5rem;
+	--sp-5: 2rem;
+	--sp-6: 3rem;
+
+	/* ---- form: brutalist restraint ---- */
+	--radius: 0;
+	--rule: 1px solid var(--rule-color);
+	--hairline: 1px solid var(--faint);
+	--transition: 120ms linear;
+	--measure: 68ch; /* max reading width */
+	--tile-min: 260px; /* CSS-grid minmax floor */
+	--wrap-max: 1440px; /* page container max */
+	--focus-ring: 2px solid var(--accent);
+}
+
+/* Honour reduced-motion: our transitions are already minimal, but be explicit. */
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--transition: 0ms;
+	}
+}

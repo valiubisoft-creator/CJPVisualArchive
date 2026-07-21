@@ -25,6 +25,7 @@ body {
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
+	cursor: var(--cursor-default);
 }
 
 h1,
@@ -66,7 +67,7 @@ a:hover {
 button {
 	font: inherit;
 	color: inherit;
-	cursor: pointer;
+	cursor: var(--cursor-default);
 	border: var(--rule);
 	background: var(--bg);
 	border-radius: var(--radius);
@@ -105,6 +106,21 @@ code {
 :focus-visible {
 	outline: var(--focus-ring);
 	outline-offset: 2px;
+}
+
+/* Cockroach cursor everywhere — including interactive elements, which would
+   otherwise revert to the UA hand — so it stays visible over video cards,
+   buttons, links, and chips. Swaps to the red variant on click (:active). */
+a,
+summary,
+label,
+select,
+input,
+[role='button'] {
+	cursor: var(--cursor-default);
+}
+:active {
+	cursor: var(--cursor-active);
 }
 
 /* Screen-reader-only utility. */

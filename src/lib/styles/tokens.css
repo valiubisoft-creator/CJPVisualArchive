@@ -67,6 +67,13 @@
 	--tile-min: 260px; /* CSS-grid minmax floor */
 	--wrap-max: 1440px; /* page container max */
 	--focus-ring: 2px solid var(--accent);
+
+	/* ---- cursor: cockroach pointer (CJP theme) ----
+	   Sized ~default pointer; hotspot at the head (top-centre). Swaps to the red
+	   variant on :active for a click colour-change. SVG cursors need intrinsic
+	   width/height (set in the files) to render in Chrome/Safari. */
+	--cursor-default: url('/cursor/cockroach.svg') 13 2, auto;
+	--cursor-active: url('/cursor/cockroach-active.svg') 13 2, auto;
 }
 
 /* Honour reduced-motion: our transitions are already minimal, but be explicit. */

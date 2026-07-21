@@ -42,11 +42,19 @@ const snapshots = existsSync(resolve(dataDir, 'stats_snapshots.jsonl'))
 			.map((l) => JSON.parse(l))
 	: [];
 
-// --- field accessors (tolerate v1 + v2 shapes) ---
-const views = (r) => r._stats?.views ?? r._view_count ?? null;
-const likes = (r) => r._stats?.likes ?? null;
-const comments = (r) => r._stats?.comments ?? null;
-const duration = (r) => r._duration_seconds ?? null;
+// --- field accessors (tolerate curated events `_`-shape AND raw candidate shape) ---
+const views = (r) => r._stats?.views ?? r.stats?.views ?? r._view_count ?? null;
+const likes = (r) => r._stats?.likes ?? r.stats?.likes ?? null;
+const comments = (r) => r._stats?.comments ?? r.stats?.comments ?? null;
+const duration = (r) => r._duration_seconds ?? r.duration_seconds ?? null;
+const definition = (r) => r._definition ?? r.definition ?? null;
+const license = (r) => r._license ?? r.license ?? null;
+const caption = (r) => r._caption ?? r.caption ?? null;
+const ageRestricted = (r) => r._age_restricted ?? r.age_restricted ?? null;
+const regionRestriction = (r) => r._region_restriction ?? r.region_restriction ?? null;
+const categoryId = (r) => r._category_id ?? r.category_id ?? null;
+const audioLang = (r) => r._default_audio_language ?? r.default_audio_language ?? null;
+const topicCats = (r) => r._topic_categories ?? r.topic_categories ?? [];
 
 // --- helpers ---
 function counts(items, key) {
@@ -117,12 +125,20 @@ function velocity() {
 
 // --- network stats ---
 function networkStats() {
+	const shared = edges.filter((e) => e.relation === 'shared-footage');
+	const crossChannel = shared.filter((e) => e.same_channel === false);
+	// in-degree over the meaningful edges (credit-links + cross-channel footage)
+	const meaningful = edges.filter((e) => e.method === 'credit-link' || e.same_channel === false);
 	const indeg = new Map();
-	for (const e of edges) indeg.set(e.target, (indeg.get(e.target) ?? 0) + 1);
+	for (const e of meaningful) indeg.set(e.target_channel ?? e.target, (indeg.get(e.target_channel ?? e.target) ?? 0) + 1);
 	const topReposted = [...indeg.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 	return {
 		edges: edges.length,
 		byMethod: Object.fromEntries(counts(edges, 'method')),
+		credit_link: edges.filter((e) => e.method === 'credit-link').length,
+		shared_footage: shared.length,
+		shared_same_channel: shared.length - crossChannel.length,
+		shared_cross_channel: crossChannel.length,
 		clusters: clustersData.length,
 		clusterSizes: summary(clustersData.map((c) => c.size)),
 		misattribution: clustersData.filter((c) => c.misattribution_candidate).length,
@@ -141,14 +157,14 @@ const profile = {
 	upload_range: dates.length ? { first: dates[0], last: dates[dates.length - 1] } : null,
 	verification_status: Object.fromEntries(counts(videos, 'verification_status')),
 	source_type: Object.fromEntries(counts(videos, 'source_type')),
-	definition: Object.fromEntries(counts(videos, (r) => r._definition)),
-	license: Object.fromEntries(counts(videos, (r) => r._license)),
-	captioned: videos.filter((r) => r._caption === true).length,
-	age_restricted: videos.filter((r) => r._age_restricted === true).length,
-	geo_blocked: videos.filter((r) => r._region_restriction).length,
-	category: Object.fromEntries(counts(videos, (r) => categories[r._category_id] ?? r._category_id)),
-	language: Object.fromEntries(counts(videos, (r) => r._default_audio_language)),
-	topic_categories: Object.fromEntries(counts(videos, (r) => r._topic_categories ?? [])),
+	definition: Object.fromEntries(counts(videos, definition)),
+	license: Object.fromEntries(counts(videos, license)),
+	captioned: videos.filter((r) => caption(r) === true).length,
+	age_restricted: videos.filter((r) => ageRestricted(r) === true).length,
+	geo_blocked: videos.filter((r) => regionRestriction(r)).length,
+	category: Object.fromEntries(counts(videos, (r) => categories[categoryId(r)] ?? categoryId(r))),
+	language: Object.fromEntries(counts(videos, audioLang)),
+	topic_categories: Object.fromEntries(counts(videos, topicCats)),
 	duration_buckets: Object.fromEntries(counts(videos, (r) => durationBucket(duration(r)))),
 	duration_seconds: summary(videos.map(duration)),
 	views: summary(videos.map(views)),
@@ -181,13 +197,13 @@ _Generated ${P.generated_at} from \`${P.corpus}\`. Companion reference: [DATA_DI
 	distTable('Verification status', counts(videos, 'verification_status'), total) +
 	distTable('Source type', counts(videos, 'source_type'), total) +
 	`## Content & rights\n\n` +
-	distTable('Definition (HD/SD)', counts(videos, (r) => r._definition), total) +
-	distTable('License', counts(videos, (r) => r._license), total) +
+	distTable('Definition (HD/SD)', counts(videos, definition), total) +
+	distTable('License', counts(videos, license), total) +
 	`Captioned: **${P.captioned}/${total}** (${pct(P.captioned, total)}) · Age-restricted: **${P.age_restricted}** (${pct(P.age_restricted, total)}) · Geo-blocked: **${P.geo_blocked}** (${pct(P.geo_blocked, total)})\n\n` +
 	`## Topic, category & language\n\n` +
-	distTable('YouTube category', counts(videos, (r) => categories[r._category_id] ?? r._category_id), total) +
-	distTable('Topic categories', counts(videos, (r) => r._topic_categories ?? []), total) +
-	distTable('Audio language', counts(videos, (r) => r._default_audio_language), total) +
+	distTable('YouTube category', counts(videos, (r) => categories[categoryId(r)] ?? categoryId(r)), total) +
+	distTable('Topic categories', counts(videos, topicCats), total) +
+	distTable('Audio language', counts(videos, audioLang), total) +
 	`## Length & reach\n\n` +
 	distTable('Duration buckets', counts(videos, (r) => durationBucket(duration(r))), total) +
 	summaryTable('Duration (seconds)', P.duration_seconds) +
@@ -200,10 +216,14 @@ _Generated ${P.generated_at} from \`${P.corpus}\`. Companion reference: [DATA_DI
 	summaryTable('Videos per channel', P.channel_videos) +
 	distTable('Channel country', counts(channels, 'country'), channels.length) +
 	`## Reposting / shared-footage network\n\n` +
-	`Edges: **${P.network.edges}** (${Object.entries(P.network.byMethod).map(([k, v]) => `${v} ${k}`).join(', ') || 'none'}) · ` +
-	`footage clusters: **${P.network.clusters}** · **⚠ ${P.network.misattribution}** misattribution candidate(s)\n\n` +
+	`Derived without downloading media (credit-link regex + thumbnail dHash). **Precision caveat:** thumbnail dHash mostly catches a channel reusing its own branded thumbnail template across a series — *not* footage reposting. The meaningful repost signal is **credit-links** + **cross-channel** footage matches.\n\n` +
+	`| edge type | n | meaning |\n|---|--:|---|\n` +
+	`| credit-link | ${P.network.credit_link} | description cites another clip's id — high confidence |\n` +
+	`| shared-footage, cross-channel | ${P.network.shared_cross_channel} | same footage across different sources — **the repost candidates** |\n` +
+	`| shared-footage, same-channel | ${P.network.shared_same_channel} | one channel's thumbnail template across its own videos — mostly noise |\n\n` +
+	`Footage clusters: **${P.network.clusters}** · **⚠ ${P.network.misattribution}** misattribution candidate(s) _(fires only once clips carry curator-set date/location)_.\n\n` +
 	(P.network.topReposted.length
-		? `Most-reposted (in-degree): ${P.network.topReposted.map(([id, n]) => `\`${id}\` (${n})`).join(', ')}\n\n`
+		? `Most cited/reused-from (in-degree over meaningful edges): ${P.network.topReposted.map(([id, n]) => `${id} (${n})`).join(', ')}\n\n`
 		: '') +
 	`## View velocity (self-sampled)\n\n` +
 	(P.velocity.withSeries

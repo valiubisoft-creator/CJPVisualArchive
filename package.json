@@ -12,6 +12,7 @@
     "validate": "node scripts/validate.mjs",
     "add-event": "node scripts/add-event.mjs",
     "ingest": "node scripts/ingest.mjs",
+    "filter": "node scripts/filter-relevance.mjs",
     "snapshot": "node scripts/snapshot-stats.mjs",
     "network": "node scripts/derive-network.mjs",
     "profile": "node scripts/profile-data.mjs",

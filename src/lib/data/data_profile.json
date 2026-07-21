@@ -1,0 +1,188 @@
+{
+  "generated_at": "2026-07-21T16:03:08Z",
+  "corpus": "curation/candidates_cjp.json",
+  "videos": 994,
+  "channels": 130,
+  "upload_range": {
+    "first": "2026-05-23T05:30:06Z",
+    "last": "2026-07-21T15:15:36Z"
+  },
+  "verification_status": {},
+  "source_type": {},
+  "definition": {
+    "hd": 974,
+    "sd": 20
+  },
+  "license": {
+    "youtube": 992,
+    "creativeCommon": 2
+  },
+  "captioned": 41,
+  "age_restricted": 0,
+  "geo_blocked": 4,
+  "category": {
+    "News & Politics": 901,
+    "People & Blogs": 67,
+    "Education": 13,
+    "Entertainment": 8,
+    "Travel & Events": 2,
+    "Science & Technology": 1,
+    "Comedy": 1,
+    "Sports": 1
+  },
+  "language": {
+    "hi": 400,
+    "en": 268,
+    "en-IN": 168,
+    "en-US": 80,
+    "en-GB": 39,
+    "tr": 15,
+    "mr": 10,
+    "zxx": 6,
+    "hi-Latn": 2,
+    "ta": 2,
+    "te": 2,
+    "pa": 1,
+    "pt-PT": 1
+  },
+  "topic_categories": {
+    "Society": 976,
+    "Politics": 690,
+    "Television_program": 22,
+    "Health": 5,
+    "Entertainment": 4,
+    "Lifestyle_(sociology)": 2,
+    "Film": 2,
+    "Music": 1,
+    "Military": 1
+  },
+  "duration_buckets": {
+    "4–20m": 325,
+    "1–4m": 320,
+    "<1m (Short)": 190,
+    ">20m": 140,
+    "unknown": 19
+  },
+  "duration_seconds": {
+    "n": 975,
+    "min": 4,
+    "p25": 80,
+    "median": 220,
+    "p75": 537,
+    "max": 42901,
+    "mean": 1987
+  },
+  "views": {
+    "n": 994,
+    "min": 0,
+    "p25": 5781,
+    "median": 26719,
+    "p75": 90200,
+    "max": 8766400,
+    "mean": 99244
+  },
+  "uploads_by_month": {
+    "2026-07": 908,
+    "2026-06": 72,
+    "2026-05": 14
+  },
+  "uploads_by_hour_utc": {
+    "08:00": 88,
+    "05:00": 73,
+    "13:00": 70,
+    "11:00": 66,
+    "10:00": 65,
+    "06:00": 64,
+    "07:00": 62,
+    "14:00": 60,
+    "15:00": 58,
+    "09:00": 55,
+    "16:00": 53,
+    "12:00": 52,
+    "04:00": 47,
+    "17:00": 44,
+    "02:00": 39,
+    "03:00": 30,
+    "18:00": 29,
+    "01:00": 11,
+    "19:00": 7,
+    "21:00": 6,
+    "00:00": 5,
+    "20:00": 5,
+    "22:00": 3,
+    "23:00": 2
+  },
+  "channel_subscribers": {
+    "n": 130,
+    "min": 30,
+    "p25": 107000,
+    "median": 1660000,
+    "p75": 7550000,
+    "max": 75400000,
+    "mean": 6479842
+  },
+  "channel_videos": {
+    "n": 130,
+    "min": 26,
+    "p25": 822,
+    "median": 21485,
+    "p75": 112328,
+    "max": 705105,
+    "mean": 95291
+  },
+  "channel_country": {
+    "IN": 115,
+    "DE": 1,
+    "US": 1
+  },
+  "velocity": {
+    "tracked": 0,
+    "withSeries": 0,
+    "viewsPerDay": null
+  },
+  "network": {
+    "edges": 120,
+    "byMethod": {
+      "thumbnail-dhash": 116,
+      "credit-link": 4
+    },
+    "credit_link": 4,
+    "shared_footage": 116,
+    "shared_same_channel": 94,
+    "shared_cross_channel": 22,
+    "clusters": 64,
+    "clusterSizes": {
+      "n": 64,
+      "min": 2,
+      "p25": 2,
+      "median": 2,
+      "p75": 3,
+      "max": 11,
+      "mean": 3
+    },
+    "misattribution": 0,
+    "topReposted": [
+      [
+        "Cockroach Janta Party",
+        7
+      ],
+      [
+        "wry5_kU_YoI",
+        3
+      ],
+      [
+        "The Indian Express",
+        2
+      ],
+      [
+        "The Lallantop",
+        2
+      ],
+      [
+        "Aaj Tak",
+        2
+      ]
+    ]
+  },
+  "facets_present": false
+}

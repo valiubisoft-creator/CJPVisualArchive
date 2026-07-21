@@ -33,7 +33,10 @@ const dataDir = resolve(root, 'src/lib/data');
 const { values } = parseArgs({
 	options: {
 		input: { type: 'string' },
-		threshold: { type: 'string', default: '10' } // max dHash Hamming distance to call a match
+		// max dHash Hamming distance to call a match. Default 6 = the script's own
+		// "high-confidence" band: empirically, ≥8 over-connects news thumbnails
+		// (shared chyron/lower-third layout ⇒ a false-positive mega-cluster).
+		threshold: { type: 'string', default: '6' }
 	}
 });
 const THRESH = Number(values.threshold) || 10;
@@ -177,11 +180,18 @@ function sharedFootageEdges(hashes) {
 				rb = corpus[j];
 			const [earlier, later] =
 				(ra.published_at ?? '') <= (rb.published_at ?? '') ? [ra, rb] : [rb, ra];
+			// Same-channel matches are usually branded-thumbnail-template reuse across a
+			// channel's own series, NOT cross-source footage reposting. Flag so the
+			// interesting cross-channel DSV candidates can be isolated downstream.
+			const sameChannel = Boolean(earlier.channel_id && earlier.channel_id === later.channel_id);
 			edges.push({
 				source: later.youtube_id, // repost points to original
 				target: earlier.youtube_id,
 				relation: 'shared-footage',
 				method: 'thumbnail-dhash',
+				same_channel: sameChannel,
+				source_channel: later.channel ?? null,
+				target_channel: earlier.channel ?? null,
 				score: Number((1 - dist / 64).toFixed(3)),
 				distance: dist,
 				confidence: dist <= 6 ? 'high' : 'medium',
@@ -238,7 +248,19 @@ function summariseCluster(members, idx) {
 // --- run ---
 console.log(`Deriving network over ${corpus.length} videos (threshold ${THRESH})…`);
 const credit = creditEdges();
-const hashes = await pool(corpus.map((r) => r.youtube_id), 8, hashVideo);
+// Cache perceptual hashes (curation/, gitignored) so re-thresholding never re-fetches.
+const HASH_CACHE = resolve(root, 'curation/thumb_hashes.json');
+const hashCache = existsSync(HASH_CACHE) ? JSON.parse(readFileSync(HASH_CACHE, 'utf8')) : {};
+const ids = corpus.map((r) => r.youtube_id);
+const toFetch = ids.filter((id) => !(id in hashCache));
+if (toFetch.length) {
+	console.log(`  hashing ${toFetch.length} new thumbnails (${ids.length - toFetch.length} cached)…`);
+	const fetched = await pool(toFetch, 8, hashVideo);
+	toFetch.forEach((id, k) => (hashCache[id] = fetched[k]));
+	mkdirSync(dirname(HASH_CACHE), { recursive: true });
+	writeFileSync(HASH_CACHE, JSON.stringify(hashCache) + '\n');
+}
+const hashes = ids.map((id) => hashCache[id] ?? { hq: null, sb: null });
 const hashed = hashes.filter((h) => h.hq || h.sb).length;
 const shared = sharedFootageEdges(hashes);
 const edges = [...credit, ...shared];

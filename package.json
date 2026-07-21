@@ -12,6 +12,7 @@
     "validate": "node scripts/validate.mjs",
     "add-event": "node scripts/add-event.mjs",
     "ingest": "node scripts/ingest.mjs",
+    "snapshot": "node scripts/snapshot-stats.mjs",
     "prebuild": "node scripts/validate.mjs"
   },
   "devDependencies": {

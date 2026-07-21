@@ -78,6 +78,45 @@
 		"_embeddable": {
 			"type": ["boolean", "null"],
 			"description": "videos.list status.embeddable at ingest time (authoritative embeddability)."
+		},
+
+		"_channel_id": { "type": ["string", "null"], "description": "Join key to channels.json." },
+		"_category_id": { "type": ["string", "null"], "description": "YouTube categoryId; decode via ref/categories.json." },
+		"_default_audio_language": { "type": ["string", "null"] },
+		"_definition": { "type": ["string", "null"], "enum": ["hd", "sd", null] },
+		"_caption": { "type": ["boolean", "null"], "description": "Whether a caption track exists (not the text)." },
+		"_license": { "type": ["string", "null"], "enum": ["youtube", "creativeCommon", null] },
+		"_age_restricted": { "type": ["boolean", "null"] },
+		"_region_restriction": {
+			"type": ["object", "null"],
+			"description": "Geo-block footprint (censorship signal): { allowed?, blocked? } ISO-3166.",
+			"additionalProperties": true
+		},
+		"_topic_categories": { "type": "array", "items": { "type": "string" } },
+		"_live_actual_start": { "type": ["string", "null"], "format": "date-time" },
+		"_live_actual_end": { "type": ["string", "null"], "format": "date-time" },
+		"_stats": {
+			"type": ["object", "null"],
+			"description": "Aggregate counts only (no comment text/authors). Latest snapshot; time series lives in stats_snapshots.jsonl.",
+			"additionalProperties": false,
+			"properties": {
+				"views": { "type": ["number", "null"] },
+				"likes": { "type": ["number", "null"] },
+				"comments": { "type": ["number", "null"] }
+			}
+		},
+
+		"_footage_cluster_id": {
+			"type": ["string", "null"],
+			"description": "Derived shared-footage cluster (derive-network.mjs). Connected component over DSV edges."
+		},
+		"_reposted_from_inferred": {
+			"type": ["string", "null"],
+			"description": "Machine-inferred original youtube_id (vs curator-authoritative reposted_from). Never overwrites the human field."
+		},
+		"_thumbnail_pdq": {
+			"type": ["string", "null"],
+			"description": "Perceptual hash of the thumbnail/storyboard (hex) for repost matching. Derived; media itself never stored."
 		}
 	}
 }

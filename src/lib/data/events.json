@@ -2,11 +2,11 @@
 	{
 		"id": "evt_0001",
 		"youtube_id": "aqz-KE-bpKQ",
-		"title": "[SAMPLE] Gathering at Patel Chowk — morning",
+		"title": "[SAMPLE] Gathering at Patel Chowk — पटेल चौक पर जमावड़ा",
 		"channel": "Sample Citizen Upload",
 		"published_at": "2026-07-20T09:14:00Z",
 		"date_claimed": "2026-07-20",
-		"location_claimed": "Patel Chowk, New Delhi",
+		"location_claimed": "Patel Chowk, New Delhi / पटेल चौक, नई दिल्ली",
 		"theme": ["assembly", "march"],
 		"source_type": "citizen",
 		"verification_status": "unverified",
@@ -70,7 +70,7 @@
 	{
 		"id": "evt_0005",
 		"youtube_id": "Y-rmzh0PI3c",
-		"title": "[SAMPLE] Speeches at the main stage",
+		"title": "[SAMPLE] Speeches at the main stage — मुख्य मंच पर भाषण",
 		"channel": "Sample Citizen Upload",
 		"published_at": "2026-07-20T16:05:00Z",
 		"date_claimed": "2026-07-20",

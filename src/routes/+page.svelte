@@ -45,6 +45,7 @@
 				Curated video documentation of the 2026 CJP protests in Delhi — what's circulating, from
 				whom, and how verified. Embedded, not rehosted.
 			</p>
+			<a class="explore mono" href="/timeline/">Explore the timeline &amp; map →</a>
 		</div>
 		<p class="count mono">
 			{visible.length}<span class="of">/{data.events.length}</span> clips
@@ -88,6 +89,19 @@
 		margin: 0;
 		color: var(--muted);
 		font-size: var(--fs-200);
+	}
+	.explore {
+		display: inline-block;
+		margin-top: var(--sp-3);
+		font-size: var(--fs-100);
+		color: var(--accent);
+		text-decoration: none;
+		border-bottom: 1px solid var(--accent);
+		padding-bottom: 1px;
+	}
+	.explore:hover {
+		color: var(--fg);
+		border-color: var(--fg);
 	}
 	.count {
 		font-size: var(--fs-400);

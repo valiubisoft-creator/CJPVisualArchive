@@ -13,6 +13,8 @@
     "add-event": "node scripts/add-event.mjs",
     "ingest": "node scripts/ingest.mjs",
     "snapshot": "node scripts/snapshot-stats.mjs",
+    "network": "node scripts/derive-network.mjs",
+    "profile": "node scripts/profile-data.mjs",
     "prebuild": "node scripts/validate.mjs"
   },
   "devDependencies": {
@@ -27,6 +29,7 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "jpeg-js": "^0.4.4"
   }
 }

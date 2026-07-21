@@ -22,15 +22,21 @@
  * Every call is appended to curation/tag_audit.jsonl (model, prompt version, ts, usage)
  * for DPDPA accountability + WITNESS chain-of-custody.
  *
+ * Two engines (same proposal shape, same human gate, same audit):
+ *   --engine heuristic  (default)  offline bilingual keyword->enum rules. No API, no cost,
+ *                                  scales to the whole corpus. Low-confidence by design so
+ *                                  every facet is flagged for human review.
+ *   --engine anthropic             Claude (claude-sonnet-5) via forced tool call. Higher
+ *                                  quality; requires ANTHROPIC_API_KEY + account credits.
+ *
  * Usage:
- *   node scripts/tag-suggest.mjs [--corpus <path>] [--limit N] [--model <id>] [--redo] [--dry-run]
+ *   node scripts/tag-suggest.mjs [--corpus <path>] [--limit N] [--engine heuristic|anthropic] [--model <id>] [--redo] [--dry-run]
  *     --corpus    default curation/candidates_cjp.json
  *     --limit     how many untagged clips to propose for this run (default 8)
- *     --model     override the model id
+ *     --engine    heuristic (default, offline) | anthropic (LLM, needs key+credits)
+ *     --model     override the anthropic model id
  *     --redo      re-propose even if a clip already has a proposal
- *     --dry-run   print the request for the first clip and exit (no API call, no cost)
- *
- * Requires ANTHROPIC_API_KEY in .env.local.
+ *     --dry-run   print what would be sent/produced for the first clip; no writes
  */
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -51,13 +57,16 @@ const { values } = parseArgs({
 	options: {
 		corpus: { type: 'string', default: 'curation/candidates_cjp.json' },
 		limit: { type: 'string', default: '8' },
+		engine: { type: 'string', default: 'heuristic' },
 		model: { type: 'string' },
 		redo: { type: 'boolean', default: false },
 		'dry-run': { type: 'boolean', default: false }
 	}
 });
 
+const ENGINE = values.engine ?? 'heuristic';
 const MODEL = values.model ?? 'claude-sonnet-5';
+const MODEL_LABEL = ENGINE === 'heuristic' ? 'heuristic/v1' : MODEL;
 const ANTHROPIC_VERSION = '2023-06-01';
 const API = 'https://api.anthropic.com/v1/messages';
 const PROMPT_VERSION = 'tag-suggest/v1';
@@ -197,6 +206,152 @@ function offVocab(proposals) {
 	return bad;
 }
 
+// --- heuristic engine (offline, no LLM): bilingual keyword lexicon → enum facets ---
+// A deterministic first pass for when the API is unavailable. Inherently low-confidence
+// (surface keywords, not comprehension), so facets stay under the 0.7 review threshold —
+// the human gate confirms everything. Emits the exact same proposal shape as the LLM path.
+const NEWS_RE = /news|tak|abp|ndtv|cnn|india today|zee|tv9|republic|times now|wire|lallantop|patrika|jagran|samachar|tv18|cnbc/i;
+const ACTION_RULES = [
+	['excessive_force', ['lathi charge', 'lathicharge', 'lathi-charge', 'लाठीचार्ज', 'लाठी चार्ज', 'baton charge', 'water cannon', 'excessive force', 'brutal']],
+	['tear_gas_lathi', ['tear gas', 'teargas', 'tear-gas', 'आंसू गैस', 'lathi', 'लाठी']],
+	['clash', ['clash', 'भिड़ंत', 'scuffle', 'face-off', 'faceoff', 'confrontation', 'झड़प', 'vs police', 'vs protesters']],
+	['arrest', ['arrest', 'detained', 'detention', 'into custody', 'गिरफ्तार', 'हिरासत']],
+	['hunger_strike', ['hunger strike', 'hunger-strike', 'anshan', 'अनशन', 'fast unto', 'भूख हड़ताल']],
+	['sit_in_dharna', ['dharna', 'धरना', 'sit-in', 'sit in']],
+	['blockade_roko', ['rail roko', 'rasta roko', 'chakka jam', 'चक्का जाम', 'blockade', 'road block', 'रोको']],
+	['march', ['march', 'padyatra', 'पदयात्रा', 'procession', 'chalo sansad', 'sansad chalo', 'जुलूस']],
+	['rally', ['rally', 'जनसभा', 'public meeting', 'jansabha', 'maha rally']],
+	['vigil', ['candle march', 'candlelight', 'vigil', 'कैंडल']],
+	['speech_presser', ['press conference', 'presser', 'press meet', 'statement', 'address', 'भाषण', 'संबोधन']],
+	['symbolic_protest', ['effigy', 'putla', 'पुतला', 'memorandum', 'symbolic']],
+	['aftermath_testimony', ['aftermath', 'testimony', 'eyewitness', 'survivor']],
+	['peaceful_protest', ['protest', 'प्रदर्शन', 'pradarshan', 'demonstration', 'protester', 'protestor', 'आंदोलन', 'andolan', 'agitation']]
+];
+const ACTOR_RULES = [
+	['police', ['police', 'पुलिस', 'cops', 'constable']],
+	['paramilitary', ['crpf', 'rpf', 'paramilitary', 'central forces', 'rapid action', 'अर्धसैनिक']],
+	['protesters', ['protester', 'protestor', 'प्रदर्शनकारी', 'demonstrator', 'andolankari', 'आंदोलनकारी', 'agitators']],
+	['students', ['student', 'छात्र', 'aspirant', 'युवा', 'neet aspirant']],
+	['party_figures', ['cjp', 'spokesperson', 'party leader', 'प्रवक्ता', 'convenor']],
+	['press', ['reporter', 'journalist', 'press ', 'पत्रकार']],
+	['state_officials', ['minister', 'मंत्री', 'govt official', 'government official', 'ruling party', 'सरकार']],
+	['medics', ['ambulance', 'एम्बुलेंस', 'medic', 'first aid', 'stretcher']],
+	['bystanders', ['bystander', 'onlooker', 'राहगीर']]
+];
+const ISSUE_RULES = [
+	['exam_education_integrity', ['neet', 'paper leak', 'exam', 'retake', 'परीक्षा', 'question paper', 'nta', 'coaching']],
+	['youth_unemployment', ['unemploy', 'बेरोजगार', 'jobless', 'rozgar', 'रोजगार', 'job crisis', 'vacancy']],
+	['judicial_accountability', ['cji', 'chief justice', 'judiciary', 'collegium', 'rajya sabha seat', 'post-retirement', 'न्यायपालिका']],
+	['electoral_integrity', ['vote deletion', 'voter list', 'election commission', 'चुनाव आयोग', 'vote chori', 'electoral roll', 'मतदाता']],
+	['gender_representation', ['women reservation', 'महिला आरक्षण', '50% women', 'women in parliament']],
+	['media_ownership', ['ambani', 'adani', 'godi media', 'media license', 'press freedom']],
+	['anti_defection_reform', ['defection', 'dal-badal', 'दलबदल', 'party switch', 'anti-defection']],
+	['police_conduct_civil_liberties', ['civil liberties', 'human rights', 'surveillance', 'custodial', 'police brutality', 'मानवाधिकार']]
+];
+const SETTING_RULES = [
+	['square_maidan', ['jantar mantar', 'जंतर मंतर', 'ramlila', 'रामलीला', 'maidan', 'मैदान']],
+	['outside_govt', ['sansad', 'parliament', 'संसद', 'sansad marg', 'parliament street', 'vidhan sabha', 'विधानसभा', 'secretariat']],
+	['campus', ['university', 'campus', 'कैंपस', 'college', 'jnu', 'jamia', 'जामिया', 'iit']],
+	['stage', ['stage', 'मंच', 'manch', 'dais']],
+	['highway', ['highway', 'हाईवे', 'toll plaza', 'expressway']],
+	['worship_vicinity', ['temple', 'mosque', 'मंदिर', 'मस्जिद', 'gurudwara']],
+	['indoor', ['auditorium', 'press club', 'सभागार', 'indoor hall']],
+	['street_road', ['road', 'सड़क', 'street', ' marg', 'मार्ग', 'connaught place', 'कनॉट', 'chowk', 'चौक', 'crossing']]
+];
+const CW_RULES = [
+	['injury', ['injured', 'injury', 'blood', 'घायल', 'wounded', 'officers injured', 'bleeding']],
+	['graphic_violence', ['lathicharge', 'lathi charge', 'लाठीचार्ज', 'beaten', 'thrash', 'brutal', 'violence', 'हिंसा', 'manhandled', 'dragged']],
+	['death', ['death', 'died', 'मौत', 'killed', 'मारे गए', 'deceased']],
+	['distress_minors', ['child', 'minor', 'बच्चा']]
+];
+const PROTEST_ACTIONS = new Set(['peaceful_protest', 'march', 'rally', 'sit_in_dharna', 'hunger_strike', 'blockade_roko', 'clash', 'protest_with_intervention', 'excessive_force', 'tear_gas_lathi']);
+const FORCE_ACTIONS = new Set(['excessive_force', 'tear_gas_lathi', 'arrest', 'clash']);
+
+const hayOf = (v) => `${v.title ?? ''} ${v.description ?? ''} ${(v.tags ?? []).join(' ')}`.toLowerCase();
+// Plain ASCII words match on word boundaries (so "nta" ≠ manTAr, "road" ≠ bROADcast);
+// hyphenated / %-bearing / Devanagari / padded terms fall back to substring.
+function compileTerm(term) {
+	if (/^[a-z0-9]$/.test(term) || /^[a-z0-9][a-z0-9 ]*[a-z0-9]$/.test(term)) {
+		const re = new RegExp(`\\b${term}\\b`);
+		return (hay) => re.test(hay);
+	}
+	return (hay) => hay.includes(term);
+}
+const compileRules = (rules) => rules.map(([value, terms]) => [value, terms.map((t) => [t, compileTerm(t)])]);
+const [ACTION_C, ACTOR_C, ISSUE_C, SETTING_C, CW_C] = [ACTION_RULES, ACTOR_RULES, ISSUE_RULES, SETTING_RULES, CW_RULES].map(compileRules);
+function firstHit(hay, rules) {
+	for (const [value, terms] of rules) for (const [t, m] of terms) if (m(hay)) return { value, ev: t };
+	return null;
+}
+function allHits(hay, rules) {
+	const out = [];
+	for (const [value, terms] of rules) {
+		const hit = terms.find(([, m]) => m(hay));
+		if (hit) out.push({ value, ev: hit[0] });
+	}
+	return out;
+}
+
+function heuristicPropose(v) {
+	const hay = hayOf(v);
+	const conf = {};
+	const evidence = {};
+
+	const a = firstHit(hay, ACTION_C);
+	const action = a?.value ?? 'insufficient_evidence';
+	if (a) { conf.action = 0.6; evidence.action = a.ev; }
+
+	const actorHits = allHits(hay, ACTOR_C);
+	const actors = actorHits.map((h) => h.value);
+	if (PROTEST_ACTIONS.has(action) && !actors.includes('protesters')) actors.push('protesters');
+	if (actors.length) { conf.actors = 0.5; evidence.actors = actorHits.map((h) => h.ev).join('; ') || 'inferred from protest context'; }
+
+	const issueHits = allHits(hay, ISSUE_C);
+	const issues = issueHits.map((h) => h.value);
+	if (FORCE_ACTIONS.has(action) && !issues.includes('police_conduct_civil_liberties')) issues.push('police_conduct_civil_liberties');
+	if (issues.length) { conf.issues = 0.5; evidence.issues = issueHits.map((h) => h.ev).join('; ') || 'reactive: force action'; }
+
+	const s = firstHit(hay, SETTING_C);
+	const setting = s?.value ?? 'insufficient_evidence';
+	if (s) { conf.setting = 0.55; evidence.setting = s.ev; }
+
+	const media_format = [];
+	const mfEv = [];
+	if (v.live?.actual_start || hay.includes('live') || hay.includes('लाइव')) { media_format.push('livestream'); mfEv.push('live'); }
+	if (NEWS_RE.test(v.channel ?? '')) { media_format.push('broadcast'); mfEv.push('news channel'); }
+	if (hay.includes('#shorts') || (v.duration_seconds != null && v.duration_seconds <= 60 && !v.live)) { media_format.push('vertical_phone'); mfEv.push('short'); }
+	if (media_format.length) { conf.media_format = 0.5; evidence.media_format = mfEv.join('; '); }
+
+	const cwHits = allHits(hay, CW_C);
+	const content_warnings = cwHits.map((h) => h.value);
+	if (content_warnings.length) { conf.content_warnings = 0.4; evidence.content_warnings = cwHits.map((h) => h.ev).join('; '); }
+
+	const sensitivity = [];
+	if (FORCE_ACTIONS.has(action) || content_warnings.length) sensitivity.push('identity_protection_required');
+	if (content_warnings.some((w) => w === 'graphic_violence' || w === 'death' || w === 'injury')) sensitivity.push('takedown_risk');
+	if (content_warnings.includes('distress_minors')) sensitivity.push('contains_minors');
+	if (sensitivity.length) { conf.sensitivity = 0.4; evidence.sensitivity = 'over-flagged from action/content cues'; }
+
+	return {
+		action,
+		actors: [...new Set(actors)],
+		issues: [...new Set(issues)],
+		setting,
+		media_format: [...new Set(media_format)],
+		content_warnings,
+		sensitivity: [...new Set(sensitivity)],
+		confidence: conf,
+		evidence,
+		sensitive_attribute_inference: 'none_performed',
+		reasoning: 'Heuristic bilingual keyword match (no LLM). Low-confidence first pass — every facet requires human confirmation.'
+	};
+}
+
+async function propose(v) {
+	if (ENGINE === 'heuristic') return { input: heuristicPropose(v), usage: null };
+	return tagOne(v);
+}
+
 // --- run ---
 const corpusPath = resolve(root, values.corpus);
 const corpus = readJSON(corpusPath, []).filter((r) => r.youtube_id);
@@ -219,14 +374,19 @@ if (existsSync(proposalsPath) && !values.redo)
 const targets = corpus.filter((v) => !done.has(v.youtube_id)).slice(0, Math.max(1, Number(values.limit) || 8));
 
 if (values['dry-run']) {
-	console.log('=== SYSTEM ===\n' + SYSTEM + '\n\n=== USER (first target) ===\n' + buildUserPrompt(targets[0]));
-	console.log('\n=== TOOL input_schema (enums) ===\n' + JSON.stringify(ENUMS, null, 2));
-	console.log(`\n[dry-run] would tag ${targets.length} clip(s) with ${MODEL}. No API call made.`);
+	if (ENGINE === 'heuristic') {
+		console.log(`[dry-run] heuristic engine — proposal for first target (${targets[0]?.youtube_id}):\n`);
+		console.log(JSON.stringify(heuristicPropose(targets[0]), null, 2));
+	} else {
+		console.log('=== SYSTEM ===\n' + SYSTEM + '\n\n=== USER (first target) ===\n' + buildUserPrompt(targets[0]));
+		console.log('\n=== TOOL input_schema (enums) ===\n' + JSON.stringify(ENUMS, null, 2));
+	}
+	console.log(`\n[dry-run] would tag ${targets.length} clip(s) with ${MODEL_LABEL}. No writes.`);
 	process.exit(0);
 }
 
-if (!KEY) {
-	console.error('✗ ANTHROPIC_API_KEY not found in .env.local.');
+if (ENGINE === 'anthropic' && !KEY) {
+	console.error('✗ ANTHROPIC_API_KEY not found in .env.local (needed for --engine anthropic).');
 	process.exit(1);
 }
 
@@ -236,13 +396,14 @@ const flagged = [];
 for (const v of targets) {
 	const ts = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 	try {
-		const { input, usage } = await tagOne(v);
+		const { input, usage } = await propose(v);
 		const bad = offVocab(input);
 		const row = {
 			youtube_id: v.youtube_id,
 			title: v.title,
 			channel: v.channel,
-			model: MODEL,
+			engine: ENGINE,
+			model: MODEL_LABEL,
 			prompt_version: PROMPT_VERSION,
 			proposed_at: ts,
 			status: 'pending',
@@ -252,7 +413,7 @@ for (const v of targets) {
 		appendFileSync(proposalsPath, JSON.stringify(row) + '\n');
 		appendFileSync(
 			auditPath,
-			JSON.stringify({ ts, youtube_id: v.youtube_id, model: MODEL, prompt_version: PROMPT_VERSION, usage, off_vocab: bad.length || 0 }) + '\n'
+			JSON.stringify({ ts, youtube_id: v.youtube_id, engine: ENGINE, model: MODEL_LABEL, prompt_version: PROMPT_VERSION, usage, off_vocab: bad.length || 0 }) + '\n'
 		);
 		ok++;
 		const lowConf = Object.entries(input.confidence ?? {}).filter(([, c]) => c < 0.7).map(([k]) => k);
@@ -264,7 +425,7 @@ for (const v of targets) {
 				(bad.length ? `  ⚠ off-vocab: ${bad.join(',')}` : '')
 		);
 	} catch (err) {
-		appendFileSync(auditPath, JSON.stringify({ ts, youtube_id: v.youtube_id, model: MODEL, prompt_version: PROMPT_VERSION, error: err.message }) + '\n');
+		appendFileSync(auditPath, JSON.stringify({ ts, youtube_id: v.youtube_id, engine: ENGINE, model: MODEL_LABEL, prompt_version: PROMPT_VERSION, error: err.message }) + '\n');
 		console.error(`  ✗ ${v.youtube_id}: ${err.message}`);
 	}
 }

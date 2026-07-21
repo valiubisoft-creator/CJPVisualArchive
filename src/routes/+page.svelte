@@ -4,8 +4,13 @@
 	import TileGrid from '$lib/components/TileGrid.svelte';
 	import ConcernNotice from '$lib/components/ConcernNotice.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import IntroScreen from '$lib/components/IntroScreen.svelte';
 
 	let { data } = $props();
+
+	// Landing intro (typewriter title → cockroach wave) overlays the wall on load
+	// and removes itself when done. The wall renders underneath the whole time.
+	let showIntro = $state(true);
 
 	// Counts for the filter chips (from the full set, not the filtered view).
 	const statusCounts = $derived(tally(data.events, 'verification_status'));
@@ -36,6 +41,10 @@
 <svelte:head>
 	<title>CJP Protest Video Wall</title>
 </svelte:head>
+
+{#if showIntro}
+	<IntroScreen oncomplete={() => (showIntro = false)} />
+{/if}
 
 <div class="wrap">
 	<header class="masthead">

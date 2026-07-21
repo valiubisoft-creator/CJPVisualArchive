@@ -117,6 +117,41 @@
 		"_thumbnail_pdq": {
 			"type": ["string", "null"],
 			"description": "Perceptual hash of the thumbnail/storyboard (hex) for repost matching. Derived; media itself never stored."
+		},
+
+		"facets": {
+			"type": "object",
+			"additionalProperties": false,
+			"description": "Human-confirmed faceted tags. Values are validated against vocab.json by validate.mjs (single source of truth for the controlled vocabularies). See docs/TAXONOMY.md.",
+			"properties": {
+				"action": { "type": ["string", "null"], "description": "F1 primary action/event." },
+				"actors": { "type": "array", "items": { "type": "string" }, "description": "F2 role/type only." },
+				"issues": { "type": "array", "items": { "type": "string" }, "description": "F3 CJP issue/theme." },
+				"setting": { "type": ["string", "null"], "description": "F4 setting." },
+				"media_format": { "type": "array", "items": { "type": "string" }, "description": "F5 format." },
+				"content_warnings": { "type": "array", "items": { "type": "string" } },
+				"sensitivity": { "type": "array", "items": { "type": "string" }, "description": "F8 handling flags (gate access, not discovery)." }
+			}
+		},
+		"geo": {
+			"type": "object",
+			"additionalProperties": false,
+			"description": "F7 ACLED-style structured geo/time (curator-set).",
+			"properties": {
+				"event_date": { "type": ["string", "null"], "format": "date" },
+				"date_precision": { "type": ["string", "null"] },
+				"country": { "type": ["string", "null"] },
+				"admin1": { "type": ["string", "null"] },
+				"admin2": { "type": ["string", "null"] },
+				"location": { "type": ["string", "null"] },
+				"latitude": { "type": ["number", "null"] },
+				"longitude": { "type": ["number", "null"] },
+				"geo_precision": { "type": ["integer", "null"] },
+				"geo_confidence": {
+					"type": ["string", "null"],
+					"enum": ["confirmed", "probable", "unconfirmed", null]
+				}
+			}
 		}
 	}
 }

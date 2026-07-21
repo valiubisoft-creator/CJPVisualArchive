@@ -15,6 +15,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 const schemaPath = resolve(root, 'src/lib/schema/event.schema.json');
 const dataPath = resolve(root, 'src/lib/data/events.json');
+const vocabPath = resolve(root, 'src/lib/data/vocab.json');
 
 function readJSON(path) {
 	try {
@@ -27,6 +28,35 @@ function readJSON(path) {
 
 const schema = readJSON(schemaPath);
 const events = readJSON(dataPath);
+const vocab = readJSON(vocabPath).facets ?? {};
+
+// allowed values per facet field, from vocab.json (single source of truth)
+const allowed = Object.fromEntries(
+	Object.entries(vocab).map(([facet, def]) => [facet, new Set(def.values.map((v) => v.value))])
+);
+// map event.facets keys → vocab facet key (media_format uses the media_format vocab)
+function checkFacets(event, label, problems) {
+	const f = event.facets;
+	if (!f) return;
+	const single = { action: 'action', setting: 'setting' };
+	const multi = {
+		actors: 'actors',
+		issues: 'issues',
+		media_format: 'media_format',
+		content_warnings: 'content_warnings',
+		sensitivity: 'sensitivity'
+	};
+	for (const [key, facet] of Object.entries(single)) {
+		const val = f[key];
+		if (val != null && allowed[facet] && !allowed[facet].has(val))
+			problems.push(`  [${label}] facets.${key} "${val}" not in vocab (${facet})`);
+	}
+	for (const [key, facet] of Object.entries(multi)) {
+		for (const val of f[key] ?? [])
+			if (allowed[facet] && !allowed[facet].has(val))
+				problems.push(`  [${label}] facets.${key} "${val}" not in vocab (${facet})`);
+	}
+}
 
 if (!Array.isArray(events)) {
 	console.error('✗ events.json must be a JSON array of event records.');
@@ -53,6 +83,9 @@ events.forEach((event, i) => {
 	} else {
 		ok++;
 	}
+
+	// Facet values must be in the controlled vocabulary
+	checkFacets(event, label, problems);
 
 	// Cross-record integrity: unique ids and youtube_ids
 	if (event?.id) {

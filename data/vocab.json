@@ -1,0 +1,120 @@
+{
+  "version": "1.0.0",
+  "note": "Controlled vocabularies for the v2 faceted taxonomy. ACLED-aligned action/actors, CJP-specific issues (from the movement's own manifesto), WITNESS-informed sensitivity. Single source of truth: validate.mjs checks facet values against this; tag-suggest.mjs constrains the LLM to these enums; docs/TAXONOMY.md is the human spec.",
+  "facets": {
+    "action": {
+      "label": "Action / event type",
+      "multi": false,
+      "note": "One primary value per clip (ACLED sub-event aligned).",
+      "values": [
+        { "value": "peaceful_protest", "label": "Peaceful protest", "acled": "Protests / Peaceful protest" },
+        { "value": "march", "label": "March / procession" },
+        { "value": "rally", "label": "Rally / public meeting" },
+        { "value": "sit_in_dharna", "label": "Sit-in / dharna" },
+        { "value": "blockade_roko", "label": "Blockade / rail-roko / road-block" },
+        { "value": "hunger_strike", "label": "Hunger strike" },
+        { "value": "vigil", "label": "Vigil / candlelight" },
+        { "value": "speech_presser", "label": "Speech / press conference" },
+        { "value": "symbolic_protest", "label": "Symbolic protest (effigy, memorandum)" },
+        { "value": "protest_with_intervention", "label": "Protest with intervention (dispersal, non-lethal)", "acled": "Protests / Protest with intervention" },
+        { "value": "excessive_force", "label": "Excessive force against protesters", "acled": "Protests / Excessive force against protesters" },
+        { "value": "arrest", "label": "Arrest / detention", "acled": "Strategic developments / Arrests" },
+        { "value": "tear_gas_lathi", "label": "Tear gas / lathi charge / dispersal" },
+        { "value": "clash", "label": "Clash (protesters vs force)" },
+        { "value": "violent_demo", "label": "Violent demonstration", "acled": "Riots / Violent demonstration" },
+        { "value": "mob_violence", "label": "Mob violence", "acled": "Riots / Mob violence" },
+        { "value": "property_damage", "label": "Property damage / looting" },
+        { "value": "aftermath_testimony", "label": "Aftermath / testimony" }
+      ]
+    },
+    "actors": {
+      "label": "Actors present",
+      "multi": true,
+      "note": "Role / type only — never a named individual (ACLED interaction-code style). DPDPA + WITNESS.",
+      "values": [
+        { "value": "protesters", "label": "Protesters", "acled_inter": "6" },
+        { "value": "police", "label": "Police (Delhi Police)", "acled_inter": "1" },
+        { "value": "paramilitary", "label": "Paramilitary / central forces", "acled_inter": "1" },
+        { "value": "state_officials", "label": "State officials", "acled_inter": "1" },
+        { "value": "party_figures", "label": "Party figures (role, not name)", "acled_inter": "6" },
+        { "value": "students", "label": "Student groups" },
+        { "value": "unions", "label": "Unions / organized groups" },
+        { "value": "civil_society_ngo", "label": "Civil society / NGO" },
+        { "value": "press", "label": "Press / media" },
+        { "value": "bystanders", "label": "Bystanders / public", "acled_inter": "7" },
+        { "value": "counter_protesters", "label": "Counter-protesters" },
+        { "value": "medics", "label": "Medical / first responders" },
+        { "value": "unidentified_armed_group", "label": "Unidentified armed group" }
+      ]
+    },
+    "issues": {
+      "label": "Issue / theme",
+      "multi": true,
+      "note": "CJP-specific, from the movement's own manifesto (15 Jul 2026). The 'kind' field distinguishes demands the movement protests FOR from grievances that emerged during suppression (done TO the movement).",
+      "values": [
+        { "value": "exam_education_integrity", "label": "Exam & education-system integrity", "kind": "demand", "note": "Trigger: leaked NEET paper → mass retake." },
+        { "value": "youth_unemployment", "label": "Youth unemployment & economic precarity", "kind": "demand", "note": "Central self-branding ('Voice of the Lazy & Unemployed')." },
+        { "value": "judicial_accountability", "label": "Judicial & institutional accountability", "kind": "demand", "note": "CJI remark origin; post-retirement Rajya Sabha seats demand." },
+        { "value": "electoral_integrity", "label": "Electoral integrity", "kind": "demand", "note": "Vote-deletion / Election Commission demand." },
+        { "value": "gender_representation", "label": "Gender representation", "kind": "demand", "note": "50% reservation for women in Parliament & Cabinet." },
+        { "value": "media_ownership", "label": "Media ownership & independence", "kind": "demand", "note": "Targets Ambani/Adani-owned media licenses." },
+        { "value": "anti_defection_reform", "label": "Anti-defection reform", "kind": "demand", "note": "20-year bar for MLAs/MPs who switch parties." },
+        { "value": "police_conduct_civil_liberties", "label": "Police conduct & civil liberties", "kind": "reactive", "note": "Emerged live during the 20 Jul crackdown (excessive force, surveillance) — done TO the movement, not an original demand." },
+        { "value": "other_specify", "label": "Other (specify)", "kind": "other" }
+      ]
+    },
+    "setting": {
+      "label": "Setting / location type",
+      "multi": false,
+      "values": [
+        { "value": "street_road", "label": "Street / road" },
+        { "value": "square_maidan", "label": "Public square / maidan (e.g. Jantar Mantar)" },
+        { "value": "outside_govt", "label": "Outside government building (Sansad / Parliament)" },
+        { "value": "campus", "label": "University / campus" },
+        { "value": "stage", "label": "Stage / designated venue" },
+        { "value": "worship_vicinity", "label": "Place-of-worship vicinity" },
+        { "value": "indoor", "label": "Indoor hall" },
+        { "value": "highway", "label": "Highway / toll" },
+        { "value": "online", "label": "Online only" }
+      ]
+    },
+    "media_format": {
+      "label": "Media format",
+      "multi": true,
+      "values": [
+        { "value": "livestream", "label": "Livestream" },
+        { "value": "edited", "label": "Edited package" },
+        { "value": "raw", "label": "Raw / unedited" },
+        { "value": "vertical_phone", "label": "Phone / vertical" },
+        { "value": "broadcast", "label": "Broadcast news" },
+        { "value": "drone", "label": "Drone / aerial" },
+        { "value": "cctv", "label": "CCTV" },
+        { "value": "screen_recording", "label": "Screen recording" }
+      ]
+    },
+    "content_warnings": {
+      "label": "Content warnings",
+      "multi": true,
+      "note": "Over-flag rather than under-flag (WITNESS). Drives the click-to-reveal interstitial + handling.",
+      "values": [
+        { "value": "graphic_violence", "label": "Graphic violence" },
+        { "value": "injury", "label": "Injury / blood" },
+        { "value": "death", "label": "Death" },
+        { "value": "distress_minors", "label": "Distress / minors" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    "sensitivity": {
+      "label": "Sensitivity / handling",
+      "multi": true,
+      "note": "Ethics/DPDPA flags — gate access & handling, not discovery. Never used as a search filter.",
+      "values": [
+        { "value": "identity_protection_required", "label": "Identity protection required (obscure faces/voices)" },
+        { "value": "contains_minors", "label": "Contains minors" },
+        { "value": "takedown_risk", "label": "Takedown risk" },
+        { "value": "legal_hold", "label": "Legal hold" },
+        { "value": "restricted_access", "label": "Restricted access" }
+      ]
+    }
+  }
+}

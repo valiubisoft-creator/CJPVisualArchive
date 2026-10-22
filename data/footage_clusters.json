@@ -1,0 +1,868 @@
+[
+  {
+    "cluster_id": "fc_0001",
+    "members": [
+      "qY5vozYstwM",
+      "wry5_kU_YoI",
+      "IkyFl1KSztk",
+      "COOkRaoBQBs"
+    ],
+    "size": 4,
+    "inferred_original": "wry5_kU_YoI",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0002",
+    "members": [
+      "OjPcPQkCxOM",
+      "G0dFsbRlT_8"
+    ],
+    "size": 2,
+    "inferred_original": "G0dFsbRlT_8",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0003",
+    "members": [
+      "EFtpMpHqZIo",
+      "cmDZKjXx1js"
+    ],
+    "size": 2,
+    "inferred_original": "cmDZKjXx1js",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0004",
+    "members": [
+      "NEX9HelVoJU",
+      "xoAWCbM-GYY",
+      "eAYdwFeg6Fs",
+      "Y2hvDKJI7Lo",
+      "EVTb0Gpbw48",
+      "i4YakhhGWik",
+      "bzlSeB0I1W4",
+      "lGQkiJAdsAc",
+      "KmU2UljzB0Y",
+      "lQOMNs9N_D0"
+    ],
+    "size": 10,
+    "inferred_original": "i4YakhhGWik",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0005",
+    "members": [
+      "JifD58Z617c",
+      "8rX5h68Lohk"
+    ],
+    "size": 2,
+    "inferred_original": "8rX5h68Lohk",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0006",
+    "members": [
+      "eHSVzn5raLw",
+      "WE8UB7FNXuQ",
+      "s90eK_FSVAk"
+    ],
+    "size": 3,
+    "inferred_original": "s90eK_FSVAk",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0007",
+    "members": [
+      "K9DkGy229xk",
+      "s_q25ckS25k"
+    ],
+    "size": 2,
+    "inferred_original": "s_q25ckS25k",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0008",
+    "members": [
+      "bhKKIIpUdIw",
+      "rq8ry39l03E",
+      "2hZBejLgLLk"
+    ],
+    "size": 3,
+    "inferred_original": "rq8ry39l03E",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0009",
+    "members": [
+      "wnjcIhP671w",
+      "VEl0UO9JB5Y",
+      "UDmj2CApoGo"
+    ],
+    "size": 3,
+    "inferred_original": "UDmj2CApoGo",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0010",
+    "members": [
+      "sEfXvplCR1Q",
+      "IWZxfZHiIFM",
+      "O-f7k47dbUg"
+    ],
+    "size": 3,
+    "inferred_original": "IWZxfZHiIFM",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0011",
+    "members": [
+      "YEIvTqQIQ1o",
+      "bO0eRc7Ui9U",
+      "JzW4-8VUQ4A",
+      "6O9b8OwkGCA",
+      "7G7wErpHVSA",
+      "gqWynRtQRg8",
+      "2pprqBnHM-k",
+      "j3sCyL8Ougs",
+      "tR_no2-Pmxs",
+      "nF5OL7hDxx0"
+    ],
+    "size": 10,
+    "inferred_original": "7G7wErpHVSA",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0012",
+    "members": [
+      "S-qfrrXg--U",
+      "8fpQty8EmMI"
+    ],
+    "size": 2,
+    "inferred_original": "8fpQty8EmMI",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0013",
+    "members": [
+      "9tCoSrAjkZ8",
+      "Agv_8MISpjg"
+    ],
+    "size": 2,
+    "inferred_original": "Agv_8MISpjg",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0014",
+    "members": [
+      "xC74xQcty5U",
+      "ukfPPbOvP6Q",
+      "OZ6x_wnXs3w"
+    ],
+    "size": 3,
+    "inferred_original": "ukfPPbOvP6Q",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0015",
+    "members": [
+      "2r7vYQFWQVI",
+      "tVgMU0XIex8"
+    ],
+    "size": 2,
+    "inferred_original": "tVgMU0XIex8",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0016",
+    "members": [
+      "dszflh8Thf8",
+      "0_7eIaNA038",
+      "gUPAPjl5OWc",
+      "ceWRHoKdtBc",
+      "HYGfY1KM2lI"
+    ],
+    "size": 5,
+    "inferred_original": "ceWRHoKdtBc",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0017",
+    "members": [
+      "8WFrDTShYQU",
+      "vxQjYNiGchA"
+    ],
+    "size": 2,
+    "inferred_original": "vxQjYNiGchA",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0018",
+    "members": [
+      "krpVgzwkMQQ",
+      "hgBKDx3KVdY",
+      "fQ-aP8Yci3c",
+      "_3LV3bY2eQo",
+      "wnAx8aDWS0Y"
+    ],
+    "size": 5,
+    "inferred_original": "hgBKDx3KVdY",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0019",
+    "members": [
+      "7EPHw6sa0vE",
+      "T-52Tc0VAHM"
+    ],
+    "size": 2,
+    "inferred_original": "T-52Tc0VAHM",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0020",
+    "members": [
+      "9dXdZGDcj2o",
+      "UXQT3Pw6YiM"
+    ],
+    "size": 2,
+    "inferred_original": "UXQT3Pw6YiM",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0021",
+    "members": [
+      "SzXYdGB6IW8",
+      "x3k_IchChBA",
+      "FrUhUauS9MI"
+    ],
+    "size": 3,
+    "inferred_original": "x3k_IchChBA",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0022",
+    "members": [
+      "Jnqm1reSqAM",
+      "sVTt222PKfc"
+    ],
+    "size": 2,
+    "inferred_original": "sVTt222PKfc",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0023",
+    "members": [
+      "53jsqDxSjAA",
+      "_tyV3xXgTJk"
+    ],
+    "size": 2,
+    "inferred_original": "_tyV3xXgTJk",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0024",
+    "members": [
+      "N0cHKjKtjmM",
+      "zcILkq2RK4s"
+    ],
+    "size": 2,
+    "inferred_original": "zcILkq2RK4s",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0025",
+    "members": [
+      "aaaDdSv8CwY",
+      "FAOlTLz5BeQ"
+    ],
+    "size": 2,
+    "inferred_original": "FAOlTLz5BeQ",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0026",
+    "members": [
+      "mZHiDKHONUk",
+      "DRlFTiHHk3U"
+    ],
+    "size": 2,
+    "inferred_original": "DRlFTiHHk3U",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0027",
+    "members": [
+      "5YqOk5OH_3I",
+      "peUo6wVyFaA",
+      "MZkRcb9Cxck"
+    ],
+    "size": 3,
+    "inferred_original": "peUo6wVyFaA",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0028",
+    "members": [
+      "ewL6Z7XN_E4",
+      "lyW-I5sRFr8"
+    ],
+    "size": 2,
+    "inferred_original": "lyW-I5sRFr8",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0029",
+    "members": [
+      "ZDepIa-4WfI",
+      "kbdayj-pPzw"
+    ],
+    "size": 2,
+    "inferred_original": "kbdayj-pPzw",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0030",
+    "members": [
+      "p43tLTtQFOE",
+      "H1k7tlZa2Co"
+    ],
+    "size": 2,
+    "inferred_original": "H1k7tlZa2Co",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0031",
+    "members": [
+      "fCyWjKrlp0w",
+      "OoQX8vm_0o4"
+    ],
+    "size": 2,
+    "inferred_original": "OoQX8vm_0o4",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0032",
+    "members": [
+      "lYaRj02UxUQ",
+      "C4sQy8Lq5l8"
+    ],
+    "size": 2,
+    "inferred_original": "C4sQy8Lq5l8",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0033",
+    "members": [
+      "5Jq06rsZ7Gk",
+      "hX2nMq5yCCg"
+    ],
+    "size": 2,
+    "inferred_original": "hX2nMq5yCCg",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0034",
+    "members": [
+      "7hbp67x0V_o",
+      "imiUfmmYNR0"
+    ],
+    "size": 2,
+    "inferred_original": "imiUfmmYNR0",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0035",
+    "members": [
+      "N_B3xPCWoPg",
+      "nb7yEdyisEg"
+    ],
+    "size": 2,
+    "inferred_original": "nb7yEdyisEg",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0036",
+    "members": [
+      "vF7UIXQYIeM",
+      "iieGUg-oP9o"
+    ],
+    "size": 2,
+    "inferred_original": "iieGUg-oP9o",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0037",
+    "members": [
+      "2-Ye6AKU8gM",
+      "AnxjA3A8G_Y"
+    ],
+    "size": 2,
+    "inferred_original": "AnxjA3A8G_Y",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0038",
+    "members": [
+      "SVDxeOHUfEU",
+      "RIe6avx3Eog"
+    ],
+    "size": 2,
+    "inferred_original": "RIe6avx3Eog",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0039",
+    "members": [
+      "9zls9D8RS8w",
+      "dRqPaLK8BJk"
+    ],
+    "size": 2,
+    "inferred_original": "dRqPaLK8BJk",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0040",
+    "members": [
+      "FxT0lT0dOuw",
+      "cG9h7MuguFY"
+    ],
+    "size": 2,
+    "inferred_original": "cG9h7MuguFY",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0041",
+    "members": [
+      "61V9iMOjDXc",
+      "Z4D_BtsFDZQ"
+    ],
+    "size": 2,
+    "inferred_original": "Z4D_BtsFDZQ",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0042",
+    "members": [
+      "Nm9cJpMJ8g8",
+      "-G-2RJALbYI"
+    ],
+    "size": 2,
+    "inferred_original": "-G-2RJALbYI",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0043",
+    "members": [
+      "JbYdvkvV4tY",
+      "7CZrzhUjG3s",
+      "re5qCamCMTw",
+      "LOHuieo2iJE"
+    ],
+    "size": 4,
+    "inferred_original": "re5qCamCMTw",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0044",
+    "members": [
+      "JsyoUbmqvkE",
+      "AD8DPZEu9Jc",
+      "6EMntQrtmn0"
+    ],
+    "size": 3,
+    "inferred_original": "6EMntQrtmn0",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0045",
+    "members": [
+      "tpqK5d-XHak",
+      "zCRpN4IZZvk",
+      "s6GVT6I3gDw",
+      "2NZ9_7iUH88",
+      "6oGtmJeGMVk",
+      "BuOUgfSgCtI",
+      "VcVXLkEBlt8",
+      "2GYJa_ORqOc",
+      "5O8RXb_h68Q",
+      "ujy5x_wps8g",
+      "igkd1dl8j9A"
+    ],
+    "size": 11,
+    "inferred_original": "2GYJa_ORqOc",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0046",
+    "members": [
+      "eiidMK0Q5V0",
+      "00sZlaB39DU"
+    ],
+    "size": 2,
+    "inferred_original": "00sZlaB39DU",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0047",
+    "members": [
+      "Jc-lVKBJc5g",
+      "4YAUBW6sO1M"
+    ],
+    "size": 2,
+    "inferred_original": "4YAUBW6sO1M",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0048",
+    "members": [
+      "zFj9HO6FLbw",
+      "yRXlgo9t_tw"
+    ],
+    "size": 2,
+    "inferred_original": "yRXlgo9t_tw",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0049",
+    "members": [
+      "e1mwQfqF1kc",
+      "mu_sKHyXa1k",
+      "rXCCQF57h54"
+    ],
+    "size": 3,
+    "inferred_original": "rXCCQF57h54",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0050",
+    "members": [
+      "VfeJ0iZ4Yao",
+      "dsjlSMlZXSI",
+      "2gRmma69Jok"
+    ],
+    "size": 3,
+    "inferred_original": "dsjlSMlZXSI",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0051",
+    "members": [
+      "yl-t0iC3NiI",
+      "HA-P-gWjglg"
+    ],
+    "size": 2,
+    "inferred_original": "HA-P-gWjglg",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0052",
+    "members": [
+      "UAB91hxeVl0",
+      "a6e3LTJkRrw"
+    ],
+    "size": 2,
+    "inferred_original": "a6e3LTJkRrw",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0053",
+    "members": [
+      "_cknvkax-oI",
+      "8P5pB4jFKeM"
+    ],
+    "size": 2,
+    "inferred_original": "8P5pB4jFKeM",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0054",
+    "members": [
+      "Za08rGETTZ4",
+      "le2Hhzj9QRw"
+    ],
+    "size": 2,
+    "inferred_original": "le2Hhzj9QRw",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0055",
+    "members": [
+      "nzsSvUTLFDs",
+      "8eOr8vY9B_c"
+    ],
+    "size": 2,
+    "inferred_original": "8eOr8vY9B_c",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0056",
+    "members": [
+      "RtTmycxuAS0",
+      "N5xZmXPheN4",
+      "7XIzDnV1xvo",
+      "jAVCyaAZaNM"
+    ],
+    "size": 4,
+    "inferred_original": "N5xZmXPheN4",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0057",
+    "members": [
+      "IaWy7Ef9jVI",
+      "cQbQTDgRhGk"
+    ],
+    "size": 2,
+    "inferred_original": "cQbQTDgRhGk",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0058",
+    "members": [
+      "ePJ1T_NI-nU",
+      "WclKBrIHSYI"
+    ],
+    "size": 2,
+    "inferred_original": "WclKBrIHSYI",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0059",
+    "members": [
+      "g1sw3J3zKnQ",
+      "qOIXussvZaM",
+      "HnQBvcS_GX8"
+    ],
+    "size": 3,
+    "inferred_original": "qOIXussvZaM",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0060",
+    "members": [
+      "iiPOF30EVno",
+      "699lgQP_9XU",
+      "cT63ia4sAKo",
+      "qFg_IsOB8Lc"
+    ],
+    "size": 4,
+    "inferred_original": "cT63ia4sAKo",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0061",
+    "members": [
+      "doTiOPDjQx8",
+      "SuoGIIaIPno"
+    ],
+    "size": 2,
+    "inferred_original": "SuoGIIaIPno",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0062",
+    "members": [
+      "hWBQDZ73Fis",
+      "l6ZyJAFY18o"
+    ],
+    "size": 2,
+    "inferred_original": "l6ZyJAFY18o",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0063",
+    "members": [
+      "GSlu1UxaFDI",
+      "0jVu9YSOGA0"
+    ],
+    "size": 2,
+    "inferred_original": "0jVu9YSOGA0",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0064",
+    "members": [
+      "NBUsoAfWKqY",
+      "mf8EdZwM4aU"
+    ],
+    "size": 2,
+    "inferred_original": "mf8EdZwM4aU",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0065",
+    "members": [
+      "98etJR4Xzng",
+      "HWnARsLO7Zg"
+    ],
+    "size": 2,
+    "inferred_original": "HWnARsLO7Zg",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0066",
+    "members": [
+      "iFRpY-XhZgg",
+      "jaNyKsVKRhU"
+    ],
+    "size": 2,
+    "inferred_original": "jaNyKsVKRhU",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0067",
+    "members": [
+      "apTss3EKGjA",
+      "Nv_WYxXrX_I"
+    ],
+    "size": 2,
+    "inferred_original": "Nv_WYxXrX_I",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0068",
+    "members": [
+      "O9uJhGiwu-c",
+      "Thrd0KglB7I"
+    ],
+    "size": 2,
+    "inferred_original": "Thrd0KglB7I",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0069",
+    "members": [
+      "yO3Hu5zgxUQ",
+      "sJWRqHbntdY"
+    ],
+    "size": 2,
+    "inferred_original": "sJWRqHbntdY",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0070",
+    "members": [
+      "EDMHv2Ot0S4",
+      "4UW6Uf6_ndk"
+    ],
+    "size": 2,
+    "inferred_original": "4UW6Uf6_ndk",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0071",
+    "members": [
+      "v3G_y51Z6p4",
+      "dp8-NdU_VcQ"
+    ],
+    "size": 2,
+    "inferred_original": "dp8-NdU_VcQ",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0072",
+    "members": [
+      "1XzIVRy9vPM",
+      "oik_nVBL8sI"
+    ],
+    "size": 2,
+    "inferred_original": "oik_nVBL8sI",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0073",
+    "members": [
+      "R88gCxqEzGg",
+      "TWpB-8eT-GM",
+      "QRRozu4D36A",
+      "DVNW37z9Ofk"
+    ],
+    "size": 4,
+    "inferred_original": "DVNW37z9Ofk",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0074",
+    "members": [
+      "Noz2vV0tyho",
+      "JEAUegCxuoM"
+    ],
+    "size": 2,
+    "inferred_original": "JEAUegCxuoM",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0075",
+    "members": [
+      "WbJ2-zQLPvs",
+      "sQOAkfvdysk"
+    ],
+    "size": 2,
+    "inferred_original": "sQOAkfvdysk",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0076",
+    "members": [
+      "oM2K_T-qvcs",
+      "sdJFgAjHF80"
+    ],
+    "size": 2,
+    "inferred_original": "sdJFgAjHF80",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0077",
+    "members": [
+      "5QWnoLHj3nw",
+      "SVFbOIXbD5Y"
+    ],
+    "size": 2,
+    "inferred_original": "SVFbOIXbD5Y",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0078",
+    "members": [
+      "GKxdp9kXooU",
+      "BKBldt_-6RU"
+    ],
+    "size": 2,
+    "inferred_original": "BKBldt_-6RU",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0079",
+    "members": [
+      "l9HryphcbCY",
+      "cLMYTdFotek",
+      "2kJwJZz7CBM",
+      "Jk-yUXlvfBI",
+      "DA8C5Cn72oo"
+    ],
+    "size": 5,
+    "inferred_original": "Jk-yUXlvfBI",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0080",
+    "members": [
+      "uWMAhT2i4c8",
+      "BrQYIM2Hl4I"
+    ],
+    "size": 2,
+    "inferred_original": "BrQYIM2Hl4I",
+    "misattribution_candidate": false
+  },
+  {
+    "cluster_id": "fc_0081",
+    "members": [
+      "RyRErhqlHRU",
+      "UHgcRC4nhqE",
+      "ufJRXh8n31g"
+    ],
+    "size": 3,
+    "inferred_original": "UHgcRC4nhqE",
+    "misattribution_candidate": false
+  }
+]

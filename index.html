@@ -6,7 +6,7 @@
 <title>Cockroach Field File</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link id="fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Archivo:wdth,wght@62..125,800;62..125,900&display=swap">
+<link id="fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Archivo:wdth,wght@62..125,100..900&display=swap">
 <script type="importmap">
 { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.esm.min.js" } }
 </script>
@@ -79,6 +79,9 @@
   .hero-copy { position: relative; display: flex; flex-direction: column; gap: 22px; max-width: 1100px; pointer-events: none; }
   .hero-copy > * { pointer-events: auto; }
   .hero h1 em { font-style: normal; color: var(--state); }
+  /* the word is painted on #hero-cv so roaches can glitch it; the h1 keeps layout, selection and screen readers */
+  .hero h1 { font-weight: 200; letter-spacing: -0.02em; line-height: 1; }
+  .hero h1.on-canvas { color: transparent; }
   .cta { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: var(--bg); border-radius: 999px;
     padding: 14px 22px; font-size: 15px; font-weight: 500; text-decoration: none; }
   .cta:hover { background: #fff; }
@@ -584,35 +587,142 @@ $$('.ch-head h2').forEach(h => {
 
 /* ───────────────────────── HERO ───────────────────────── */
 (() => {
-  const cv = $('#hero-cv'), { ctx, fit } = hiDPI(cv), hero = $('#top');
-  let W = 0, H = 0, bugs = [], mouse = { x: -999, y: -999 };
-  function layout() {
-    const r = fit(); W = r.width; H = r.height;
-    const n = Math.round(utils.clamp(W * H / 9000, 40, 160));
-    bugs = Array.from({ length: n }, () => ({ x: rng() * W, y: rng() * H, a: rng() * TAU, v: .3 + rng() * .7, s: 5 + rng() * 6, ph: rng() * TAU, o: .18 + rng() * .3 }));
+  const cv = $('#hero-cv'), { ctx, fit } = hiDPI(cv), hero = $('#top'), h1 = $('#hero-h');
+  const TEXT = h1.textContent.toUpperCase(), PAD = 28, MS = 2;   // MS: collision-mask cell, css px
+  const R = Math.random;
+  let W = 0, H = 0, D = 1, bugs = [], mouse = { x: -999, y: -999 }, ready = false;
+  // the word, pre-rendered three times: ink, plus red/blue copies for the channel split
+  const wd = { ink: document.createElement('canvas'), red: document.createElement('canvas'), blue: document.createElement('canvas'),
+    x: 0, y: 0, w: 0, h: 0, bh: 8, mask: null, mw: 0, mh: 0, pts: [] };
+  let bands = new Float32Array(0), split = new Float32Array(0), blocks = [], intro = REDUCED ? 0 : 1, lastMouseHit = 0;
+  const font = fs => `200 ${fs}px Archivo, "Helvetica Neue", Helvetica, sans-serif`;
+  const setFont = (g, fs) => { g.font = font(fs); if ('fontStretch' in g) g.fontStretch = 'condensed'; };
+
+  // fit the thin word to the hero width, then paint it offscreen and sample its letterforms into a mask
+  function paintWord() {
+    const pad = parseFloat(getComputedStyle(hero).paddingLeft);
+    setFont(ctx, 100);
+    const fs = Math.min(280, (hero.clientWidth - pad * 2) * .97 / (ctx.measureText(TEXT).width / 100));
+    h1.style.fontSize = fs + 'px';
+    const hr = hero.getBoundingClientRect(), r = h1.getBoundingClientRect();
+    setFont(ctx, fs);
+    const m = ctx.measureText(TEXT);
+    wd.w = Math.ceil(m.width + PAD * 2); wd.h = Math.ceil(r.height + PAD * 2);
+    wd.x = r.left - hr.left - PAD; wd.y = r.top - hr.top - PAD;
+    wd.bh = Math.max(3, Math.round(fs / 26));
+    const base = PAD + r.height / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
+    for (const [k, col] of [['ink', C.ink], ['red', C.state], ['blue', C.move]]) {
+      const c = wd[k], g = c.getContext('2d', { willReadFrequently: k === 'ink' });
+      c.width = wd.w * D; c.height = wd.h * D;
+      g.setTransform(D, 0, 0, D, 0, 0); setFont(g, fs); g.fillStyle = col; g.textBaseline = 'alphabetic';
+      g.fillText(TEXT, PAD, base);
+    }
+    const px = wd.ink.getContext('2d').getImageData(0, 0, wd.ink.width, wd.ink.height).data;
+    wd.mw = Math.ceil(wd.w / MS); wd.mh = Math.ceil(wd.h / MS); wd.mask = new Uint8Array(wd.mw * wd.mh); wd.pts = [];
+    for (let j = 0; j < wd.mh; j++) for (let i = 0; i < wd.mw; i++) {
+      const sx = Math.min(wd.ink.width - 1, Math.round((i + .5) * MS * D)), sy = Math.min(wd.ink.height - 1, Math.round((j + .5) * MS * D));
+      if (px[(sy * wd.ink.width + sx) * 4 + 3] > 140) { wd.mask[j * wd.mw + i] = 1; wd.pts.push([wd.x + (i + .5) * MS, wd.y + (j + .5) * MS]); }
+    }
+    const nb = Math.ceil(wd.h / wd.bh);
+    bands = new Float32Array(nb); split = new Float32Array(nb); blocks = [];
+    h1.classList.add('on-canvas'); ready = true;
   }
-  layout(); resizers.push(layout);
+  const onType = (x, y) => {
+    const i = Math.floor((x - wd.x) / MS), j = Math.floor((y - wd.y) / MS);
+    return i >= 0 && j >= 0 && i < wd.mw && j < wd.mh && wd.mask[j * wd.mw + i] === 1;
+  };
+  // a roach crossing a stroke tears the bands around it sideways and splits the channels
+  function glitch(x, y, k) {
+    const j = Math.floor((y - wd.y) / wd.bh), spread = Math.floor(R() * 2.4 * k);
+    for (let b = j - spread; b <= j + spread; b++) {
+      if (b < 0 || b >= bands.length) continue;
+      bands[b] += (R() - .5) * 2 * (1.5 + 6 * k) * (b === j ? 1.5 : 1);
+      split[b] = Math.max(split[b], 1 + 3 * k * R());
+    }
+    if (R() < .18 * k) {
+      const bw = 18 + R() * 70 * k, bh = wd.bh * (1 + Math.floor(R() * 3));
+      blocks.push({ x: x - wd.x - bw / 2, y: y - wd.y - bh / 2, w: bw, h: bh, dx: (R() < .5 ? -1 : 1) * (5 + R() * 18 * k), life: 1 });
+    }
+  }
+  // crawlers walk the letterforms: next target is a nearby point on a stroke
+  function nextPt(b) {
+    let best = null;
+    for (let t = 0; t < 14; t++) {
+      const p = wd.pts[Math.floor(R() * wd.pts.length)], d = Math.hypot(p[0] - b.x, p[1] - b.y);
+      if (d > 25 && d < 130) return p;
+      if (!best || d < best.d) best = { p, d };
+    }
+    return best.p;
+  }
+
+  function layout() {
+    const r = fit(); W = r.width; H = r.height; D = Math.min(devicePixelRatio || 1, 2);
+    paintWord();
+    const n = Math.round(utils.clamp(W * H / 9000, 40, 160)), nc = Math.round(utils.clamp(n * .12, 8, 18));
+    bugs = Array.from({ length: n }, (_, i) => {
+      const crawl = i < nc && wd.pts.length, p = crawl ? wd.pts[Math.floor(R() * wd.pts.length)] : [rng() * W, rng() * H];
+      return { x: p[0], y: p[1], a: rng() * TAU, v: .3 + rng() * .7, s: 5 + rng() * 6, ph: rng() * TAU, o: .18 + rng() * .3,
+        crawl, tgt: null, in: false, cd: 0 };
+    });
+  }
+  document.fonts.load(font(100)).then(() => { layout(); resizers.push(layout); if (REDUCED) draw(0); });
   hero.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); mouse = { x: e.clientX - r.left, y: e.clientY - r.top }; });
   hero.addEventListener('pointerleave', () => mouse = { x: -999, y: -999 });
-  const timer = createTimer({ onUpdate: () => {
+
+  function drawWord() {
+    const bh = wd.bh, chaos = intro * intro;
+    for (let b = 0; b < bands.length; b++) {
+      const sy = b * bh, off = bands[b] + (chaos ? (R() - .5) * 90 * chaos : 0), sp = split[b] + chaos * 8;
+      const src = (c, dx, a) => { ctx.globalAlpha = a; ctx.drawImage(c, 0, sy * D, wd.w * D, bh * D, wd.x + off + dx, wd.y + sy, wd.w, bh); };
+      if (sp > .4) { src(wd.red, -sp, .9); src(wd.blue, sp, .9); }
+      src(wd.ink, 0, chaos ? 1 - chaos * .6 : 1);
+      bands[b] *= .8; split[b] *= .82;
+      if (Math.abs(bands[b]) < .05) bands[b] = 0;
+    }
+    ctx.globalAlpha = 1;
+    // displaced blocks: punch out the original pixels, re-stamp them a few px over
+    for (const k of blocks) {
+      if (R() < .8) { ctx.fillStyle = C.bg; ctx.fillRect(wd.x + k.x, wd.y + k.y, k.w, k.h); }
+      ctx.drawImage(wd.ink, k.x * D, k.y * D, k.w * D, k.h * D, wd.x + k.x + k.dx, wd.y + k.y, k.w, k.h);
+      k.life -= .07;
+    }
+    blocks = blocks.filter(k => k.life > 0);
+  }
+
+  function draw(dt) {
+    if (!ready) return;
+    const now = performance.now();
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = ctx.strokeStyle = C.ink;
+    if (intro > 0) intro = Math.max(0, intro - dt / 1400);
+    if (!REDUCED && R() < .006) glitch(wd.x + R() * wd.w, wd.y + R() * wd.h, .25);   // the word twitches on its own
+    if (!REDUCED && onType(mouse.x, mouse.y) && now - lastMouseHit > 70) { glitch(mouse.x, mouse.y, .7); lastMouseHit = now; }
+    drawWord();
     for (const b of bugs) {
       const dx = b.x - mouse.x, dy = b.y - mouse.y, d = Math.hypot(dx, dy);
-      let sp = b.v;
+      let sp = b.v, fled = false;
       if (d < 160) {                                  // flee the cursor
         const away = Math.atan2(dy, dx), diff = Math.atan2(Math.sin(away - b.a), Math.cos(away - b.a));
-        b.a += diff * .25; sp = b.v * 5;
+        b.a += diff * .25; sp = b.v * 5; fled = true; b.tgt = null;
+      } else if (b.crawl) {
+        if (!b.tgt || Math.hypot(b.tgt[0] - b.x, b.tgt[1] - b.y) < 6) b.tgt = nextPt(b);
+        const to = Math.atan2(b.tgt[1] - b.y, b.tgt[0] - b.x);
+        b.a += Math.atan2(Math.sin(to - b.a), Math.cos(to - b.a)) * .14 + (R() - .5) * .3;
+        sp = b.v * 1.1;
       } else b.a += (rng() - .5) * .25;
       if (!REDUCED) { b.x += Math.cos(b.a) * sp; b.y += Math.sin(b.a) * sp; b.ph += sp * .6; }
       if (b.x < -30) b.x = W + 30; if (b.x > W + 30) b.x = -30; if (b.y < -30) b.y = H + 30; if (b.y > H + 30) b.y = -30;
-      ctx.globalAlpha = b.o; roach(ctx, b.x, b.y, b.a, b.s, b.ph);
+      const inside = onType(b.x, b.y);
+      if (inside && !b.in && now > b.cd && !REDUCED) { glitch(b.x, b.y, utils.clamp(b.s / 11 * (fled ? 1.6 : 1), .3, 1.4)); b.cd = now + 350; }
+      b.in = inside;
+      // on a stroke the roach reads as a dark hole in the letter; off it, a faint ink shape
+      ctx.fillStyle = ctx.strokeStyle = inside ? C.bg : C.ink;
+      ctx.globalAlpha = inside ? 1 : b.crawl ? Math.max(b.o, .5) : b.o;
+      roach(ctx, b.x, b.y, b.a, b.s, b.ph);
     }
     ctx.globalAlpha = 1;
-  } });
+  }
+  const timer = createTimer({ onUpdate: t => draw(t.deltaTime || 16) });
   whileVisible(hero, timer);
-  const { chars: words } = splitText('#hero-h', { chars: { wrap: 'clip' } });
-  animate(words, { y: ['110%', '0%'], delay: stagger(40, { start: 200 }), duration: 1100, ease: 'outExpo' });
   animate($$('.hero-copy > :not(h1)'), { opacity: [0, 1], y: [14, 0], delay: stagger(110, { start: 700 }), duration: 900, ease: 'outExpo' });
   if (!REDUCED) animate('.cta span', { y: [0, 4], duration: 900, loop: true, alternate: true, ease: 'inOutSine' });
 })();

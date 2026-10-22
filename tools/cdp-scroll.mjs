@@ -18,7 +18,7 @@ const send = (method, params = {}) => new Promise(r => { const i = ++id; pending
 const ev = async e => (await send('Runtime.evaluate', { expression: e, returnByValue: true, awaitPromise: true })).result?.result?.value;
 await send('Runtime.enable'); await send('Page.enable');
 await send('Page.navigate', { url });
-await sleep(2500);
+await sleep(+(process.env.LOAD||2500));
 await ev(`document.documentElement.style.scrollBehavior='auto'`);
 for (const [name, expr, wait = 1500] of targets) {
   const y = await ev(expr);

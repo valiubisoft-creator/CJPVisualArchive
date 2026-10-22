@@ -81,7 +81,11 @@
   .hero h1 em { font-style: normal; color: var(--state); }
   /* the word is painted on #hero-cv so roaches can glitch it; the h1 keeps layout, selection and screen readers */
   .hero h1 { font-weight: 200; letter-spacing: -0.02em; line-height: 1; }
-  .hero h1.on-canvas { color: transparent; }
+  .hero h1 { position: relative; }
+  /* a glitch patch: a small window (bg-filled, so it hides the pixels under it) showing the word nudged a few px */
+  .hero h1 .gp { position: absolute; left: 0; top: 0; background: var(--bg); visibility: hidden; pointer-events: none; }
+  .hero h1 .gp > span { position: absolute; left: 0; top: 0; white-space: nowrap; }
+  #hero-fg { z-index: 1; pointer-events: none; }
   .cta { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: var(--bg); border-radius: 999px;
     padding: 14px 22px; font-size: 15px; font-weight: 500; text-decoration: none; }
   .cta:hover { background: #fff; }
@@ -259,6 +263,7 @@
     <a class="cta" href="#ch-swarm">Open the file <span>↓</span></a>
     <p class="note">Move your cursor: they scatter. Every figure that follows is sourced; where sources disagree, both are shown.</p>
   </div>
+  <canvas id="hero-fg" aria-hidden="true"></canvas>
 </section>
 
 <!-- ───────────── 01 SWARM ───────────── -->
@@ -587,68 +592,82 @@ $$('.ch-head h2').forEach(h => {
 
 /* ───────────────────────── HERO ───────────────────────── */
 (() => {
-  const cv = $('#hero-cv'), { ctx, fit } = hiDPI(cv), hero = $('#top'), h1 = $('#hero-h');
-  const TEXT = h1.textContent.toUpperCase(), PAD = 28, MS = 2;   // MS: collision-mask cell, css px
+  // back canvas: roaches wandering behind the copy; front canvas: the ones crawling over the word
+  const cv = $('#hero-cv'), fg = $('#hero-fg'), back = hiDPI(cv), front = hiDPI(fg), ctx = back.ctx, fx = front.ctx;
+  const hero = $('#top'), h1 = $('#hero-h'), TEXT = h1.textContent, MS = 2;   // MS: mask cell, css px
   const R = Math.random;
-  let W = 0, H = 0, D = 1, bugs = [], mouse = { x: -999, y: -999 }, ready = false;
-  // the word, pre-rendered three times: ink, plus red/blue copies for the channel split
-  const wd = { ink: document.createElement('canvas'), red: document.createElement('canvas'), blue: document.createElement('canvas'),
-    x: 0, y: 0, w: 0, h: 0, bh: 8, mask: null, mw: 0, mh: 0, pts: [] };
-  let bands = new Float32Array(0), split = new Float32Array(0), blocks = [], intro = REDUCED ? 0 : 1, lastMouseHit = 0;
-  const font = fs => `200 ${fs}px Archivo, "Helvetica Neue", Helvetica, sans-serif`;
-  const setFont = (g, fs) => { g.font = font(fs); if ('fontStretch' in g) g.fontStretch = 'condensed'; };
+  let W = 0, H = 0, bugs = [], mouse = { x: -999, y: -999 }, ready = false;
+  // the word stays live text; a hit opens a small patch over it that shows the same pixels nudged sideways
+  const patches = Array.from({ length: 10 }, () => {
+    const o = document.createElement('span'), i = document.createElement('span');
+    o.className = 'gp'; o.setAttribute('aria-hidden', 'true'); i.textContent = TEXT; o.append(i); h1.append(o);
+    return { o, i, until: 0 };
+  });
+  const box = { left: 0, top: 0, fs: 100, w: 0, h: 0 };
+  // collision mask in hero coordinates, sampled from the glyphs
+  const mk = { x: 0, y: 0, mw: 0, mh: 0, cells: null, pts: [] };
 
-  // fit the thin word to the hero width, then paint it offscreen and sample its letterforms into a mask
-  function paintWord() {
-    const pad = parseFloat(getComputedStyle(hero).paddingLeft);
-    setFont(ctx, 100);
-    const fs = Math.min(280, (hero.clientWidth - pad * 2) * .97 / (ctx.measureText(TEXT).width / 100));
-    h1.style.fontSize = fs + 'px';
-    const hr = hero.getBoundingClientRect(), r = h1.getBoundingClientRect();
-    setFont(ctx, fs);
-    const m = ctx.measureText(TEXT);
-    wd.w = Math.ceil(m.width + PAD * 2); wd.h = Math.ceil(r.height + PAD * 2);
-    wd.x = r.left - hr.left - PAD; wd.y = r.top - hr.top - PAD;
-    wd.bh = Math.max(3, Math.round(fs / 26));
-    const base = PAD + r.height / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
-    for (const [k, col] of [['ink', C.ink], ['red', C.state], ['blue', C.move]]) {
-      const c = wd[k], g = c.getContext('2d', { willReadFrequently: k === 'ink' });
-      c.width = wd.w * D; c.height = wd.h * D;
-      g.setTransform(D, 0, 0, D, 0, 0); setFont(g, fs); g.fillStyle = col; g.textBaseline = 'alphabetic';
-      g.fillText(TEXT, PAD, base);
-    }
-    const px = wd.ink.getContext('2d').getImageData(0, 0, wd.ink.width, wd.ink.height).data;
-    wd.mw = Math.ceil(wd.w / MS); wd.mh = Math.ceil(wd.h / MS); wd.mask = new Uint8Array(wd.mw * wd.mh); wd.pts = [];
-    for (let j = 0; j < wd.mh; j++) for (let i = 0; i < wd.mw; i++) {
-      const sx = Math.min(wd.ink.width - 1, Math.round((i + .5) * MS * D)), sy = Math.min(wd.ink.height - 1, Math.round((j + .5) * MS * D));
-      if (px[(sy * wd.ink.width + sx) * 4 + 3] > 140) { wd.mask[j * wd.mw + i] = 1; wd.pts.push([wd.x + (i + .5) * MS, wd.y + (j + .5) * MS]); }
-    }
-    const nb = Math.ceil(wd.h / wd.bh);
-    bands = new Float32Array(nb); split = new Float32Array(nb); blocks = [];
-    h1.classList.add('on-canvas'); ready = true;
+  function textRect() { const rg = document.createRange(); rg.selectNodeContents(h1.firstChild); return rg.getBoundingClientRect(); }
+  function measure() {
+    const pad = parseFloat(getComputedStyle(hero).paddingLeft), avail = hero.clientWidth - pad * 2;
+    h1.style.fontSize = '100px';
+    h1.style.fontSize = Math.min(280, avail * .97 / (textRect().width / 100)) + 'px';
+    const hr = hero.getBoundingClientRect(), r = h1.getBoundingClientRect(), t = textRect();
+    box.left = r.left - hr.left; box.top = r.top - hr.top; box.fs = parseFloat(h1.style.fontSize);
+    box.w = Math.ceil(t.right - r.left) + 20; box.h = Math.ceil(r.height);
+    patches.forEach(p => { p.o.style.width = box.w + 'px'; p.o.style.height = box.h + 'px'; });
+    buildMask(t, hr, parseFloat(h1.style.fontSize));
+  }
+  function buildMask(t, hr, fs) {
+    const c = document.createElement('canvas'), g = c.getContext('2d', { willReadFrequently: true });
+    const f = `200 ${fs}px Archivo, "Helvetica Neue", Helvetica, sans-serif`;
+    g.font = f; if ('fontStretch' in g) g.fontStretch = 'condensed';
+    const m = g.measureText(TEXT.toUpperCase()), fa = m.fontBoundingBoxAscent || fs * .9, fd = m.fontBoundingBoxDescent || fs * .25;
+    const sx = m.width ? t.width / m.width : 1;
+    c.width = Math.ceil(m.width / MS) + 2; c.height = Math.ceil((fa + fd) / MS) + 2;
+    g.scale(1 / MS, 1 / MS); g.font = f; if ('fontStretch' in g) g.fontStretch = 'condensed';
+    g.fillStyle = '#000'; g.fillText(TEXT.toUpperCase(), 0, fa);
+    const px = g.getImageData(0, 0, c.width, c.height).data;
+    // CSS puts the baseline half-leading below the line top
+    const lh = parseFloat(getComputedStyle(h1).lineHeight) || fs, baseY = t.top - hr.top + (lh - (fa + fd)) / 2 + fa;
+    mk.x = t.left - hr.left; mk.y = baseY - fa; mk.mw = c.width; mk.mh = c.height; mk.cells = new Uint8Array(c.width * c.height); mk.pts = [];
+    for (let j = 0; j < c.height; j++) for (let i = 0; i < c.width; i++) if (px[(j * c.width + i) * 4 + 3] > 120) mk.cells[j * c.width + i] = 1;
+    mk.sx = sx * MS;
+    let n = 0; mk.cells.forEach(v => n += v);
+    if (n < 40) {
+      // canvas text unavailable: fall back to the letter boxes from the DOM
+      mk.sx = 1; mk.mw = Math.ceil(t.width) + 2; mk.mh = Math.ceil(t.height) + 2; mk.x = t.left - hr.left; mk.y = t.top - hr.top; mk.cells = new Uint8Array(mk.mw * mk.mh);
+      const node = h1.firstChild, rg = document.createRange();
+      for (let k = 0; k < node.length; k++) {
+        rg.setStart(node, k); rg.setEnd(node, k + 1); const b = rg.getBoundingClientRect();
+        const x0 = b.left - t.left, y0 = b.top - t.top, w = b.width, h = b.height, e = Math.max(2, fs * .04);
+        for (let y = y0 + h * .2; y < y0 + h * .85; y++) for (let x = x0 + w * .1; x < x0 + w * .9; x++) {
+          const edge = x < x0 + w * .1 + e || x > x0 + w * .9 - e || y < y0 + h * .2 + e || y > y0 + h * .85 - e;
+          if (edge) mk.cells[Math.floor(y) * mk.mw + Math.floor(x)] = 1;
+        }
+      }
+      mk.cellW = 1;
+    } else mk.cellW = mk.sx;
+    const cw = mk.cellW, ch = mk.cellW === 1 ? 1 : MS;
+    mk.ch = ch;
+    for (let j = 0; j < mk.mh; j += 2) for (let i = 0; i < mk.mw; i += 2) if (mk.cells[j * mk.mw + i]) mk.pts.push([mk.x + (i + .5) * cw, mk.y + (j + .5) * ch]);
   }
   const onType = (x, y) => {
-    const i = Math.floor((x - wd.x) / MS), j = Math.floor((y - wd.y) / MS);
-    return i >= 0 && j >= 0 && i < wd.mw && j < wd.mh && wd.mask[j * wd.mw + i] === 1;
+    const i = Math.floor((x - mk.x) / mk.cellW), j = Math.floor((y - mk.y) / mk.ch);
+    return !!mk.cells && i >= 0 && j >= 0 && i < mk.mw && j < mk.mh && mk.cells[j * mk.mw + i] === 1;
   };
-  // a roach crossing a stroke tears the bands around it sideways and splits the channels
-  function glitch(x, y, k) {
-    const j = Math.floor((y - wd.y) / wd.bh), spread = Math.floor(R() * 2.4 * k);
-    for (let b = j - spread; b <= j + spread; b++) {
-      if (b < 0 || b >= bands.length) continue;
-      bands[b] += (R() - .5) * 2 * (1.5 + 6 * k) * (b === j ? 1.5 : 1);
-      split[b] = Math.max(split[b], 1 + 3 * k * R());
-    }
-    if (R() < .18 * k) {
-      const bw = 18 + R() * 70 * k, bh = wd.bh * (1 + Math.floor(R() * 3));
-      blocks.push({ x: x - wd.x - bw / 2, y: y - wd.y - bh / 2, w: bw, h: bh, dx: (R() < .5 ? -1 : 1) * (5 + R() * 18 * k), life: 1 });
-    }
+  // a simple pixel shift: a roach-sized strip of the letter under it jumps a few px, holds, snaps back
+  function shift(x, y, k, now) {
+    const p = patches.find(p => now > p.until); if (!p) return;
+    const w = box.fs * (.25 + R() * .35 * k), h = box.fs * (.05 + R() * .07 * k), lx = x - box.left - w / 2, ly = y - box.top - h / 2;
+    p.o.style.clipPath = `inset(${ly}px ${box.w - lx - w}px ${box.h - ly - h}px ${lx}px)`;
+    p.i.style.transform = `translateX(${(R() < .5 ? -1 : 1) * Math.round(2 + R() * 3 * k)}px)`;
+    p.o.style.visibility = 'visible'; p.until = now + 70 + R() * 110;
   }
-  // crawlers walk the letterforms: next target is a nearby point on a stroke
   function nextPt(b) {
     let best = null;
     for (let t = 0; t < 14; t++) {
-      const p = wd.pts[Math.floor(R() * wd.pts.length)], d = Math.hypot(p[0] - b.x, p[1] - b.y);
+      const p = mk.pts[Math.floor(R() * mk.pts.length)], d = Math.hypot(p[0] - b.x, p[1] - b.y);
       if (d > 25 && d < 130) return p;
       if (!best || d < best.d) best = { p, d };
     }
@@ -656,54 +675,31 @@ $$('.ch-head h2').forEach(h => {
   }
 
   function layout() {
-    const r = fit(); W = r.width; H = r.height; D = Math.min(devicePixelRatio || 1, 2);
-    paintWord();
-    const n = Math.round(utils.clamp(W * H / 9000, 40, 160)), nc = Math.round(utils.clamp(n * .12, 8, 18));
+    const r = back.fit(); front.fit(); W = r.width; H = r.height;
+    measure();
+    const n = Math.round(utils.clamp(W * H / 9000, 40, 160)), nc = mk.pts.length ? Math.round(utils.clamp(n * .12, 8, 18)) : 0;
     bugs = Array.from({ length: n }, (_, i) => {
-      const crawl = i < nc && wd.pts.length, p = crawl ? wd.pts[Math.floor(R() * wd.pts.length)] : [rng() * W, rng() * H];
-      return { x: p[0], y: p[1], a: rng() * TAU, v: .3 + rng() * .7, s: 5 + rng() * 6, ph: rng() * TAU, o: .18 + rng() * .3,
-        crawl, tgt: null, in: false, cd: 0 };
+      const crawl = i < nc, p = crawl ? mk.pts[Math.floor(R() * mk.pts.length)] : [rng() * W, rng() * H];
+      return { x: p[0], y: p[1], a: rng() * TAU, v: .3 + rng() * .7, s: 5 + rng() * 6, ph: rng() * TAU, o: .18 + rng() * .3, crawl, tgt: null, in: false, cd: 0 };
     });
+    ready = true;
   }
-  document.fonts.load(font(100)).then(() => { layout(); resizers.push(layout); if (REDUCED) draw(0); });
+  document.fonts.load('200 100px Archivo').catch(() => {}).then(() => { layout(); resizers.push(layout); if (REDUCED) draw(); });
   hero.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); mouse = { x: e.clientX - r.left, y: e.clientY - r.top }; });
   hero.addEventListener('pointerleave', () => mouse = { x: -999, y: -999 });
 
-  function drawWord() {
-    const bh = wd.bh, chaos = intro * intro;
-    for (let b = 0; b < bands.length; b++) {
-      const sy = b * bh, off = bands[b] + (chaos ? (R() - .5) * 90 * chaos : 0), sp = split[b] + chaos * 8;
-      const src = (c, dx, a) => { ctx.globalAlpha = a; ctx.drawImage(c, 0, sy * D, wd.w * D, bh * D, wd.x + off + dx, wd.y + sy, wd.w, bh); };
-      if (sp > .4) { src(wd.red, -sp, .9); src(wd.blue, sp, .9); }
-      src(wd.ink, 0, chaos ? 1 - chaos * .6 : 1);
-      bands[b] *= .8; split[b] *= .82;
-      if (Math.abs(bands[b]) < .05) bands[b] = 0;
-    }
-    ctx.globalAlpha = 1;
-    // displaced blocks: punch out the original pixels, re-stamp them a few px over
-    for (const k of blocks) {
-      if (R() < .8) { ctx.fillStyle = C.bg; ctx.fillRect(wd.x + k.x, wd.y + k.y, k.w, k.h); }
-      ctx.drawImage(wd.ink, k.x * D, k.y * D, k.w * D, k.h * D, wd.x + k.x + k.dx, wd.y + k.y, k.w, k.h);
-      k.life -= .07;
-    }
-    blocks = blocks.filter(k => k.life > 0);
-  }
-
-  function draw(dt) {
+  function draw() {
     if (!ready) return;
     const now = performance.now();
-    ctx.clearRect(0, 0, W, H);
-    if (intro > 0) intro = Math.max(0, intro - dt / 1400);
-    if (!REDUCED && R() < .006) glitch(wd.x + R() * wd.w, wd.y + R() * wd.h, .25);   // the word twitches on its own
-    if (!REDUCED && onType(mouse.x, mouse.y) && now - lastMouseHit > 70) { glitch(mouse.x, mouse.y, .7); lastMouseHit = now; }
-    drawWord();
+    ctx.clearRect(0, 0, W, H); fx.clearRect(0, 0, W, H);
+    for (const p of patches) if (p.until && now > p.until) { p.o.style.visibility = 'hidden'; p.until = 0; }
     for (const b of bugs) {
       const dx = b.x - mouse.x, dy = b.y - mouse.y, d = Math.hypot(dx, dy);
-      let sp = b.v, fled = false;
+      let sp = b.v;
       if (d < 160) {                                  // flee the cursor
         const away = Math.atan2(dy, dx), diff = Math.atan2(Math.sin(away - b.a), Math.cos(away - b.a));
-        b.a += diff * .25; sp = b.v * 5; fled = true; b.tgt = null;
-      } else if (b.crawl) {
+        b.a += diff * .25; sp = b.v * 5; b.tgt = null;
+      } else if (b.crawl) {                           // walk the letterforms
         if (!b.tgt || Math.hypot(b.tgt[0] - b.x, b.tgt[1] - b.y) < 6) b.tgt = nextPt(b);
         const to = Math.atan2(b.tgt[1] - b.y, b.tgt[0] - b.x);
         b.a += Math.atan2(Math.sin(to - b.a), Math.cos(to - b.a)) * .14 + (R() - .5) * .3;
@@ -712,17 +708,19 @@ $$('.ch-head h2').forEach(h => {
       if (!REDUCED) { b.x += Math.cos(b.a) * sp; b.y += Math.sin(b.a) * sp; b.ph += sp * .6; }
       if (b.x < -30) b.x = W + 30; if (b.x > W + 30) b.x = -30; if (b.y < -30) b.y = H + 30; if (b.y > H + 30) b.y = -30;
       const inside = onType(b.x, b.y);
-      if (inside && !b.in && now > b.cd && !REDUCED) { glitch(b.x, b.y, utils.clamp(b.s / 11 * (fled ? 1.6 : 1), .3, 1.4)); b.cd = now + 350; }
+      if (inside && !b.in && now > b.cd && !REDUCED) { shift(b.x, b.y, utils.clamp(b.s / 11, .3, 1), now); b.cd = now + 400; }
       b.in = inside;
-      // on a stroke the roach reads as a dark hole in the letter; off it, a faint ink shape
-      ctx.fillStyle = ctx.strokeStyle = inside ? C.bg : C.ink;
-      ctx.globalAlpha = inside ? 1 : b.crawl ? Math.max(b.o, .5) : b.o;
-      roach(ctx, b.x, b.y, b.a, b.s, b.ph);
+      const g = b.crawl ? fx : ctx;
+      // on a stroke the roach reads as a dark shape in the letter
+      g.fillStyle = g.strokeStyle = inside ? C.bg : C.ink;
+      g.globalAlpha = inside ? 1 : b.crawl ? Math.max(b.o, .5) : b.o;
+      roach(g, b.x, b.y, b.a, b.s, b.ph);
     }
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha = fx.globalAlpha = 1;
   }
-  const timer = createTimer({ onUpdate: t => draw(t.deltaTime || 16) });
+  const timer = createTimer({ onUpdate: draw });
   whileVisible(hero, timer);
+  animate(h1, { opacity: [0, 1], duration: 900, delay: 150, ease: 'outQuad' });
   animate($$('.hero-copy > :not(h1)'), { opacity: [0, 1], y: [14, 0], delay: stagger(110, { start: 700 }), duration: 900, ease: 'outExpo' });
   if (!REDUCED) animate('.cta span', { y: [0, 4], duration: 900, loop: true, alternate: true, ease: 'inOutSine' });
 })();

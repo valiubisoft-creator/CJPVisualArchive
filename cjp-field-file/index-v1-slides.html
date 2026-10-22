@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cockroach Field File</title>
+<script type="importmap">
+{ "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.esm.min.js" } }
+</script>
+<style>
+  :root {
+    --bg: #0E0E0D; --surface: #161614; --ink: #EDEAE3; --ink-2: #9A968D; --ink-3: #3A3935; --ink-4: #222120;
+    --state: #E5533A; --move: #3A8FC4;
+    --font: "Helvetica Neue", Helvetica, "Neue Haas Grotesk Text Pro", "Zalando Sans", Arial, sans-serif;
+    --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    --hatch: repeating-linear-gradient(45deg, var(--ink-2) 0 1.4px, transparent 1.4px 3.6px);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); overflow: hidden; }
+  button { font: inherit; color: inherit; }
+  a { color: var(--ink); }
+
+  header.top { position: fixed; inset: 0 0 auto 0; height: 52px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; font: 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); z-index: 5; }
+  header.top b { color: var(--ink); font-weight: 500; }
+
+  main { position: fixed; inset: 52px 0 64px 0; }
+  .scene { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 48px; padding: 16px 40px 24px; }
+  .scene[hidden] { display: none; }
+  .copy { align-self: center; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .kicker { font: 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+  .kicker .num { color: var(--state); }
+  h1, h2 { margin: 0; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; }
+  h1 { font-size: clamp(44px, 6.4vw, 92px); }
+  h2 { font-size: clamp(30px, 3.2vw, 44px); }
+  .copy p { margin: 0; color: var(--ink-2); font-size: 15px; line-height: 1.5; max-width: 42ch; }
+  .copy p strong { color: var(--ink); font-weight: 500; }
+  .note { font: 11px/1.5 var(--mono); color: var(--ink-2); max-width: 46ch; }
+  .stage { position: relative; min-width: 0; min-height: 0; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { border: 1px solid var(--ink-3); background: none; border-radius: 999px; padding: 7px 12px; font-size: 12px; cursor: pointer;
+    color: var(--ink-2); display: inline-flex; align-items: center; gap: 7px; transition: border-color .2s, color .2s; }
+  .chip:hover { color: var(--ink); border-color: var(--ink-2); }
+  .chip[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); }
+  .sw { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+  .sw.state { background: var(--state); } .sw.move { background: var(--move); }
+  .sw.rec { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--ink-2); }
+  .cta { align-self: flex-start; margin-top: 8px; background: var(--ink); color: var(--bg); border: 0; border-radius: 999px; padding: 12px 20px;
+    font-size: 14px; font-weight: 500; cursor: pointer; }
+  .readout { font: 500 13px/1.4 var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .big { font-size: clamp(36px, 4vw, 56px); font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .caption { min-height: 4.6em; font-size: 14px; line-height: 1.5; color: var(--ink); max-width: 42ch; }
+  .caption .src { display: block; margin-top: 6px; font: 10.5px/1.4 var(--mono); color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; }
+  .label { position: absolute; font: 11px/1.35 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink); pointer-events: none;
+    transform: translate(-50%, 0); text-align: center; white-space: nowrap; }
+  .label small { display: block; color: var(--ink-2); letter-spacing: .04em; }
+
+  /* rail */
+  nav.rail { position: fixed; inset: auto 0 0 0; height: 64px; display: flex; align-items: center; gap: 4px; padding: 0 40px; z-index: 5; }
+  .rail .items { position: relative; display: flex; flex: 1; gap: 4px; height: 100%; align-items: center; min-width: 0; }
+  .rail .items button { flex: 1; min-width: 0; background: none; border: 0; border-top: 1px solid var(--ink-3); padding: 10px 0 0; text-align: left; cursor: pointer;
+    font: 10.5px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rail .items button:hover, .rail .items button[aria-current="step"] { color: var(--ink); }
+  .rail .bar { position: absolute; top: 50%; margin-top: -11px; left: 0; height: 2px; background: var(--state); width: 10px; transform-origin: left; }
+  .rail .arrows { display: flex; gap: 6px; margin-left: 16px; }
+  .rail .arrows button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--ink-3); background: none; cursor: pointer; }
+  .rail .arrows button:hover { border-color: var(--ink); }
+
+  #tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--bg); padding: 8px 10px; border-radius: 6px;
+    font-size: 12px; line-height: 1.4; max-width: 260px; opacity: 0; }
+  #tip b { display: block; font: 500 10.5px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
+
+  /* calendar */
+  .cal-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+  .cal-months, .cal { display: grid; grid-template-columns: 28px repeat(var(--weeks), 1fr); gap: 5px; max-width: 760px; }
+  .cal-months span { font: 10.5px/1 var(--mono); letter-spacing: .06em; color: var(--ink-2); text-transform: uppercase; white-space: nowrap; }
+  .cal { grid-template-rows: repeat(7, auto); }
+  .cal .dow { font: 10px/1 var(--mono); color: var(--ink-2); align-self: center; }
+  .cell { aspect-ratio: 1; border-radius: 3px; background: var(--ink-4); cursor: default; position: relative; }
+  .cell.ev::after { content: ""; position: absolute; inset: 35%; border-radius: 50%; background: var(--ink-2); }
+  .cal-stat { display: flex; align-items: baseline; gap: 12px; margin-top: 14px; }
+
+  /* blackout */
+  .bo { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 16px; }
+  .bo svg { flex: 1; min-height: 0; width: 100%; }
+  .metro { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .scene > * { min-width: 0; }
+  .metro .sq { display: flex; gap: 4px; }
+  .metro .sq i { width: 12px; height: 12px; border-radius: 2px; background: var(--ink-4); box-shadow: inset 0 0 0 1px var(--ink-3); }
+  .track { position: relative; height: 44px; border-top: 1px solid var(--ink-3); }
+  .track .tick { position: absolute; top: 8px; font: 10.5px/1 var(--mono); color: var(--ink-2); letter-spacing: .05em; transform: translateX(-1px);
+    border-left: 1px solid var(--ink-3); padding-left: 6px; height: 28px; }
+  .track .cut { position: absolute; top: -1px; height: 3px; background: var(--state); }
+  .handle { position: absolute; top: -10px; left: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--ink);
+    box-shadow: 0 0 0 5px rgba(237,234,227,.15); cursor: grab; touch-action: none; }
+  .track-inner { position: absolute; inset: 0 10px; }
+
+  /* apparatus */
+  .ap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ap .node { cursor: pointer; }
+  .ap .node text { font: 11px var(--mono); fill: var(--ink); letter-spacing: .04em; text-transform: uppercase; }
+  .ap .node:hover text { fill: var(--state); }
+  .card { border-top: 1px solid var(--ink-3); padding-top: 14px; min-height: 180px; }
+  .card h3 { margin: 0 0 8px; font-size: 18px; letter-spacing: -0.01em; }
+  .card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .card li { font-size: 13.5px; line-height: 1.45; color: var(--ink); }
+  .card li em { font-style: normal; font: 10.5px/1 var(--mono); color: var(--ink-2); margin-right: 6px; }
+  .card .src { margin-top: 10px; font: 10.5px/1.4 var(--mono); color: var(--ink-2); text-transform: uppercase; letter-spacing: .05em; }
+
+  /* who counts */
+  .ledger { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; align-content: center; }
+  .col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .col .who { font: 10.5px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); display: flex; gap: 8px; align-items: center; }
+  .col .what { font-size: 13px; line-height: 1.45; color: var(--ink-2); min-height: 3.4em; }
+  .col .q { font-size: 14px; line-height: 1.45; color: var(--ink); min-height: 2.9em; }
+  .units { display: grid; grid-template-columns: repeat(15, 9px); gap: 4px; min-height: 140px; align-content: start; }
+  .u { width: 9px; height: 9px; border-radius: 50%; }
+  .u.state { background: var(--state); } .u.move { background: var(--move); }
+  .u.rec { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--ink-2); }
+  .u.zero { grid-column: 1 / -1; width: auto; height: 40px; border-radius: 4px; border: 1px dashed var(--ink-3); background: none;
+    font: 10.5px/38px var(--mono); color: var(--ink-2); text-align: center; letter-spacing: .06em; text-transform: uppercase; }
+
+  /* detained */
+  .det { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+  .det-grid { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 3px; max-width: 720px; }
+  .det-grid i { aspect-ratio: 1; border-radius: 50%; background: var(--ink-4); }
+  .det-grid i.rec { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--ink-2); }
+  .det-grid i.move { background: var(--move); }
+  .det-legend { display: flex; flex-wrap: wrap; gap: 18px; font: 10.5px/1.4 var(--mono); color: var(--ink-2); letter-spacing: .05em; text-transform: uppercase; }
+  .det-legend span { display: inline-flex; gap: 7px; align-items: center; }
+  blockquote { margin: 0; padding-left: 14px; border-left: 2px solid var(--state); font-size: 14px; line-height: 1.5; color: var(--ink); max-width: 42ch; }
+  blockquote cite { display: block; margin-top: 6px; font: 10.5px/1.4 var(--mono); font-style: normal; color: var(--ink-2); text-transform: uppercase; letter-spacing: .05em; }
+
+  /* sources */
+  .sources { columns: 2 320px; column-gap: 40px; align-self: center; font-size: 13px; line-height: 1.5; }
+  .sources h4 { margin: 0 0 8px; font: 10.5px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); break-after: avoid; }
+  .sources ol { margin: 0 0 22px; padding-left: 18px; break-inside: avoid-column; }
+  .sources li { margin-bottom: 5px; color: var(--ink-2); }
+  .sources li a { color: var(--ink); text-decoration-color: var(--ink-3); text-underline-offset: 3px; }
+
+  @media (max-width: 820px) {
+    header.top, nav.rail { padding: 0 16px; }
+    header.top .hide-sm { display: none; }
+    .scene { grid-template-columns: 1fr; grid-template-rows: auto minmax(360px, 1fr); gap: 20px; padding: 12px 16px 24px; overflow-y: auto; }
+    .copy { align-self: start; }
+    .rail .items button .t { display: none; }
+    .ledger { grid-template-columns: 1fr; position: relative; gap: 22px; }
+    .units { min-height: 0; }
+    .det, .cal-wrap, .bo { position: relative; }
+    .bo svg { height: 300px; flex: none; }
+    .metro .readout { min-width: 0 !important; }
+    .det-grid { gap: 2px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <span><b>Cockroach</b> &nbsp;/&nbsp; a field file</span>
+  <span class="hide-sm">CJP protests · India · 15 May – 21 Oct 2026</span>
+</header>
+
+<main>
+  <!-- 00 COVER -->
+  <section class="scene" id="s-cover" hidden>
+    <div class="copy">
+      <div class="kicker">Supreme Court of India · 15 May 2026</div>
+      <h1 id="cover-h">“Parasites of society.”</h1>
+      <p>In open court the Chief Justice of India called some unemployed youth and activists <strong>“cockroaches”</strong>. (He later said he meant people with fake degrees.) The next day, Abhijeet Dipke launched the <strong>Cockroach Janta Party</strong> online, as a joke.</p>
+      <p>Ten weeks later the Education Minister had resigned. Along the way the movement was muted online, cut off and detained in the thousands. This file follows the people, the agencies and the numbers.</p>
+      <button class="cta" data-go="1">Open the file →</button>
+      <div class="note">Use ← → or the rail below. Every figure is sourced; where sources disagree, both are shown.</div>
+    </div>
+    <div class="stage"><canvas id="cover-cv" aria-hidden="true"></canvas></div>
+  </section>
+
+  <!-- 01 SWARM -->
+  <section class="scene" id="s-swarm" hidden>
+    <div class="copy">
+      <div class="kicker"><span class="num">01</span> / The swarm</div>
+      <h2>One week, fifteen million.</h2>
+      <p>Each mark is <strong>10,000 Instagram followers</strong>. In its first week the account passed 15 million (one outlet reported 20 million; we use the lower figure).</p>
+      <div><div class="big" id="sw-count">0</div><div class="readout" id="sw-date" style="color:var(--ink-2)">16 May 2026</div></div>
+      <p>Then the state asked: <strong>who are these people?</strong></p>
+      <div class="chips" role="group" aria-label="Claims about the followers">
+        <button class="chip" data-mode="claim" aria-pressed="false"><span class="sw state"></span>The minister's claim</button>
+        <button class="chip" data-mode="data" aria-pressed="false"><span class="sw move"></span>The account's analytics</button>
+      </div>
+      <div class="caption" id="sw-cap"></div>
+    </div>
+    <div class="stage" id="sw-stage"><canvas id="sw-cv" role="img" aria-label="1,500 marks, each 10,000 followers"></canvas></div>
+  </section>
+
+  <!-- 02 MUTED -->
+  <section class="scene" id="s-muted" hidden>
+    <div class="copy">
+      <div class="kicker"><span class="num">02</span> / Five months, day by day</div>
+      <h2>The street, and the switch.</h2>
+      <p>Each square is one day from the remark to the release of two of the party's leaders. Pick a layer. Hover any marked day for what happened.</p>
+      <div class="chips" role="group" aria-label="Layers">
+        <button class="chip" data-layer="street"><span class="sw move"></span>On the street</button>
+        <button class="chip" data-layer="muted"><span class="sw state"></span>Account withheld</button>
+        <button class="chip" data-layer="offline"><span class="sw state"></span>Internet cut</button>
+        <button class="chip" data-layer="custody"><span class="sw state"></span>Leaders in custody</button>
+      </div>
+      <div class="cal-stat"><span class="big" id="cal-n">0</span><span class="readout" id="cal-unit">days</span></div>
+      <div class="caption" id="cal-cap"></div>
+    </div>
+    <div class="stage">
+      <div class="cal-wrap">
+        <div class="cal-months" id="cal-months"></div>
+        <div class="cal" id="cal"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 BLACKOUT -->
+  <section class="scene" id="s-blackout" hidden>
+    <div class="copy">
+      <div class="kicker"><span class="num">03</span> / Blackout · 20–24 July</div>
+      <h2>No signal, no order.</h2>
+      <p>The week of the march on Parliament. Each dot is a phone near the protest site (schematic, not a map). <strong>Drag the handle</strong> to move through the week.</p>
+      <div class="readout" id="bo-time">MON 20 JUL · 00:00</div>
+      <div class="caption" id="bo-cap"></div>
+      <div class="note">The 20 July shutdown zone was never published. The 1.5 km ring is the radius of the 23 July Home Ministry order.</div>
+    </div>
+    <div class="stage">
+      <div class="bo">
+        <svg id="bo-svg" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Schematic of phones around Jantar Mantar losing signal"></svg>
+        <div class="metro"><span class="readout" style="min-width:24ch;color:var(--ink-2)" id="bo-metro">METRO STATIONS SHUT · 0</span><span class="sq" id="bo-sq"></span></div>
+        <div class="track" id="bo-track"><div class="track-inner" id="bo-inner"></div><div class="handle" id="bo-handle" aria-label="Time scrubber" role="slider" tabindex="0"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 APPARATUS -->
+  <section class="scene" id="s-apparatus" hidden>
+    <div class="copy">
+      <div class="kicker"><span class="num">04</span> / The apparatus</div>
+      <h2>Who acted on the protest.</h2>
+      <p>Thirteen bodies with a documented hand in the response. Filter by method, then click a node for its record.</p>
+      <div class="chips" role="group" aria-label="Filter by method">
+        <button class="chip" data-kind="all" aria-pressed="true">All</button>
+        <button class="chip" data-kind="street">Street</button>
+        <button class="chip" data-kind="digital">Digital</button>
+        <button class="chip" data-kind="courts">Courts</button>
+        <button class="chip" data-kind="politics">Politics</button>
+      </div>
+      <div class="card" id="ap-card"></div>
+    </div>
+    <div class="stage ap"><svg id="ap-svg" viewBox="0 0 720 560" preserveAspectRatio="xMidYMid meet"></svg></div>
+  </section>
+
+  <!-- 05 WHO COUNTS -->
+  <section class="scene" id="s-counts" hidden>
+    <div class="copy">
+      <div class="kicker"><span class="num">05</span> / 20 July, Sansad Chalo</div>
+      <h2>Who counts?</h2>
+      <p>One march, three ledgers. Each dot is <strong>one person</strong> (or one round fired). The sources count different things, and that is the point.</p>
+      <div class="chips" role="group" aria-label="Ledger">
+        <button class="chip" data-tab="injured" aria-pressed="true">Injured</button>
+        <button class="chip" data-tab="detained">Detained</button>
+        <button class="chip" data-tab="pellets">Pellets</button>
+      </div>
+      <div class="note" style="display:flex;gap:16px;flex-wrap:wrap">
+        <span><span class="sw state"></span> State</span><span><span class="sw rec"></span> Records</span><span><span class="sw move"></span> Movement</span>
+      </div>
+    </div>
+    <div class="stage"><div class="ledger" id="ledger"></div></div>
+  </section>
+
+  <!-- 06 DETAINED -->
+  <section class="scene" id="s-detained" hidden>
+    <div class="copy">
+      <div class="kicker"><span class="num">06</span> / October</div>
+      <h2>Detained.</h2>
+      <p>The demand moved to the Election Commission and so did the crackdown. Each dot is <strong>ten people</strong> detained, as reported city by city.</p>
+      <button class="chip" id="det-claim" aria-pressed="false" style="align-self:flex-start"><span class="sw move"></span>Add the movement's own count</button>
+      <div class="caption" id="det-cap"></div>
+      <blockquote>“Authorities cannot use the criminal justice system to punish people for exercising their right to peaceful assembly.”<cite>Aakar Patel, Amnesty International India · 14 Oct</cite></blockquote>
+    </div>
+    <div class="stage">
+      <div class="det">
+        <div class="det-legend" id="det-legend"></div>
+        <div class="det-grid" id="det-grid" style="--cols:40"></div>
+        <div class="note" id="det-note"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 EVERY NAME -->
+  <section class="scene" id="s-names" hidden>
+    <div class="copy">
+      <div class="kicker"><span class="num">07</span> / Why they marched</div>
+      <h2>Every name counts.</h2>
+      <p>Each mark is <strong>100,000 voters</strong>: about 969 million were eligible in 2024. The voter-roll revision has removed more than <strong>130 million</strong> names.</p>
+      <div><div class="big" id="nm-count">0</div><div class="readout" style="color:var(--ink-2)">names removed</div></div>
+      <p>The Commission says it removed duplicate, deceased and ineligible entries. Two of its own commissioners raised concerns at least 14 times in ten months.</p>
+      <button class="chip" id="nm-replay" style="align-self:flex-start">Replay the removals</button>
+    </div>
+    <div class="stage"><canvas id="nm-cv" role="img" aria-label="9,690 marks, 1,300 removed"></canvas></div>
+  </section>
+
+  <!-- 08 SOURCES -->
+  <section class="scene" id="s-sources" hidden>
+    <div class="copy">
+      <div class="kicker"><span class="num">08</span> / Method &amp; sources</div>
+      <h2>On the record.</h2>
+      <p>A prototype in interactive storytelling, built with anime.js v4. Figures come from the reporting below as of 22 October 2026. Counts are as reported, not independently verified. Where a party's claim conflicts with records, both appear and are colour-coded by who said it.</p>
+      <p>The form borrows from investigative platforms by Forensic Architecture, Bellingcat and SITU Research, which tie every mark to a source.</p>
+    </div>
+    <div class="sources" id="sources"></div>
+  </section>
+</main>
+
+<nav class="rail" aria-label="Scenes">
+  <div class="items" id="rail"><div class="bar" id="rail-bar"></div></div>
+  <div class="arrows"><button id="prev" aria-label="Previous">←</button><button id="next" aria-label="Next">→</button></div>
+</nav>
+<div id="tip" role="tooltip"></div>
+
+<script type="module">
+import { animate, createTimeline, createTimer, createDraggable, stagger, utils, svg, splitText, scrambleText, engine } from 'animejs';
+
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (REDUCED) engine.speed = 25;               // keep every end state, skip the journey
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const css = getComputedStyle(document.documentElement);
+const C = Object.fromEntries(['ink', 'ink-2', 'ink-3', 'ink-4', 'state', 'move', 'bg'].map(k => [k, css.getPropertyValue('--' + k).trim()]));
+const fmtIN = n => Math.round(n).toLocaleString('en-IN');
+
+// seeded random so layouts are stable between visits
+const rng = (seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647)(7);
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+// sunflower packing: n points, spacing s, around cx/cy
+const phyllo = (n, cx, cy, s) => Array.from({ length: n }, (_, i) => {
+  const r = s * Math.sqrt(i + 0.5), t = i * 2.39996;
+  return [cx + r * Math.cos(t), cy + r * Math.sin(t)];
+});
+
+function hiDPI(cv) {
+  const ctx = cv.getContext('2d');
+  return { ctx, fit() {
+    const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+    cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+    return r;
+  } };
+}
+
+// tooltip
+const tip = $('#tip');
+function showTip(e, title, body) {
+  tip.innerHTML = `<b>${title}</b>${body}`;
+  const x = Math.min(e.clientX + 14, innerWidth - 280), y = e.clientY + 16;
+  utils.set(tip, { left: x + 'px', top: y + 'px' });
+  animate(tip, { opacity: 1, duration: 150, ease: 'out(2)' });
+}
+const hideTip = () => animate(tip, { opacity: 0, duration: 150 });
+
+// shared copy reveal: words rise out of a clip, then the rest fades up
+function revealCopy(el) {
+  const h = $('h1, h2', el);
+  h._split ??= splitText(h, { words: { wrap: 'clip' } });
+  const rest = $$('.copy > :not(h1):not(h2)', el);
+  const kicker = $('.kicker', el);
+  utils.set(h._split.words, { y: '110%' });
+  utils.set(rest, { opacity: 0, y: 10 });
+  kicker._text ??= kicker.innerHTML;
+  return createTimeline({ defaults: { ease: 'outExpo', duration: 900 } })
+    .add(h._split.words, { y: ['110%', '0%'], delay: stagger(45) })
+    .add(rest, { opacity: [0, 1], y: [10, 0], delay: stagger(70) }, '<<+=150');
+}
+
+/* ───────────────────────── 00 COVER ───────────────────────── */
+const cover = (() => {
+  const el = $('#s-cover'), cv = $('#cover-cv'), { ctx, fit } = hiDPI(cv);
+  let pts = [], W = 0, H = 0, timer;
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = C.ink;
+    for (const p of pts) {
+      const k = REDUCED ? 0 : t * 0.0004;
+      const x = p.x + Math.cos(p.ph + k * p.v) * p.amp, y = p.y + Math.sin(p.ph * 1.3 + k * p.v) * p.amp;
+      ctx.globalAlpha = p.a;
+      ctx.beginPath(); ctx.ellipse(x, y, 2.6, 1.4, p.ph + k * p.v, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  return { el,
+    enter() {
+      const r = fit(); W = r.width; H = r.height;
+      // one mark becomes many: the joke catching
+      pts = Array.from({ length: 420 }, () => ({ x: W * .5, y: H * .5, a: 0, ph: rng() * 6.28, v: .5 + rng(), amp: 6 + rng() * 22 }));
+      const targets = phyllo(pts.length, W * .5, H * .5, Math.min(W, H) * 0.021);
+      shuffle(targets);
+      animate(pts, { x: (_, i) => targets[i][0], y: (_, i) => targets[i][1], a: () => .25 + rng() * .6,
+        duration: () => utils.random(1400, 2600), delay: stagger([300, 2600], { ease: 'in(3)' }), ease: 'outExpo' });
+      timer = createTimer({ onUpdate: s => draw(s.currentTime) });
+      return revealCopy(el);
+    },
+    leave() { timer?.pause(); },
+  };
+})();
+
+/* ───────────────────────── 01 SWARM ───────────────────────── */
+const swarm = (() => {
+  const el = $('#s-swarm'), cv = $('#sw-cv'), stage = $('#sw-stage'), { ctx, fit } = hiDPI(cv);
+  const N = 1500, FOLLOWERS = 15_000_000;
+  let pts = [], W = 0, H = 0, timer, labels = [];
+  const CAPS = {
+    claim: { split: .49, tint: C.state, left: ['India', '51%'], right: ['Pakistan', '49% (claimed)'],
+      cap: `<b>23 May.</b> Union Minister Sukanta Majumdar claimed 49% of the followers were from Pakistan.<span class="src">The Telegraph / PTI</span>` },
+    data: { split: .06, tint: C.move, left: ['India', '94%+'], right: ['Elsewhere', '≤ 6%'], tintLeft: true,
+      cap: `<b>24–25 May.</b> Dipke published the account's audience analytics: over 94% in India. Independent fact-checkers backed it.<span class="src">Hindustan Times · Deccan Herald</span>` },
+  };
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    const k = REDUCED ? 0 : t * 0.0006;
+    for (const p of pts) {
+      if (p.a <= 0) continue;
+      const x = p.x + Math.cos(p.ph + k * p.v) * 1.6, y = p.y + Math.sin(p.ph + k * p.v * 1.4) * 1.6;
+      const rot = p.ph + k * p.v;
+      ctx.globalAlpha = p.a * (1 - p.c);
+      ctx.fillStyle = C.ink;
+      ctx.beginPath(); ctx.ellipse(x, y, 2.4, 1.3, rot, 0, Math.PI * 2); ctx.fill();
+      if (p.c > 0) {
+        ctx.globalAlpha = p.a * p.c; ctx.fillStyle = p.tint;
+        ctx.beginPath(); ctx.ellipse(x, y, 2.4, 1.3, rot, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  function setLabels(list) {
+    labels.forEach(l => l.remove());
+    labels = list.map(([x, y, a, b]) => {
+      const d = document.createElement('div');
+      d.className = 'label'; d.innerHTML = `${a}<small>${b}</small>`;
+      d.style.left = x + 'px'; d.style.top = y + 'px';
+      stage.append(d); return d;
+    });
+    animate(labels, { opacity: [0, 1], y: [8, 0], delay: stagger(120, { start: 700 }), duration: 600, ease: 'outExpo' });
+  }
+  function group(mode) {
+    const m = CAPS[mode];
+    $$('.chip[data-mode]', el).forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === mode));
+    $('#sw-cap').innerHTML = m.cap;
+    animate('#sw-cap', { opacity: [0, 1], duration: 500 });
+    const nR = Math.round(N * m.split), nL = N - nR;
+    const s = Math.min(W, H) * 0.0108;
+    const rL = s * Math.sqrt(nL), rR = s * Math.sqrt(nR);
+    const gap = Math.max(40, W * .06);
+    const total = rL * 2 + gap + rR * 2;
+    const cxL = (W - total) / 2 + rL, cxR = cxL + rL + gap + rR, cy = H * .48;
+    const targets = [...phyllo(nL, cxL, cy, s).map(p => [...p, 0]), ...phyllo(nR, cxR, cy, s).map(p => [...p, 1])];
+    const order = shuffle([...pts.keys()]);
+    order.forEach((pi, k) => { pts[pi]._t = targets[k]; pts[pi].tint = m.tint; });
+    animate(pts, {
+      x: p => p._t[0], y: p => p._t[1],
+      c: p => (m.tintLeft ? p._t[2] === 0 : p._t[2] === 1) ? 1 : 0,
+      duration: () => utils.random(900, 1500), delay: stagger([0, 700], { from: 'random' }), ease: 'inOutQuart',
+    });
+    setLabels([[cxL, cy + rL + 14, ...m.left], [cxR, cy + rR + 14, ...m.right]]);
+  }
+  $$('.chip[data-mode]', el).forEach(b => b.onclick = () => group(b.dataset.mode));
+  return { el,
+    enter() {
+      const r = fit(); W = r.width; H = r.height;
+      labels.forEach(l => l.remove()); labels = [];
+      $('#sw-cap').innerHTML = '';
+      $$('.chip[data-mode]', el).forEach(b => b.setAttribute('aria-pressed', 'false'));
+      const scatter = Array.from({ length: N }, () => {
+        const r = Math.sqrt(rng()), t = rng() * Math.PI * 2, wob = 1 + .12 * Math.sin(t * 3 + 1);
+        return [W * .5 + Math.cos(t) * r * W * .44 * wob, H * .5 + Math.sin(t) * r * H * .44 * wob];
+      });
+      pts = Array.from({ length: N }, (_, i) => ({ x: W * .5, y: H * .5, a: 0, c: 0, tint: C.state, ph: rng() * 6.28, v: .4 + rng() }));
+      timer = createTimer({ onUpdate: s => draw(s.currentTime) });
+      const counter = { v: 0 };
+      const dur = 3200;
+      animate(pts, { x: (_, i) => scatter[i][0], y: (_, i) => scatter[i][1], a: [0, 1],
+        duration: 1400, delay: stagger([400, 400 + dur], { ease: 'in(2)' }), ease: 'outQuart' });
+      createTimeline()
+        .add(counter, { v: FOLLOWERS, duration: dur + 1000, ease: 'in(2)', modifier: utils.round(0),
+          onRender: () => {
+            $('#sw-count').textContent = fmtIN(counter.v);
+            $('#sw-date').textContent = `${16 + Math.floor((counter.v / FOLLOWERS) * 6)} May 2026${counter.v >= FOLLOWERS ? ' · 1.5 crore' : ''}`;
+          } }, 400);
+      return revealCopy(el);
+    },
+    leave() { timer?.pause(); labels.forEach(l => l.remove()); },
+  };
+})();
+
+/* ───────────────────────── 02 CALENDAR ───────────────────────── */
+const muted = (() => {
+  const el = $('#s-muted'), cal = $('#cal'), months = $('#cal-months');
+  const day0 = Date.UTC(2026, 4, 15), DAY = 864e5, NDAYS = 160;           // 15 May → 21 Oct
+  const key = t => new Date(t).toISOString().slice(5, 10);
+  const range = (a, b) => { const out = []; for (let t = Date.UTC(2026, +a.slice(0, 2) - 1, +a.slice(3)); t <= Date.UTC(2026, +b.slice(0, 2) - 1, +b.slice(3)); t += DAY) out.push(key(t)); return out; };
+  const LAYERS = {
+    street: { color: C.move, days: ['06-06', ...range('06-20', '07-25'), '10-02', '10-08', ...range('10-10', '10-13')], unit: 'days of documented street action',
+      cap: `First protest on 6 June; an indefinite sit-in at Jantar Mantar from 20 June until the minister resigned on 25 July; then the voter-roll protests of October. The September "Jail Bharo" protests are left out because sources give no dates.<span class="src">Wikipedia · Al Jazeera · Amnesty</span>` },
+    muted: { color: C.state, days: range('05-21', '07-07'), unit: 'days the X account was withheld in India',
+      cap: `Blocked under Section 69A of the IT Act by MeitY, reportedly on an Intelligence Bureau flag. On 7 July the Solicitor General told the Delhi High Court: <b>“Now the examination is over.”</b><span class="src">MediaNama · LawBeat · India.com</span>` },
+    offline: { color: C.state, days: ['07-20', '07-23', '10-02', '10-10', '10-11'], unit: 'days of mobile internet cut around protests',
+      cap: `On 20 July and 2 October no suspension order was made public. Only 23 July had a published Home Ministry order: 09:30–16:00, within 1.5 km of Jantar Mantar.<span class="src">IFF · Internet Society Pulse · Amnesty</span>` },
+    custody: { color: C.state, days: range('10-13', '10-21'), unit: 'days, Saurav Das & Ashutosh Ranka',
+      cap: `Arrested at Jantar Mantar on 13 October and remanded to judicial custody. Released on 21 October after undertaking not to call protests at Jantar Mantar.<span class="src">Amnesty · Wikipedia</span>` },
+  };
+  const EVENTS = {
+    '05-15': 'The Chief Justice’s “cockroaches” remark', '05-16': 'The CJP launches online, as satire',
+    '05-21': 'X account withheld in India (Sec. 69A)', '05-23': 'Minister claims 49% of followers are in Pakistan',
+    '06-06': 'First street protest at Jantar Mantar; ~5,000 police deployed', '06-20': 'Indefinite sit-in begins',
+    '06-28': 'Sonam Wangchuk begins a hunger strike', '07-07': 'Delhi High Court: the account is restored',
+    '07-20': 'Sansad Chalo march; internet cut; 118 police and ~60 protesters reported injured',
+    '07-22': '20 CRPF companies airlifted in; 16 metro stations shut',
+    '07-23': 'Home Ministry suspends internet within 1.5 km of Jantar Mantar', '07-25': 'Dharmendra Pradhan resigns; protests called off',
+    '10-02': 'Voter-roll protests begin; 500+ reportedly held in Delhi; internet cut near Connaught Place',
+    '10-08': 'CJP claims “at least 10,000” detained nationwide (unverified)', '10-10': 'Mumbai police detain 600+; mobile internet restricted',
+    '10-12': 'Jantar Mantar struck off the permitted-protest list; 100+ detained in Bengaluru',
+    '10-13': 'Das and Ranka arrested at Jantar Mantar', '10-21': 'Das and Ranka released after 7 days in custody',
+  };
+  const startDow = (new Date(day0).getUTCDay() + 6) % 7;                   // Mon = 0
+  const weeks = Math.floor((NDAYS - 1 + startDow) / 7) + 1;
+  cal.style.setProperty('--weeks', weeks); months.style.setProperty('--weeks', weeks);
+  months.innerHTML = '<span></span>' + Array.from({ length: weeks }, () => '<span></span>').join('');
+  ['M', '', 'W', '', 'F', '', 'S'].forEach((d, i) => cal.insertAdjacentHTML('beforeend', `<span class="dow" style="grid-row:${i + 1};grid-column:1">${d}</span>`));
+  const cells = [];
+  for (let i = 0; i < NDAYS; i++) {
+    const t = day0 + i * DAY, d = new Date(t), dow = (d.getUTCDay() + 6) % 7, w = Math.floor((i + startDow) / 7);
+    const k = key(t), c = document.createElement('div');
+    c.className = 'cell' + (EVENTS[k] ? ' ev' : ''); c.dataset.k = k;
+    c.style.gridRow = dow + 1; c.style.gridColumn = w + 2;
+    cal.append(c); cells.push(c);
+    if (d.getUTCDate() === 1 || i === 0) months.children[w + 1].textContent = d.toLocaleString('en', { month: 'short', timeZone: 'UTC' });
+    const label = d.toLocaleString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+    c.onpointerenter = e => EVENTS[k] && showTip(e, label, EVENTS[k]);
+    c.onpointerleave = hideTip;
+  }
+  let active = null;
+  function show(name) {
+    active = name;
+    const L = LAYERS[name], on = new Set(L.days);
+    $$('.chip[data-layer]', el).forEach(b => b.setAttribute('aria-pressed', b.dataset.layer === name));
+    const hit = cells.filter(c => on.has(c.dataset.k)), miss = cells.filter(c => !on.has(c.dataset.k));
+    animate(miss, { backgroundColor: C['ink-4'], scale: 1, duration: 300, ease: 'out(2)' });
+    animate(hit, { backgroundColor: L.color, scale: [{ from: .3, to: 1.15, duration: 260 }, { to: 1, duration: 300 }],
+      delay: stagger(Math.min(18, 600 / hit.length)), ease: 'outQuad' });
+    const n = { v: +$('#cal-n').textContent || 0 };
+    animate(n, { v: L.days.length, duration: 700, ease: 'outExpo', modifier: utils.round(0), onRender: () => $('#cal-n').textContent = n.v });
+    $('#cal-unit').textContent = L.unit;
+    $('#cal-cap').innerHTML = L.cap;
+    animate('#cal-cap', { opacity: [0, 1], y: [6, 0], duration: 500, ease: 'outExpo' });
+  }
+  $$('.chip[data-layer]', el).forEach(b => b.onclick = () => show(b.dataset.layer));
+  return { el,
+    enter() {
+      utils.set(cells, { scale: 0, backgroundColor: C['ink-4'] });
+      animate(cells, { scale: [0, 1], duration: 500, ease: 'outBack(1.4)', delay: stagger(6, { start: 300 }) });
+      setTimeout(() => show(active || 'muted'), REDUCED ? 0 : 1500);
+      return revealCopy(el);
+    },
+  };
+})();
+
+/* ───────────────────────── 03 BLACKOUT ───────────────────────── */
+const blackout = (() => {
+  const el = $('#s-blackout'), sv = $('#bo-svg'), sq = $('#bo-sq'), inner = $('#bo-inner'), handle = $('#bo-handle');
+  const HOURS = 120, CX = 300, CY = 182, R = 160;
+  const NS = 'http://www.w3.org/2000/svg';
+  const phones = phyllo(300, CX, CY, 8.6).filter(([x, y]) => Math.hypot(x - CX, y - CY) < R - 8);
+  sv.innerHTML = `
+    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${C['ink-3']}" stroke-dasharray="3 5"/>
+    <text x="${CX + R * .72}" y="${CY - R * .74}" font-family="ui-monospace,Menlo" font-size="10.5" fill="${C['ink-2']}" letter-spacing=".6">1.5 KM</text>
+    <g id="bo-phones">${phones.map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${C.ink}"/>`).join('')}</g>
+    <circle cx="${CX}" cy="${CY}" r="6" fill="${C.bg}" stroke="${C.state}" stroke-width="2"/>
+    <text x="${CX + 12}" y="${CY + 4}" font-family="ui-monospace,Menlo" font-size="11" fill="${C.ink}" letter-spacing=".6" stroke="${C.bg}" stroke-width="5" paint-order="stroke">JANTAR MANTAR</text>
+    <text id="bo-stamp" x="${CX}" y="${CY + R + 28}" text-anchor="middle" font-family="ui-monospace,Menlo" font-size="13" fill="${C.state}" letter-spacing="2" opacity="0">NO SIGNAL · NO PUBLISHED ORDER</text>`;
+  const dots = $$('#bo-phones circle', sv);
+  sq.innerHTML = '<i></i>'.repeat(18);
+  const squares = $$('i', sq);
+  // ticks + red bands for cut windows
+  const CUTS = [[10, 18, false], [81.5, 88, true]];
+  ['MON 20', 'TUE 21', 'WED 22', 'THU 23', 'FRI 24'].forEach((d, i) => inner.insertAdjacentHTML('afterbegin', `<span class="tick" style="left:${i * 20}%">${d} JUL</span>`));
+  CUTS.forEach(([a, b]) => inner.insertAdjacentHTML('afterbegin', `<span class="cut" style="left:${a / HOURS * 100}%;width:${(b - a) / HOURS * 100}%"></span>`));
+  const METRO = [5, 5, 16, 17, 18];
+  const EV = [
+    [0, `<b>20 July.</b> Section 163 prohibitory orders across New Delhi district ahead of the march on Parliament.`, 'Wikipedia'],
+    [10, `<b>~10:00.</b> Protesters report mobile internet blocked near Parliament. No suspension order is published by any authority.`, 'IFF · The Week'],
+    [14, `<b>Later.</b> Clashes. Police say 118 personnel were hurt; RML hospital logs 65 medico-legal cases by 7 pm. Five metro stations shut.`, 'Wikipedia · Delhi Police'],
+    [18, `<b>~18:00.</b> Telecom officials say services are restored. Which authority ordered the cut is still unknown.`, 'IFF · The Wire'],
+    [24, `<b>21 July.</b> The Delhi High Court orders Sonam Wangchuk moved to hospital in Gurugram. Opposition leaders are briefly detained.`, 'Wikipedia'],
+    [48, `<b>22 July.</b> 20 CRPF companies airlifted from Kolkata on Home Ministry orders. DMRC shuts 16 stations.`, 'Wikipedia'],
+    [81.5, `<b>23 July, 09:30–16:00.</b> Home Ministry order: mobile internet suspended within 1.5 km of Jantar Mantar. 17 stations shut.`, 'Internet Society Pulse'],
+    [88, `<b>16:00.</b> The order lapses, but reports of crippled connectivity around the site continue.`, 'The Wire'],
+    [96, `<b>24 July.</b> 18 stations shut. The next day the Education Minister resigns.`, 'Wikipedia'],
+  ];
+  const DAYS = ['MON 20', 'TUE 21', 'WED 22', 'THU 23', 'FRI 24'];
+  let isCut = false, evIdx = -1, metroN = -1, clock = { h: 0 }, auto, drag;
+  const pad = n => String(n).padStart(2, '0');
+  function render(h, fromDrag) {
+    h = utils.clamp(h, 0, HOURS - 0.01);
+    const d = Math.floor(h / 24), hh = Math.floor(h % 24), mm = Math.floor((h % 1) * 60 / 10) * 10;
+    $('#bo-time').textContent = `${DAYS[d]} JUL · ${pad(hh)}:${pad(mm)}`;
+    if (!fromDrag && drag) drag.setX(h / HOURS * inner.clientWidth, true);   // inner = track minus the handle width
+    const cut = CUTS.some(([a, b]) => h >= a && h < b);
+    if (cut !== isCut) {
+      isCut = cut;
+      // the cut ripples out from the site; restoration ripples back in
+      animate(dots, { fill: cut ? C['ink-3'] : C.ink, r: cut ? 1.6 : 2.6, duration: 380, ease: 'out(2)',
+        delay: stagger(2.2, { reversed: !cut }) });
+      animate('#bo-stamp', cut
+        ? { opacity: 1, innerHTML: scrambleText({ text: h > 80 ? 'NO SIGNAL · HOME MINISTRY ORDER' : 'NO SIGNAL · NO PUBLISHED ORDER', chars: 'A-Z' }) }
+        : { opacity: 0, duration: 250 });
+    }
+    const ei = EV.findLastIndex(([t]) => h >= t);
+    if (ei !== evIdx) {
+      evIdx = ei; const [, txt, src] = EV[ei];
+      $('#bo-cap').innerHTML = `${txt}<span class="src">${src}</span>`;
+      animate('#bo-cap', { opacity: [0, 1], y: [6, 0], duration: 450, ease: 'outExpo' });
+    }
+    const m = h < 10 ? 0 : METRO[d];
+    $('#bo-metro').textContent = `METRO STATIONS SHUT · ${m}${d === 1 ? ' (as of 20 Jul)' : ''}`;
+    if (m !== metroN) {
+      metroN = m;
+      animate(squares, { backgroundColor: (_, i) => i < m ? C.state : C['ink-4'], scale: (_, i) => i < m ? [1.5, 1] : 1,
+        delay: stagger(25), duration: 350, ease: 'outQuad' });
+    }
+  }
+  function play(from = 0) {
+    auto?.pause();
+    clock.h = from;
+    auto = animate(clock, { h: HOURS - 0.01, duration: (HOURS - from) * 100, ease: 'linear', onUpdate: () => render(clock.h) });
+  }
+  return { el,
+    enter() {
+      isCut = false; evIdx = -1; metroN = -1;
+      utils.set(dots, { fill: C.ink, r: 2.6 });
+      animate(dots, { opacity: [0, 1], delay: stagger(3), duration: 400 });
+      if (!drag) {
+        drag = createDraggable(handle, { container: '#bo-track', y: false, containerFriction: 1,
+          cursor: { onHover: 'grab', onGrab: 'grabbing' },
+          onGrab: () => auto?.pause(),
+          onDrag: d => render(d.progressX * HOURS, true),
+          onRelease: d => render(d.progressX * HOURS, true) });
+        handle.onkeydown = e => {
+          const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (!step) return; e.stopPropagation(); auto?.pause();
+          clock.h = utils.clamp(drag.progressX * HOURS + step * 2, 0, HOURS - .01); render(clock.h);
+        };
+      }
+      drag.setX(0, true);
+      render(0);
+      setTimeout(() => play(0), REDUCED ? 0 : 1200);
+      return revealCopy(el);
+    },
+    leave() { auto?.pause(); },
+  };
+})();
+
+/* ───────────────────────── 04 APPARATUS ───────────────────────── */
+const apparatus = (() => {
+  const el = $('#s-apparatus'), sv = $('#ap-svg'), card = $('#ap-card');
+  const N = [
+    { id: 'Delhi Police', k: 'street', acts: [['20 Jul', 'Section 163 orders; baton charges and tear gas'], ['12 Oct', 'Strikes Jantar Mantar off the list of permitted protest sites'], ['13 Oct', 'Arrests CJP leaders Das and Ranka at Jantar Mantar']], src: 'Wikipedia · Amnesty' },
+    { id: 'Rapid Action Force', k: 'street', acts: [['20 Jul', 'A station diary entry records two rounds of pellets fired'], ['20 Jul', 'Police publicly call pellet reports “completely false and misleading”']], src: 'Wikipedia (GD entry, Parliament St PS)' },
+    { id: 'CRPF', k: 'street', acts: [['22 Jul', '20 companies airlifted from Kolkata to Delhi on Home Ministry orders']], src: 'Wikipedia' },
+    { id: 'Delhi Metro (DMRC)', k: 'street', acts: [['20–24 Jul', 'Shuts 5, then 16, 17, 18 central stations'], ['2 Oct', 'At least 11 stations near Jantar Mantar closed']], src: 'Wikipedia · Al Jazeera' },
+    { id: 'Mumbai Police', k: 'street', acts: [['Jul–Aug', 'FIRs against 400 people for protesting without permission'], ['10 Oct', 'Detains more than 600 people']], src: 'Wikipedia · Amnesty' },
+    { id: 'Bengaluru Police', k: 'street', acts: [['12 Oct', 'Detains at least 100 people marching to the state electoral office']], src: 'Amnesty' },
+    { id: 'Home Ministry', k: 'digital', acts: [['22 Jul', 'Orders CRPF deployment to Delhi'], ['23 Jul', 'Orders mobile internet suspended within 1.5 km of Jantar Mantar, 09:30–16:00']], src: 'Wikipedia · Internet Society Pulse' },
+    { id: 'MeitY', k: 'digital', acts: [['21 May', 'Withholds the CJP’s X account in India under Sec. 69A, IT Act'], ['7 Jul', 'Tells court it has “no difficulty” with unblocking once exams end']], src: 'MediaNama · LawBeat' },
+    { id: 'Intelligence Bureau', k: 'digital', acts: [['May', 'Reportedly flags the X account over “inflammatory content”']], src: 'India.com · Indian Express (reported)' },
+    { id: 'Telecom operators', k: 'digital', acts: [['20 Jul', 'Confirm a government directive to cut mobile data; no order is published'], ['2 Oct', 'Mobile internet off near Connaught Place before the protest starts']], src: 'IFF · The Wire' },
+    { id: 'Delhi High Court', k: 'courts', acts: [['7 Jul', 'Orders the X account restored'], ['18–21 Jul', 'Orders hunger-striker Sonam Wangchuk removed from the site, then moved to hospital']], src: 'MediaNama · Wikipedia' },
+    { id: 'Election Commission', k: 'politics', acts: [['2025–26', 'Voter-roll revision removes 130M+ names'], ['10 months', 'Two commissioners raise concerns at least 14 times']], src: 'Al Jazeera · Indian Express' },
+    { id: 'Union ministers', k: 'politics', acts: [['23 May', 'Sukanta Majumdar claims 49% of followers are Pakistani'], ['25 Jul', 'Dharmendra Pradhan resigns as Education Minister']], src: 'The Telegraph · Wikipedia' },
+  ];
+  const W = 720, H = 560, CX = W / 2, CY = H / 2, R = 200;
+  const NS = 'http://www.w3.org/2000/svg';
+  const pos = N.map((_, i) => { const a = -Math.PI / 2 + i / N.length * Math.PI * 2; return [CX + Math.cos(a) * R, CY + Math.sin(a) * R, a]; });
+  sv.innerHTML = `<g id="ap-edges">${pos.map(([x, y], i) => `<line x1="${CX}" y1="${CY}" x2="${x}" y2="${y}" stroke="${N[i].k === 'courts' ? C['ink-2'] : C.state}" stroke-width="1.2" ${N[i].k === 'courts' ? 'stroke-dasharray="3 4"' : ''}/>`).join('')}</g>
+    <g id="ap-nodes">${pos.map(([x, y, a], i) => {
+      const right = Math.cos(a) > 0.15, left = Math.cos(a) < -0.15;
+      const anchor = right ? 'start' : left ? 'end' : 'middle';
+      const lx = x + Math.cos(a) * 16, ly = y + Math.sin(a) * 16 + 4;
+      return `<g class="node" data-i="${i}" tabindex="0" role="button" aria-label="${N[i].id}">
+        <circle cx="${x}" cy="${y}" r="14" fill="transparent"/>
+        <circle class="dot" cx="${x}" cy="${y}" r="6.5" fill="${N[i].k === 'courts' ? C.bg : C.state}" stroke="${N[i].k === 'courts' ? C.ink : 'none'}" stroke-width="1.5"/>
+        <text x="${lx}" y="${ly}" text-anchor="${anchor}">${N[i].id}</text></g>`; }).join('')}</g>
+    <g id="ap-core"><circle cx="${CX}" cy="${CY}" r="34" fill="${C.move}"/><text x="${CX}" y="${CY + 4}" text-anchor="middle" font-family="ui-monospace,Menlo" font-size="12" font-weight="600" fill="#fff" letter-spacing="1">CJP</text>
+    <circle id="ap-pulse" cx="${CX}" cy="${CY}" r="34" fill="none" stroke="${C.move}"/></g>`;
+  const lines = $$('#ap-edges line', sv), nodes = $$('.node', sv);
+  let drawables = svg.createDrawable(lines), pulse, sel = -1;
+  function open(i) {
+    sel = i; const n = N[i];
+    card.innerHTML = `<div class="kicker">${n.k}</div><h3>${n.id}</h3><ul>${n.acts.map(([d, t]) => `<li><em>${d}</em>${t}</li>`).join('')}</ul><div class="src">Source · ${n.src}</div>`;
+    animate($$('li, h3, .src, .kicker', card), { opacity: [0, 1], x: [-8, 0], delay: stagger(60), duration: 500, ease: 'outExpo' });
+    animate($$('.dot', sv), { r: (_, j) => j === i ? 10 : 6.5, duration: 700, ease: 'outElastic(1, .5)' });
+    // a signal runs along the chosen edge, from the state to the protester
+    animate(drawables[i], { draw: ['1 1', '0 1'], duration: 600, ease: 'inOutQuad' });
+    animate(lines, { strokeWidth: (_, j) => j === i ? 2.4 : 1.2, duration: 300 });
+  }
+  function filter(kind) {
+    $$('.chip[data-kind]', el).forEach(b => b.setAttribute('aria-pressed', b.dataset.kind === kind));
+    const on = i => kind === 'all' || N[i].k === kind;
+    animate(nodes, { opacity: (_, i) => on(i) ? 1 : .15, duration: 400, ease: 'out(2)' });
+    animate(lines, { opacity: (_, i) => on(i) ? 1 : .08, duration: 400, ease: 'out(2)' });
+    const first = N.findIndex((_, i) => on(i) && kind !== 'all');
+    if (first >= 0) open(first);
+  }
+  nodes.forEach((g, i) => {
+    g.onclick = () => open(i);
+    g.onkeydown = e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), open(i));
+  });
+  $$('.chip[data-kind]', el).forEach(b => b.onclick = () => filter(b.dataset.kind));
+  return { el,
+    enter() {
+      utils.set(nodes, { opacity: 0 });
+      utils.set(lines, { opacity: 1 });
+      const tl = createTimeline({ defaults: { ease: 'outExpo' } })
+        .add('#ap-core', { scale: [0, 1], duration: 700, ease: 'outBack(1.6)' }, 200)
+        .add(drawables, { draw: ['0 0', '0 1'], duration: 900, delay: stagger(60) }, '<<+=200')
+        .add(nodes, { opacity: [0, 1], duration: 500, delay: stagger(60) }, '<<+=400');
+      $('#ap-core').style.transformBox = 'fill-box'; $('#ap-core').style.transformOrigin = 'center';
+      pulse?.pause();
+      pulse = animate('#ap-pulse', { r: [34, 80], opacity: [.6, 0], duration: 2200, loop: true, ease: 'out(2)' });
+      card.innerHTML = '<div class="note">Select a node. Solid red lines show restrictions; dashed lines are courts, which both restricted and restored.</div>';
+      filter('all');
+      setTimeout(() => sel < 0 && open(7), REDUCED ? 0 : 2400);
+      return revealCopy(el);
+    },
+    leave() { pulse?.pause(); },
+  };
+})();
+
+/* ───────────────────────── 05 WHO COUNTS ───────────────────────── */
+const counts = (() => {
+  const el = $('#s-counts'), ledger = $('#ledger');
+  const TABS = {
+    injured: [
+      { who: 'State', cls: 'state', n: 118, what: 'Police personnel injured', q: 'Delhi Police figure. Also: 15–20 government vehicles damaged.' },
+      { who: 'Records', cls: 'rec', n: 65, what: 'Medico-legal cases at RML hospital by 7 pm', q: 'Hospital and police sources put protesters injured at ~60.' },
+      { who: 'Movement', cls: 'move', n: 150, what: 'Protesters hospitalised', q: 'CJP leaders’ figure, about 150.' },
+    ],
+    detained: [
+      { who: 'State', cls: 'state', n: 0, what: 'Protesters detained during the march', q: '“No protesters were detained during the march.” Delhi Police.' },
+      { who: 'Records', cls: 'rec', n: null, what: 'No public detention record', q: 'No independent count has been published.' },
+      { who: 'Movement', cls: 'move', n: 70, what: 'Detained, per CJP leaders', q: 'About 70.' },
+    ],
+    pellets: [
+      { who: 'State', cls: 'state', n: 0, what: 'Pellets fired, per police statement', q: '“Completely false and misleading.”' },
+      { who: 'Records', cls: 'rec', n: 3, what: '2 rounds logged by the RAF + 1 pellet wound at Safdarjung', q: 'Station diary at Parliament Street PS; hospital medical report.' },
+      { who: 'Movement', cls: 'move', n: null, what: 'One protester alleged live fire', q: 'RML noted gunshot trauma to her ear. Police said a blunt weapon.' },
+    ],
+  };
+  ledger.innerHTML = [0, 1, 2].map(i => `<div class="col"><div class="who"></div><div class="big">0</div><div class="what"></div><div class="units"></div><div class="q"></div></div>`).join('');
+  const cols = $$('.col', ledger);
+  function show(tab) {
+    $$('.chip[data-tab]', el).forEach(b => b.setAttribute('aria-pressed', b.dataset.tab === tab));
+    TABS[tab].forEach((d, i) => {
+      const c = cols[i], units = $('.units', c), big = $('.big', c);
+      $('.who', c).innerHTML = `<span class="sw ${d.cls}"></span>${d.who}`;
+      $('.what', c).textContent = d.what;
+      $('.q', c).textContent = d.q;
+      units.innerHTML = d.n === null ? '<span class="u zero">no figure</span>' : d.n === 0 ? '<span class="u zero">zero</span>' : `<span class="u ${d.cls}"></span>`.repeat(d.n);
+      const us = $$('.u', units);
+      animate(us, { scale: [0, 1], opacity: [0, 1], duration: 400, ease: 'outBack(2)',
+        delay: stagger(Math.min(8, 900 / us.length), { start: 150 + i * 120 }) });
+      const ctr = { v: 0 };
+      if (d.n === null) big.textContent = '—';
+      else animate(ctr, { v: d.n, duration: 1100, delay: 150 + i * 120, ease: 'outExpo', modifier: utils.round(0), onRender: () => big.textContent = (d.cls === 'move' && d.n ? '~' : '') + ctr.v });
+      animate($$('.what, .q', c), { opacity: [0, 1], duration: 500, delay: 300 + i * 120 });
+    });
+  }
+  $$('.chip[data-tab]', el).forEach(b => b.onclick = () => show(b.dataset.tab));
+  return { el, enter() { const tl = revealCopy(el); show('injured'); return tl; } };
+})();
+
+/* ───────────────────────── 06 DETAINED ───────────────────────── */
+const detained = (() => {
+  const el = $('#s-detained'), grid = $('#det-grid'), btn = $('#det-claim');
+  const REPORTED = [
+    { city: 'Delhi · 2 Oct', n: 50, label: '500+ reportedly held', src: 'Al Jazeera (unconfirmed)' },
+    { city: 'Mumbai · 10 Oct', n: 60, label: '600+ detained', src: 'Amnesty' },
+    { city: 'Bengaluru · 12 Oct', n: 10, label: '100+ detained', src: 'Amnesty' },
+  ];
+  const CLAIM = 1000;                               // "at least 10,000" ÷ 10
+  const reportedN = REPORTED.reduce((s, r) => s + r.n, 0);
+  grid.innerHTML = '<i></i>'.repeat(CLAIM);
+  const dots = $$('i', grid);
+  const cityOf = []; REPORTED.forEach((r, ci) => { for (let k = 0; k < r.n; k++) cityOf.push(ci); });
+  dots.forEach((d, i) => {
+    d.onpointerenter = e => {
+      if (i < reportedN) { const r = REPORTED[cityOf[i]]; showTip(e, r.city, `${r.label}. ${r.src}.`); }
+      else if (d.classList.contains('move')) showTip(e, 'CJP claim · 8 Oct', '“At least 10,000” detained nationwide. Not independently verified.');
+    };
+    d.onpointerleave = hideTip;
+  });
+  $('#det-legend').innerHTML = `<span><span class="sw rec"></span>Reported by press / Amnesty · ${fmtIN(reportedN * 10)}+</span><span id="det-lg-claim" style="opacity:.25"><span class="sw move"></span>Claimed by the CJP · 10,000+</span>`;
+  let claimed = false;
+  function claim(on) {
+    claimed = on; btn.setAttribute('aria-pressed', on);
+    const rest = dots.slice(reportedN);
+    if (on) {
+      rest.forEach(d => d.classList.add('move'));
+      animate(rest, { scale: [{ from: 0, to: 1.4, duration: 220 }, { to: 1, duration: 260 }], delay: stagger(16, { grid: [40, (CLAIM - reportedN) / 40], from: 0 }), ease: 'outQuad' });
+      $('#det-cap').innerHTML = `On 8 October the party's spokesperson said <b>at least 10,000</b> people had been detained nationwide. Al Jazeera could not verify it. Separately, Amnesty reported that police “detained thousands in Delhi” over 10–11 October.<span class="src">Al Jazeera · Amnesty</span>`;
+    } else {
+      animate(rest, { scale: 1, duration: 200 });
+      rest.forEach(d => d.classList.remove('move'));
+      $('#det-cap').innerHTML = `Three city counts the press and Amnesty could document add up to about 1,200. The true October total is unknown; Al Jazeera put it above 1,000.<span class="src">Al Jazeera · Amnesty · Wikipedia</span>`;
+    }
+    animate('#det-lg-claim', { opacity: on ? 1 : .25, duration: 300 });
+    animate('#det-cap', { opacity: [0, 1], y: [6, 0], duration: 500, ease: 'outExpo' });
+  }
+  btn.onclick = () => claim(!claimed);
+  return { el,
+    enter() {
+      const rep = dots.slice(0, reportedN);
+      dots.forEach(d => d.classList.remove('rec', 'move'));
+      rep.forEach(d => d.classList.add('rec'));
+      utils.set(dots, { scale: 1 }); utils.set(rep, { scale: 0 });
+      animate(rep, { scale: [0, 1], duration: 450, ease: 'outBack(2)', delay: stagger(14, { start: 600 }) });
+      $('#det-note').textContent = '1 dot = 10 people. Hover a dot for its source.';
+      claim(false);
+      return revealCopy(el);
+    },
+  };
+})();
+
+/* ───────────────────────── 07 EVERY NAME ───────────────────────── */
+const names = (() => {
+  const el = $('#s-names'), cv = $('#nm-cv'), { ctx, fit } = hiDPI(cv);
+  const COLS = 114, ROWS = 85, N = COLS * ROWS, GONE = 1300;           // 9,690 × 100k ≈ 969M
+  let pts = [], W = 0, H = 0, timer, removal;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pts) {
+      if (p.a <= 0.01) continue;
+      ctx.globalAlpha = p.gone && p.c > 0 ? Math.min(1, p.a * 1.6) : p.a; ctx.fillStyle = p.gone && p.c > 0 ? C.state : C.ink;
+      ctx.fillRect(p.x, p.y, p.s, p.s);
+    }
+    ctx.globalAlpha = 1;
+  }
+  function layout() {
+    const r = fit(); W = r.width; H = r.height;
+    const step = Math.min(W / COLS, H / ROWS), s = Math.max(1, step * .62);
+    const ox = (W - step * COLS) / 2, oy = (H - step * ROWS) / 2;
+    const goneIdx = new Set(shuffle([...Array(N).keys()]).slice(0, GONE));
+    pts = Array.from({ length: N }, (_, i) => ({ x: ox + (i % COLS) * step, y: oy + Math.floor(i / COLS) * step, s, a: 0, c: 0, gone: goneIdx.has(i) }));
+  }
+  function remove() {
+    removal?.pause();
+    const gone = pts.filter(p => p.gone);
+    gone.forEach(p => { p.a = .42; p.c = 0; p._y = p.y; });
+    const ctr = { v: 0 };
+    removal = createTimeline()
+      .add(gone, { c: 1, duration: 300, delay: stagger([0, 2200], { from: 'random' }) })
+      .add(gone, { a: 0, y: p => p._y + 14, duration: 900, ease: 'inQuad', delay: stagger([0, 2200], { from: 'random' }) }, '<<+=500')
+      .add(ctr, { v: 130_000_000, duration: 2900, ease: 'inOut(2)', modifier: utils.round(0), onRender: () => $('#nm-count').textContent = fmtIN(ctr.v) }, '<<');
+    // restore y so a replay starts from the grid
+    removal.then(() => gone.forEach(p => p.y = p._y));
+  }
+  $('#nm-replay').onclick = () => { pts.filter(p => p.gone).forEach(p => { p.y = p._y ?? p.y; }); $('#nm-count').textContent = '0'; remove(); };
+  return { el,
+    enter() {
+      layout();
+      $('#nm-count').textContent = '0';
+      timer = createTimer({ onUpdate: draw });
+      animate(pts, { a: .42, duration: 500, delay: stagger(20, { grid: [COLS, ROWS], from: 'center' }), ease: 'out(2)' });
+      setTimeout(remove, REDUCED ? 0 : 2400);
+      return revealCopy(el);
+    },
+    leave() { timer?.pause(); removal?.pause(); },
+  };
+})();
+
+/* ───────────────────────── 08 SOURCES ───────────────────────── */
+const sources = (() => {
+  const el = $('#s-sources');
+  const S = [
+    ['The movement', [
+      ['Cockroach Janta Party', 'https://en.wikipedia.org/wiki/Cockroach_Janta_Party', 'Wikipedia (page flags parts as unverified)'],
+      ['2026 Delhi Jantar Mantar protests', 'https://en.wikipedia.org/wiki/2026_Delhi_Jantar_Mantar_protests', 'Wikipedia'],
+      ['India’s CJP protests: why Gen-Z’s political fury is boiling over', 'https://www.cnn.com/2026/07/22/india/india-cockroach-party-protest-anger-intl-hnk', 'CNN, 22 Jul'],
+    ]],
+    ['Detention & assembly', [
+      ['India: Release CJP leaders arrested at Jantar Mantar', 'https://www.amnesty.org/en/latest/news/2026/10/india-release-cjp-leaders-arrested-after-attempting-peaceful-protests-at-jantar-mantar/', 'Amnesty, 14 Oct'],
+      ['Authorities clamp down as ‘cockroach’ movement launches new protests', 'https://www.aljazeera.com/news/2026/10/2/indian-authorities-clamp-down-as-cockroach-movement-launches-new-protests', 'Al Jazeera, 2 Oct'],
+      ['‘Cockroach’ movement says members detained as protests continue', 'https://www.aljazeera.com/news/2026/10/8/indias-cockroach-movement-says-members-detained-as-protests-continue', 'Al Jazeera, 8 Oct'],
+    ]],
+    ['Platforms & shutdowns', [
+      ['Delhi HC orders unblocking of CJP X account', 'https://www.medianama.com/2026/07/223-delhi-hc-cockroach-janta-party-x-account-unblocked/', 'MediaNama'],
+      ['Delhi High Court orders restoration of CJP’s X account', 'https://lawbeat.in/news-updates/delhi-high-court-orders-restoration-of-cockroach-janta-partys-x-account-1610149', 'LawBeat'],
+      ['X account blocked over IB security concerns', 'https://www.india.com/news/india/cockroach-janta-party-x-account-blocked-india-over-alleged-security-concerns-by-intelligence-bureau-abhijeet-dipke-receives-death-threats-8423047/', 'India.com'],
+      ['IFF condemns internet shutdown in central Delhi', 'https://internetfreedom.in/iff-condemns-the-internet-shutdown-in-parts-of-central-delhi-no-suspension-order-has-been-made-public/', 'Internet Freedom Foundation'],
+      ['Shutdown before the first protester arrived', 'https://internetfreedom.in/shutdown-before-the-first-protester-arrived-iff-condemns-the-internet-suspension-in-connaught-place/', 'IFF, Oct'],
+      ['Internet suspended in New Delhi, 23 July', 'https://pulse.internetsociety.org/en/shutdowns/internet-suspended-in-new-dehli-nct-india-23-july-2026/', 'Internet Society Pulse'],
+      ['Blanket blackout, no order', 'https://www.theweek.in/news/india/2026/07/22/blanket-blackout-no-order-sudden-internet-shutdown-amid-cjp-s-chalo-sansad-protest-raises-questions.html', 'The Week'],
+    ]],
+    ['Form references', [
+      ['Repression and Death in the Streets of Colombia', 'https://www.bellingcat.com/news/americas/2021/05/10/a-new-platform-maps-colombias-escalating-police-violence', 'Bellingcat × Forensic Architecture × Cerosetenta'],
+      ['Forensic Architecture', 'https://en.wikipedia.org/wiki/Forensic_Architecture', 'timemap / PATTRN platforms'],
+      ['SITU Research', 'https://situ.nyc/research/profile', 'visual investigations, protest policing'],
+    ]],
+  ];
+  $('#sources').innerHTML = S.map(([h, list]) => `<h4>${h}</h4><ol>${list.map(([t, u, s]) => `<li><a href="${u}" target="_blank" rel="noopener">${t}</a> · ${s}</li>`).join('')}</ol>`).join('');
+  return { el, enter() {
+    animate($$('#sources h4, #sources li'), { opacity: [0, 1], y: [8, 0], delay: stagger(30, { start: 300 }), duration: 600, ease: 'outExpo' });
+    return revealCopy(el);
+  } };
+})();
+
+/* ───────────────────────── NAVIGATION ───────────────────────── */
+const SCENES = [cover, swarm, muted, blackout, apparatus, counts, detained, names, sources];
+const TITLES = ['Cover', 'Swarm', 'Days', 'Blackout', 'Apparatus', 'Who counts', 'Detained', 'Every name', 'Sources'];
+const rail = $('#rail'), bar = $('#rail-bar');
+TITLES.forEach((t, i) => rail.insertAdjacentHTML('beforeend', `<button data-i="${i}"><span class="n">${String(i).padStart(2, '0')}</span> <span class="t">${t}</span></button>`));
+const railBtns = $$('button', rail);
+railBtns.forEach(b => b.onclick = () => go(+b.dataset.i));
+let cur = -1, busy = false;
+
+async function go(i) {
+  if (busy || i === cur || i < 0 || i >= SCENES.length) return;
+  busy = true; hideTip();
+  const prev = SCENES[cur], next = SCENES[i], dir = i > cur ? 1 : -1;
+  if (prev) {
+    prev.leave?.();
+    await animate(prev.el, { opacity: 0, x: -24 * dir, duration: 320, ease: 'in(2)' });
+    prev.el.hidden = true; utils.set(prev.el, { x: 0 });
+  }
+  cur = i;
+  next.el.hidden = false;
+  utils.set(next.el, { opacity: 0, x: 24 * dir });
+  next.enter();
+  animate(next.el, { opacity: 1, x: 0, duration: 500, ease: 'outExpo' });
+  railBtns.forEach((b, j) => j === i ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'));
+  const b = railBtns[i];
+  animate(bar, { x: b.offsetLeft, width: b.offsetWidth, duration: 600, ease: 'outExpo' });
+  history.replaceState(null, '', '?s=' + i);
+  busy = false;
+}
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') go(cur + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(cur - 1);
+});
+$('#next').onclick = () => go(cur + 1);
+$('#prev').onclick = () => go(cur - 1);
+$$('[data-go]').forEach(b => b.onclick = () => go(+b.dataset.go));
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { const i = cur; SCENES[i].leave?.(); SCENES[i].enter(); }, 250); });
+
+go(+(new URLSearchParams(location.search).get('s') || 0));
+window.__go = go;
+</script>
+</body>
+</html>

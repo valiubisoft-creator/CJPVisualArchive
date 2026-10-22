@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cockroach Field File</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Archivo:wdth,wght@62..125,800;62..125,900&display=swap">
+<script type="importmap">
+{ "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.esm.min.js" } }
+</script>
+<style>
+  :root {
+    --bg: #0E0E0D; --surface: #161614; --ink: #EDEAE3; --ink-2: #9A968D; --ink-3: #3A3935; --ink-4: #222120;
+    --state: #E5533A; --move: #3A8FC4;
+    --display: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font: "Public Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    --hatch: repeating-linear-gradient(45deg, var(--ink-2) 0 1.4px, transparent 1.4px 3.6px);
+    --gutter: 40px; --col: 380px; --head: 52px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; }
+  a { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--ink-3); }
+  a:hover { text-decoration-color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--move); outline-offset: 3px; }
+
+  /* type */
+  .kicker { font: 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+  .kicker .num { color: var(--state); margin-right: 10px; }
+  h1, h2, h3 { font-family: var(--display); margin: 0; font-weight: 900; font-stretch: 75%; letter-spacing: -0.01em; line-height: .92; text-transform: uppercase; }
+  h1 { font-size: clamp(40px, 11.2vw, 196px); white-space: nowrap; }
+  h2 { font-size: clamp(48px, 7.6vw, 120px); max-width: 13ch; }
+  h3 { font-size: 26px; line-height: 1; letter-spacing: 0; font-weight: 800; }
+  p { margin: 0; }
+  .dek { font-size: clamp(17px, 1.5vw, 20px); line-height: 1.55; color: var(--ink-2); max-width: 52ch; }
+  .dek strong, .card strong { color: var(--ink); font-weight: 500; }
+  .note { font: 11px/1.55 var(--mono); color: var(--ink-2); letter-spacing: .02em; }
+  .src { display: block; margin-top: 12px; font: 10.5px/1.4 var(--mono); color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; }
+  .big { font-family: var(--display); font-size: clamp(44px, 5vw, 72px); font-weight: 900; font-stretch: 75%; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .readout { font: 500 12px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .sw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; vertical-align: -1px; }
+  .sw.state { background: var(--state); } .sw.move { background: var(--move); }
+  .sw.rec { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--ink-2); }
+  .sw.claim { box-shadow: inset 0 0 0 1.5px var(--move); }
+  .sw.ink { background: var(--ink); }
+
+  /* header */
+  header.top { position: fixed; inset: 0 0 auto 0; height: var(--head); z-index: 20; display: flex; align-items: center; gap: 24px;
+    padding: 0 var(--gutter); font: 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2);
+    background: linear-gradient(var(--bg) 40%, transparent); }
+  header.top .brand { color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+  header.top .brand b { color: var(--ink); font-weight: 500; }
+  #hd-ch { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+  .sig { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .sig i { width: 3px; background: var(--ink); border-radius: 1px; }
+  .sig i:nth-child(1) { height: 4px; } .sig i:nth-child(2) { height: 6px; } .sig i:nth-child(3) { height: 9px; } .sig i:nth-child(4) { height: 12px; }
+  .sig em { font-style: normal; margin-left: 6px; min-width: 10ch; }
+  .prog { position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--state); transform-origin: left; transform: scaleX(0); }
+
+  /* toc */
+  nav.toc { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); z-index: 15; display: flex; flex-direction: column; gap: 6px; }
+  nav.toc a { display: flex; align-items: center; justify-content: flex-end; gap: 10px; text-decoration: none; font: 10.5px/1 var(--mono);
+    letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); padding: 4px 0; }
+  nav.toc a em { font-style: normal; opacity: 0; transform: translateX(6px); transition: opacity .2s, transform .2s; white-space: nowrap;
+    background: var(--bg); padding: 3px 6px; }
+  nav.toc a i { width: 14px; height: 2px; background: var(--ink-3); transition: width .3s, background .3s; }
+  nav.toc a:hover em, nav.toc a:focus-visible em { opacity: 1; transform: none; }
+  nav.toc a[aria-current="true"] { color: var(--ink); }
+  nav.toc a[aria-current="true"] i { width: 26px; background: var(--state); }
+
+  /* hero */
+  .hero { position: relative; min-height: 100svh; display: grid; align-items: end; padding: calc(var(--head) + 40px) var(--gutter) 72px; overflow: hidden; }
+  .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero-copy { position: relative; display: flex; flex-direction: column; gap: 22px; max-width: 1100px; pointer-events: none; }
+  .hero-copy > * { pointer-events: auto; }
+  .hero h1 em { font-style: normal; color: var(--state); }
+  .cta { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: var(--bg); border-radius: 999px;
+    padding: 14px 22px; font-size: 15px; font-weight: 500; text-decoration: none; }
+  .cta:hover { background: #fff; }
+  .cta span { display: inline-block; }
+
+  /* chapters */
+  .ch-head { min-height: 86svh; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 120px var(--gutter) 80px;
+    max-width: calc(1100px + 2 * var(--gutter)); margin: 0 auto; }
+  .ch-head .rule { width: 48px; height: 2px; background: var(--state); }
+  .scrolly { position: relative; }
+  .graphic { position: sticky; top: 0; height: 100vh; height: 100svh; }
+  .stage { position: absolute; top: calc(var(--head) + 24px); bottom: 32px; right: calc(var(--gutter) + 40px); left: calc(var(--gutter) + var(--col) + 56px); }
+  .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .steps { position: relative; margin-top: -100vh; margin-top: -100svh; padding: 0 var(--gutter); pointer-events: none; }
+  .step { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
+  .step:last-child { min-height: 130svh; }
+  .card { pointer-events: auto; width: var(--col); background: rgba(22, 22, 20, .94); border: 1px solid var(--ink-4); border-radius: 6px;
+    padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; font-size: 16px; line-height: 1.55; color: var(--ink-2);
+    opacity: .3; transition: opacity .45s; }
+  .step.is-active .card { opacity: 1; }
+  .card .when { font: 500 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); }
+  .card blockquote { margin: 4px 0 0; padding-left: 14px; border-left: 2px solid var(--state); color: var(--ink); font-size: 17px; line-height: 1.45; }
+  .card .btn { align-self: flex-start; margin-top: 4px; }
+  .btn { border: 1px solid var(--ink-3); background: none; border-radius: 999px; padding: 8px 14px; font-size: 13px; cursor: pointer; color: var(--ink);
+    display: inline-flex; gap: 8px; align-items: center; }
+  .btn:hover { border-color: var(--ink); }
+
+  .label { position: absolute; font: 11px/1.35 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink); pointer-events: none;
+    transform: translate(-50%, 0); text-align: center; white-space: nowrap; }
+  .label small { display: block; color: var(--ink-2); letter-spacing: .04em; }
+
+  #tip { position: fixed; z-index: 30; pointer-events: none; background: var(--ink); color: var(--bg); padding: 8px 10px; border-radius: 6px;
+    font-size: 12.5px; line-height: 1.4; max-width: 260px; opacity: 0; }
+  #tip b { display: block; font: 500 10.5px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
+  #grain { position: fixed; inset: 0; z-index: 12; pointer-events: none; opacity: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,.85) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* swarm */
+  .sw-hud { position: absolute; left: 0; top: 0; }
+
+  /* withheld */
+  .wh { display: flex; align-items: center; gap: clamp(24px, 4vw, 64px); }
+  .phone { flex: none; width: 236px; height: min(480px, 100%); border-radius: 30px; border: 1px solid var(--ink-3); background: #0A0A09; padding: 16px 14px;
+    position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 12px; }
+  .ph-bar { display: flex; gap: 10px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--ink-4); }
+  .ph-av { width: 34px; height: 34px; border-radius: 50%; background: var(--ink-4); display: grid; place-items: center; flex: none; }
+  .ph-bar b { display: block; font-size: 13px; font-weight: 700; }
+  .ph-bar small { font: 10px/1.3 var(--mono); color: var(--ink-2); letter-spacing: .04em; }
+  .ph-feed { display: flex; flex-direction: column; gap: 14px; }
+  .post { display: flex; flex-direction: column; gap: 6px; }
+  .post i { display: block; height: 7px; border-radius: 4px; background: var(--ink-3); }
+  .post .img { height: 62px; border-radius: 8px; background: var(--ink-4); }
+  .ph-notice { position: absolute; inset: 70px 14px 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    text-align: center; background: #0A0A09; opacity: 0; }
+  .ph-notice b { font-size: 16px; }
+  .ph-notice p { font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+  .ph-notice .ic { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--state); position: relative; }
+  .ph-notice .ic::after { content: ""; position: absolute; left: 50%; top: 50%; width: 30px; height: 2px; background: var(--state); transform: translate(-50%, -50%) rotate(-45deg); }
+  .ph-tag { position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; font: 9.5px/1 var(--mono); color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+  .wh-right { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+  .wh-right .big { font-size: clamp(72px, 9vw, 140px); color: var(--state); }
+  #tally { width: 100%; max-width: 620px; height: auto; margin: 14px 0 10px; overflow: visible; }
+  .wh-ev { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 620px; }
+  .wh-ev li { display: grid; grid-template-columns: 9ch 1fr; gap: 12px; font-size: 14px; color: var(--ink-3); transition: color .4s; }
+  .wh-ev li span { font: 11px/1.6 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .wh-ev li.on { color: var(--ink); }
+
+  /* blackout */
+  .bo { display: flex; flex-direction: column; gap: 12px; }
+  .bo-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; }
+  .bo-top .big { font-family: var(--mono); font-weight: 500; font-size: clamp(22px, 2.4vw, 34px); letter-spacing: 0; }
+  .stamp { font: 600 12px/1 var(--mono); letter-spacing: .16em; color: var(--state); min-height: 1em; }
+  .bo-field { position: relative; flex: 1; min-height: 0; }
+  #bo-metro { width: 100%; height: 64px; overflow: visible; }
+  .ruler { position: relative; height: 34px; border-top: 1px solid var(--ink-3); }
+  .ruler .tick { position: absolute; top: 6px; font: 10px/1 var(--mono); color: var(--ink-2); letter-spacing: .05em; border-left: 1px solid var(--ink-3); padding: 0 0 12px 5px; }
+  .ruler .cut { position: absolute; top: -2px; height: 3px; background: var(--state); }
+  .ruler .head { position: absolute; top: -8px; left: 0; width: 2px; height: 16px; background: var(--ink); }
+
+  /* counts */
+  #ct-svg { width: 100%; height: 100%; overflow: visible; }
+  #ct-svg text { font-family: var(--mono); letter-spacing: .05em; }
+  .ct-legend { position: absolute; left: 0; bottom: 0; display: flex; gap: 18px; flex-wrap: wrap; font: 10.5px/1.4 var(--mono); color: var(--ink-2); letter-spacing: .06em; text-transform: uppercase; }
+  .ct-legend span { display: inline-flex; gap: 7px; align-items: center; }
+
+  /* detained */
+  .dt-hud { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+  .dt-legend { position: absolute; left: 0; bottom: 0; display: flex; gap: 18px; flex-wrap: wrap; font: 10.5px/1.4 var(--mono); color: var(--ink-2); letter-spacing: .06em; text-transform: uppercase; }
+  .dt-legend span { display: inline-flex; gap: 7px; align-items: center; }
+  .cell { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; }
+  .cell-box { position: relative; width: min(420px, 90%); aspect-ratio: 1.1; display: flex; align-items: flex-end; justify-content: center; gap: 12%; overflow: hidden; border-bottom: 2px solid var(--ink-3); }
+  .cell-box svg { width: 30%; height: auto; }
+  .bars { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(12.5% - 6px), var(--ink-2) calc(12.5% - 6px) 12.5%); }
+  .cell .who { display: flex; justify-content: center; gap: 12%; font: 10.5px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink); }
+  .days7 { position: absolute; top: 0; right: 0; text-align: right; }
+
+  /* names */
+  .nm-grid { position: absolute; inset: 0; display: grid; place-items: center; }
+  #nm-people { width: min(100%, 560px); max-height: 100%; overflow: visible; }
+  #nm-people .p { cursor: pointer; }
+  #nm-people .p:hover path, #nm-people .p:focus-visible path { fill: var(--ink); }
+  .nm-hud { position: absolute; left: 0; top: 0; pointer-events: none; }
+
+  /* apparatus */
+  .ap { display: flex; gap: 32px; align-items: stretch; }
+  #ap-svg { flex: 1; min-width: 0; height: 100%; }
+  #ap-svg .node { cursor: pointer; }
+  #ap-svg .node text { font: 11px var(--mono); fill: var(--ink); letter-spacing: .04em; text-transform: uppercase; }
+  #ap-svg .node:hover text { fill: var(--state); }
+  .ap-card { flex: none; width: 260px; align-self: center; border-top: 1px solid var(--ink-3); padding-top: 14px; min-height: 200px; }
+  .ap-card ul { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .ap-card li { font-size: 14px; line-height: 1.45; color: var(--ink); }
+  .ap-card li em { display: block; font: 10.5px/1.4 var(--mono); font-style: normal; color: var(--ink-2); letter-spacing: .05em; text-transform: uppercase; }
+
+  /* close */
+  .close { padding: 140px var(--gutter) 120px; max-width: calc(1100px + 2 * var(--gutter)); margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+  .close blockquote { margin: 0; font-family: var(--display); font-size: clamp(32px, 4.4vw, 64px); line-height: 1; font-weight: 800; font-stretch: 75%; text-transform: uppercase; max-width: 22ch; }
+  .close cite { display: block; margin-top: 18px; font: 11px/1.4 var(--mono); font-style: normal; color: var(--ink-2); letter-spacing: .06em; text-transform: uppercase; }
+  .close .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 56px; border-top: 1px solid var(--ink-3); padding-top: 32px; }
+  .close .cols p { color: var(--ink-2); font-size: 15px; line-height: 1.6; margin-bottom: 14px; }
+  .sources h4 { margin: 0 0 8px; font: 10.5px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .sources ol { margin: 0 0 24px; padding-left: 18px; }
+  .sources li { margin-bottom: 6px; color: var(--ink-2); font-size: 14px; line-height: 1.45; }
+  .totop { align-self: flex-start; }
+
+  @media (max-width: 1100px) { nav.toc { display: none; } .stage { right: var(--gutter); } }
+  @media (max-width: 820px) {
+    :root { --gutter: 16px; --col: 100%; --head: 48px; }
+    header.top { gap: 12px; }
+    header.top .brand span { display: none; }
+    .sig em { min-width: 0; }
+    .stage { left: var(--gutter); right: var(--gutter); top: calc(var(--head) + 12px); bottom: 16px; }
+    .step { align-items: flex-end; padding-bottom: 8svh; }
+    .card { padding: 18px; font-size: 15px; background: rgba(22, 22, 20, .96); }
+    .wh { flex-direction: column; align-items: stretch; gap: 16px; }
+    .phone { width: 100%; height: 170px; border-radius: 18px; }
+    .ph-notice { inset: 58px 12px 12px; flex-direction: row; text-align: left; }
+    .ph-notice .ic { flex: none; }
+    .post .img, .ph-tag { display: none; }
+    .cell { justify-content: flex-start; padding-top: 128px; }
+    .cell-box { width: min(300px, 80%); }
+    .ap .ap-card { order: -1; font-size: 13px; }
+    .ap-card h3 { font-size: 22px; }
+    .ap-card li { font-size: 13px; }
+    #ap-svg { flex: none; height: auto; max-height: 52%; }
+    .wh-right .big { font-size: 72px; }
+    .ap { flex-direction: column; gap: 8px; }
+    #ap-svg { flex: 1; height: auto; min-height: 0; }
+    .ap-card { width: 100%; min-height: 0; align-self: stretch; }
+    .close .cols { grid-template-columns: 1fr; gap: 24px; }
+    .hero { padding-bottom: 48px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#top"><b>Cockroach</b><span> &nbsp;/&nbsp; a field file</span></a>
+  <span id="hd-ch">CJP protests · India · 2026</span>
+  <span class="sig" id="sig" aria-label="Signal"><i></i><i></i><i></i><i></i><em id="sig-t">4G</em></span>
+  <div class="prog" id="prog"></div>
+</header>
+<nav class="toc" id="toc" aria-label="Chapters"></nav>
+<div id="grain" aria-hidden="true"></div>
+<div id="tip" role="tooltip"></div>
+
+<main>
+<!-- ───────────── HERO ───────────── -->
+<section class="hero" id="top">
+  <canvas id="hero-cv" aria-hidden="true"></canvas>
+  <div class="hero-copy">
+    <div class="kicker">Supreme Court of India · 15 May 2026</div>
+    <h1 id="hero-h">“Cockroaches.”</h1>
+    <p class="dek">In open court, the Chief Justice of India called some unemployed young people and activists <strong>cockroaches</strong> and “parasites of society”. He later said he meant people with fake degrees. The next day a joke party was born online. Within ten weeks a minister had resigned, and the state had muted it, cut the internet around it and detained its members by the thousand.</p>
+    <a class="cta" href="#ch-swarm">Open the file <span>↓</span></a>
+    <p class="note">Move your cursor: they scatter. Every figure that follows is sourced; where sources disagree, both are shown.</p>
+  </div>
+</section>
+
+<!-- ───────────── 01 SWARM ───────────── -->
+<section class="chapter" id="ch-swarm" data-title="01 · The swarm">
+  <header class="ch-head">
+    <div class="kicker"><span class="num">01</span>16 – 25 May</div>
+    <h2>One week, fifteen million.</h2>
+    <div class="rule"></div>
+    <p class="dek">A slur, worn as a badge. How a satirical account became the largest youth movement online, and how the state first tried to explain it away.</p>
+  </header>
+  <div class="scrolly" id="sw">
+    <div class="graphic"><div class="stage" id="sw-stage">
+      <canvas id="sw-cv" role="img" aria-label="Up to 1,500 marks, each 10,000 Instagram followers"></canvas>
+      <div class="sw-hud"><div class="big" id="sw-count">1</div><div class="readout" id="sw-unit">account · 16 May</div></div>
+    </div></div>
+    <div class="steps">
+      <div class="step"><div class="card"><span class="when">16 May</span><p>Abhijeet Dipke launches the <strong>Cockroach Janta Party</strong> on Instagram and X, as satire. Its members are the people the remark described.</p></div></div>
+      <div class="step"><div class="card"><span class="when">16 – 22 May</span><p>Each mark here is <strong>10,000 followers</strong>. In its first week the account passed <strong>15 million</strong>. One outlet reported 20 million; we use the lower figure.</p><span class="src">Wikipedia · CNN</span></div></div>
+      <div class="step"><div class="card"><span class="when">23 May</span><p>Union Minister Sukanta Majumdar claimed <strong>49% of the followers were from Pakistan.</strong></p><span class="src">The Telegraph / PTI</span></div></div>
+      <div class="step"><div class="card"><span class="when">24 – 25 May</span><p>Dipke published the account's audience analytics: <strong>over 94% in India.</strong> Independent fact-checkers backed it.</p><span class="src">Hindustan Times · Deccan Herald</span></div></div>
+      <div class="step"><div class="card"><p>Two days before the minister spoke, the state had already reached for a quieter tool.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 02 WITHHELD ───────────── -->
+<section class="chapter" id="ch-withheld" data-title="02 · Withheld">
+  <header class="ch-head">
+    <div class="kicker"><span class="num">02</span>21 May – 7 July</div>
+    <h2>Forty-eight days of silence.</h2>
+    <div class="rule"></div>
+    <p class="dek">No arrest, no hearing, no public order: just a notice where the posts used to be. Each mark below is one day the account could not be seen in India.</p>
+  </header>
+  <div class="scrolly" id="wh">
+    <div class="graphic"><div class="stage wh">
+      <div class="phone" aria-hidden="true">
+        <div class="ph-bar"><span class="ph-av"><svg width="20" height="14" viewBox="-11 -7 22 14"><ellipse rx="6" ry="3.6" fill="#9A968D"/><circle cx="7" r="2" fill="#9A968D"/></svg></span><div><b>Cockroach Janta Party</b><small>satire · 15M followers</small></div></div>
+        <div class="ph-feed"></div>
+        <div class="ph-notice" id="ph-notice"><div class="ic"></div><div><b>Account withheld</b><p>Withheld in India in response to a legal demand.</p></div></div>
+        <div class="ph-tag">Illustration</div>
+      </div>
+      <div class="wh-right">
+        <div class="kicker">Days withheld in India</div>
+        <div class="big" id="wh-day">0</div>
+        <div class="readout" id="wh-date">—</div>
+        <svg id="tally" viewBox="-4 0 568 70" aria-hidden="true"></svg>
+        <ul class="wh-ev" id="wh-ev"></ul>
+      </div>
+    </div></div>
+    <div class="steps">
+      <div class="step"><div class="card"><span class="when">21 May · Day 1</span><p>The party's X account is <strong>withheld in India</strong> under Section 69A of the IT Act, by the IT ministry (MeitY), reportedly on an Intelligence Bureau flag. Its Instagram is blocked too, for two hours.</p><span class="src">India.com · MediaNama · Outlook</span></div></div>
+      <div class="step"><div class="card"><span class="when">6 June · Day 17</span><p>Muted online, the movement goes outside. <strong>First street protest</strong> at Jantar Mantar, Delhi's designated protest site. About 5,000 police are deployed.</p><span class="src">Wikipedia</span></div></div>
+      <div class="step"><div class="card"><span class="when">20 June · Day 31</span><p>An <strong>indefinite sit-in</strong> begins at Jantar Mantar. It will last until a minister resigns.</p><span class="src">Wikipedia · CNN</span></div></div>
+      <div class="step"><div class="card"><span class="when">28 June · Day 39</span><p>Climate activist <strong>Sonam Wangchuk</strong> begins a hunger strike at the site.</p><span class="src">Wikipedia</span></div></div>
+      <div class="step"><div class="card"><span class="when">7 July · Day 48</span><p>The Delhi High Court orders the account restored. The government's lawyer explains why the block can now end:</p><blockquote>“Now the examination is over.”</blockquote><span class="src">Solicitor General, Delhi High Court · MediaNama · LawBeat</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 03 BLACKOUT ───────────── -->
+<section class="chapter" id="ch-blackout" data-title="03 · Blackout">
+  <header class="ch-head">
+    <div class="kicker"><span class="num">03</span>20 – 24 July</div>
+    <h2>No signal, no order.</h2>
+    <div class="rule"></div>
+    <p class="dek">The week of the march on Parliament. Scroll to move through it hour by hour. Each light is a phone near the protest site; the lines between them are messages. The diagram is schematic, not a map.</p>
+  </header>
+  <div class="scrolly" id="bo">
+    <div class="graphic"><div class="stage bo">
+      <div class="bo-top"><div class="big" id="bo-clock">MON 20 JUL · 00:00</div><div class="stamp" id="bo-stamp"></div></div>
+      <div class="bo-field"><canvas id="bo-cv" role="img" aria-label="Schematic of phones around Jantar Mantar losing signal"></canvas></div>
+      <svg id="bo-metro" viewBox="0 0 600 64" preserveAspectRatio="xMinYMid meet" aria-label="Metro stations shut"></svg>
+      <div class="ruler" id="bo-ruler"><div class="head" id="bo-head"></div></div>
+    </div></div>
+    <div class="steps">
+      <div class="step"><div class="card"><span class="when">Mon 20 Jul · morning</span><p>Section 163 prohibitory orders across New Delhi district ahead of the <strong>Sansad Chalo</strong> march on Parliament.</p><span class="src">Wikipedia</span></div></div>
+      <div class="step"><div class="card"><span class="when">~10:00</span><p>Protesters report <strong>mobile internet cut</strong> near Parliament. No suspension order is published by any authority.</p><span class="src">Internet Freedom Foundation · The Week</span></div></div>
+      <div class="step"><div class="card"><span class="when">Afternoon</span><p>Clashes. Police say <strong>118 personnel</strong> were hurt; RML hospital logs 65 medico-legal cases by 7 pm. Five metro stations shut.</p><span class="src">Wikipedia · Delhi Police</span></div></div>
+      <div class="step"><div class="card"><span class="when">~18:00</span><p>Telecom officials say service is restored. Which authority ordered the cut is still unknown.</p><span class="src">IFF · The Wire</span></div></div>
+      <div class="step"><div class="card"><span class="when">Tue 21 Jul</span><p>The Delhi High Court orders Sonam Wangchuk moved to hospital. Opposition leaders are briefly detained.</p><span class="src">Wikipedia</span></div></div>
+      <div class="step"><div class="card"><span class="when">Wed 22 Jul</span><p><strong>20 CRPF companies</strong> are airlifted from Kolkata on Home Ministry orders. The metro shuts 16 stations.</p><span class="src">Wikipedia</span></div></div>
+      <div class="step"><div class="card"><span class="when">Thu 23 Jul · 09:30</span><p>This time there is a written order. The Home Ministry suspends mobile internet <strong>within 1.5 km of Jantar Mantar</strong>, until 16:00. 17 stations shut.</p><span class="src">Internet Society Pulse</span></div></div>
+      <div class="step"><div class="card"><span class="when">16:00</span><p>The order lapses, but reports of crippled connectivity around the site continue.</p><span class="src">The Wire</span></div></div>
+      <div class="step"><div class="card"><span class="when">Fri 24 Jul</span><p>18 stations shut. The next day, Education Minister <strong>Dharmendra Pradhan resigns</strong>. The sit-in is called off.</p><span class="src">Wikipedia</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 04 WHO COUNTS ───────────── -->
+<section class="chapter" id="ch-counts" data-title="04 · Who counts">
+  <header class="ch-head">
+    <div class="kicker"><span class="num">04</span>20 July, again</div>
+    <h2>One march, three ledgers.</h2>
+    <div class="rule"></div>
+    <p class="dek">The police, the hospitals and the movement each kept a count of the same afternoon. They rarely count the same thing, and where one says zero, another has paperwork.</p>
+  </header>
+  <div class="scrolly" id="ct">
+    <div class="graphic"><div class="stage">
+      <svg id="ct-svg" viewBox="0 0 720 470" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Dot plots comparing state, records and movement counts"></svg>
+      <div class="ct-legend"><span><span class="sw state"></span>State says</span><span><span class="sw rec"></span>Records show</span><span><span class="sw move"></span>Movement says</span></div>
+    </div></div>
+    <div class="steps">
+      <div class="step"><div class="card"><p>Three numbers per question, each placed on its own scale. <strong>Red</strong> is what the state said, <strong>hatched</strong> is what a document recorded, <strong>blue</strong> is what the movement said.</p></div></div>
+      <div class="step"><div class="card"><span class="when">Injured</span><p>Police reported <strong>118 officers</strong> hurt. The hospital logged 65 medico-legal cases. The movement says about <strong>150 protesters</strong> were hospitalised. Hospital and police sources put protesters injured at about 60.</p><span class="src">Wikipedia · RML hospital</span></div></div>
+      <div class="step"><div class="card"><span class="when">Detained</span><blockquote>“No protesters were detained during the march.”</blockquote><p>That was Delhi Police. CJP leaders say about <strong>70</strong> were. No independent count has been published.</p><span class="src">Wikipedia</span></div></div>
+      <div class="step"><div class="card"><span class="when">Pellets</span><p>Police called reports of pellet fire <strong>“completely false and misleading.”</strong> A Rapid Action Force entry in the station diary records <strong>two rounds</strong>. Safdarjung hospital treated one pellet wound.</p><span class="src">Wikipedia (GD entry, Parliament Street police station)</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 05 DETAINED ───────────── -->
+<section class="chapter" id="ch-detained" data-title="05 · Detained">
+  <header class="ch-head">
+    <div class="kicker"><span class="num">05</span>October</div>
+    <h2>Count them one by one.</h2>
+    <div class="rule"></div>
+    <p class="dek">In October the demand moved to the Election Commission, and so did the crackdown. Here every figure is one person.</p>
+  </header>
+  <div class="scrolly" id="dt">
+    <div class="graphic"><div class="stage" id="dt-stage">
+      <canvas id="dt-cv" role="img" aria-label="People detained, one figure per person"></canvas>
+      <div class="dt-hud"><div class="big" id="dt-count">0</div><div class="readout" id="dt-unit">people detained</div></div>
+      <div class="dt-legend"><span><span class="sw ink"></span>Reported by press / Amnesty</span><span><span class="sw claim"></span>Claimed by the CJP, unverified</span></div>
+      <div class="cell" id="dt-cell">
+        <div class="days7"><div class="big" id="dt-days">0</div><div class="readout">days in custody</div></div>
+        <div class="cell-box">
+          <svg viewBox="0 0 40 60"><circle cx="20" cy="12" r="9" fill="#EDEAE3"/><path d="M2 60 Q2 26 20 26 Q38 26 38 60 Z" fill="#EDEAE3"/></svg>
+          <svg viewBox="0 0 40 60"><circle cx="20" cy="12" r="9" fill="#EDEAE3"/><path d="M2 60 Q2 26 20 26 Q38 26 38 60 Z" fill="#EDEAE3"/></svg>
+          <div class="bars" id="dt-bars"></div>
+        </div>
+        <div class="who" style="margin-top:14px;width:min(420px,90%)"><span style="width:30%;text-align:center">Saurav Das</span><span style="width:30%;text-align:center">Ashutosh Ranka</span></div>
+      </div>
+    </div></div>
+    <div class="steps">
+      <div class="step"><div class="card"><span class="when">2 Oct · Delhi</span><p>Voter-roll protests begin. <strong>500+</strong> people are reportedly held on the first day. Eleven metro stations close and the internet is cut near Connaught Place before the first protester arrives.</p><span class="src">Al Jazeera (unconfirmed) · IFF</span></div></div>
+      <div class="step"><div class="card"><span class="when">10 Oct · Mumbai</span><p>Police detain <strong>more than 600</strong>. Mobile internet is restricted.</p><span class="src">Amnesty</span></div></div>
+      <div class="step"><div class="card"><span class="when">12 Oct · Bengaluru</span><p>At least <strong>100</strong> detained marching to the state electoral office. Three city counts that can be sourced: <strong>about 1,200 people</strong>.</p><span class="src">Amnesty</span></div></div>
+      <div class="step"><div class="card"><span class="when">8 Oct · the movement's count</span><p>The party's spokesperson says <strong>at least 10,000</strong> have been detained nationwide. Al Jazeera could not verify it. Amnesty separately reported police “detained thousands in Delhi” over 10–11 October.</p><span class="src">Al Jazeera · Amnesty</span></div></div>
+      <div class="step"><div class="card"><span class="when">13 – 21 Oct</span><p>Jantar Mantar is struck off the list of permitted protest sites. Two CJP leaders who try to protest there anyway are arrested and remanded. They are released after <strong>seven days</strong>, on an undertaking not to call protests there.</p><span class="src">Amnesty · Wikipedia</span></div></div>
+      <div class="step"><div class="card"><blockquote>“Authorities cannot use the criminal justice system to punish people for exercising their right to peaceful assembly.”</blockquote><span class="src">Aakar Patel, Amnesty International India · 14 Oct</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 06 EVERY NAME ───────────── -->
+<section class="chapter" id="ch-names" data-title="06 · Every name">
+  <header class="ch-head">
+    <div class="kicker"><span class="num">06</span>Why they marched in October</div>
+    <h2>Find yourself on the roll.</h2>
+    <div class="rule"></div>
+    <p class="dek">Below are a hundred eligible voters. One of them is you.</p>
+  </header>
+  <div class="scrolly" id="nm">
+    <div class="graphic"><div class="stage" id="nm-stage">
+      <div class="nm-grid" id="nm-a"><svg id="nm-people" viewBox="0 0 560 600" aria-label="100 voters; pick one"></svg></div>
+      <canvas id="nm-cv" role="img" aria-label="9,690 marks, each 100,000 voters; 1,300 removed" style="opacity:0"></canvas>
+      <div class="nm-hud" id="nm-hud" style="opacity:0"><div class="big" id="nm-count">0</div><div class="readout">names removed</div></div>
+    </div></div>
+    <div class="steps">
+      <div class="step"><div class="card"><span class="when">Pick one</span><p><strong>Click any figure.</strong> That's you, a voter who was eligible in 2024.</p><span class="note" id="nm-pick">No one picked yet. Keep scrolling and we'll pick for you.</span></div></div>
+      <div class="step"><div class="card"><span class="when">The revision</span><p>The voter-roll revision has removed more than <strong>130 million names</strong>, against about 969 million eligible in 2024. That's roughly <strong>13 in every 100</strong>.</p><p id="nm-verdict" style="color:var(--ink)"></p><span class="src">Al Jazeera · Indian Express</span></div></div>
+      <div class="step"><div class="card"><span class="when">At scale</span><p>Now every mark is <strong>100,000 voters</strong>: 9,690 of them. Keep scrolling to remove 1,300.</p></div></div>
+      <div class="step"><div class="card"><p>The Commission says it removed duplicate, deceased and ineligible entries. <strong>Two of its own commissioners</strong> raised concerns at least 14 times in ten months.</p><span class="src">Indian Express · Al Jazeera</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 07 APPARATUS ───────────── -->
+<section class="chapter" id="ch-apparatus" data-title="07 · The apparatus">
+  <header class="ch-head">
+    <div class="kicker"><span class="num">07</span>15 May – 21 Oct</div>
+    <h2>Thirteen hands on one protest.</h2>
+    <div class="rule"></div>
+    <p class="dek">Every body with a documented role in the response, from riot police to the telecom companies. Solid red lines show restrictions. Courts, which both restricted and restored, are dashed.</p>
+  </header>
+  <div class="scrolly" id="ap">
+    <div class="graphic"><div class="stage ap">
+      <svg id="ap-svg" viewBox="0 0 720 560" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Network of 13 agencies around the CJP"></svg>
+      <div class="ap-card" id="ap-card"></div>
+    </div></div>
+    <div class="steps">
+      <div class="step"><div class="card"><span class="when">On the street</span><p>Police in three cities, the Rapid Action Force, the CRPF and the Delhi Metro, which shut up to <strong>18 stations</strong> a day.</p></div></div>
+      <div class="step"><div class="card"><span class="when">Online</span><p>The Home Ministry, the IT ministry, the Intelligence Bureau and the telecom operators who switched off the signal, usually <strong>without a published order</strong>.</p></div></div>
+      <div class="step"><div class="card"><span class="when">In court</span><p>The Delhi High Court restored the account, and also ordered a hunger striker removed from the site.</p></div></div>
+      <div class="step"><div class="card"><span class="when">In power</span><p>A minister who called the followers foreign, a minister who resigned, and the Commission whose rolls started the second wave.</p></div></div>
+      <div class="step"><div class="card"><span class="when">Your turn</span><p><strong>Click any node</strong> to read its record.</p><button class="btn" id="ap-all">Show all thirteen</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── CLOSE ───────────── -->
+<section class="close" id="ch-close" data-title="Sources">
+  <div class="kicker"><span class="num">—</span>As of 22 October 2026</div>
+  <blockquote>It began as a joke about a slur. Five months later the joke had a minister's resignation, a court order, and thousands of detentions on its record.</blockquote>
+  <div class="cols">
+    <div>
+      <h3 style="margin-bottom:16px">Method</h3>
+      <p>A prototype in interactive storytelling, built with anime.js v4. Figures come from the reporting listed here. Counts are as reported, not independently verified. Where the state, the records and the movement disagree, all three are shown and coloured by who said them.</p>
+      <p>The form borrows from investigative platforms by Forensic Architecture, Bellingcat and SITU Research, which tie every mark to a source, and from the visual essays of The Pudding. The blackout and network diagrams are schematic, not maps. The phone is an illustration.</p>
+      <a class="btn totop" href="#top">Back to the top ↑</a>
+    </div>
+    <div class="sources" id="sources"></div>
+  </div>
+</section>
+</main>
+
+<script type="module">
+import { animate, createTimer, stagger, utils, svg, splitText, scrambleText, onScroll, engine } from 'animejs';
+
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (REDUCED) engine.speed = 25;               // keep every end state, skip the journey
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const css = getComputedStyle(document.documentElement);
+const C = Object.fromEntries(['ink', 'ink-2', 'ink-3', 'ink-4', 'state', 'move', 'bg'].map(k => [k, css.getPropertyValue('--' + k).trim()]));
+const fmtIN = n => Math.round(n).toLocaleString('en-IN');
+const TAU = Math.PI * 2;
+
+// seeded random so layouts are stable between visits
+const rng = (seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647)(7);
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+// sunflower packing: n points, spacing s, around cx/cy
+const phyllo = (n, cx, cy, s) => Array.from({ length: n }, (_, i) => {
+  const r = s * Math.sqrt(i + 0.5), t = i * 2.39996;
+  return [cx + r * Math.cos(t), cy + r * Math.sin(t)];
+});
+// value at fractional step f: knots sit on step centres, `end` half a step after the last
+const atStep = (f, ks, end = ks.at(-1)) => {
+  const n = ks.length;
+  if (f <= 0) return ks[0];
+  if (f >= n - 1) return ks[n - 1] + (end - ks[n - 1]) * Math.min(1, (f - (n - 1)) / .5);
+  const i = Math.floor(f); return ks[i] + (ks[i + 1] - ks[i]) * (f - i);
+};
+
+function hiDPI(cv) {
+  const ctx = cv.getContext('2d');
+  return { ctx, fit() {
+    const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+    cv.width = Math.max(1, r.width * d); cv.height = Math.max(1, r.height * d); ctx.setTransform(d, 0, 0, d, 0, 0);
+    return r;
+  } };
+}
+
+// a cockroach, nose along +x
+function roach(ctx, x, y, rot, s, legs = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  if (s > 5) {
+    ctx.lineWidth = Math.max(.8, s * .08); ctx.beginPath();
+    for (let k = -1; k <= 1; k++) {
+      const sw = Math.sin(legs + k * 2.1) * s * .28, lx = k * s * .32;
+      ctx.moveTo(lx, 0); ctx.lineTo(lx + sw, -s * .78);
+      ctx.moveTo(lx, 0); ctx.lineTo(lx - sw, s * .78);
+    }
+    ctx.moveTo(s * .9, -s * .1); ctx.quadraticCurveTo(s * 1.5, -s * .4, s * 2.1, -s * .8);
+    ctx.moveTo(s * .9, s * .1); ctx.quadraticCurveTo(s * 1.5, s * .4, s * 2.1, s * .8);
+    ctx.stroke();
+  }
+  ctx.beginPath(); ctx.ellipse(0, 0, s * .78, s * .44, 0, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(s * .84, 0, s * .22, s * .27, 0, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+
+// tooltip
+const tip = $('#tip');
+function showTip(e, title, body) {
+  tip.innerHTML = `<b>${title}</b>${body}`;
+  utils.set(tip, { left: Math.min(e.clientX + 14, innerWidth - 280) + 'px', top: e.clientY + 16 + 'px' });
+  animate(tip, { opacity: 1, duration: 150, ease: 'out(2)' });
+}
+const hideTip = () => animate(tip, { opacity: 0, duration: 150 });
+
+/* ── scroll plumbing (anime.js ScrollObserver, no scroll listeners) ── */
+// step i becomes active while the viewport centre is inside it
+function wireSteps(root, fn) {
+  const els = $$('.step', root);
+  els.forEach((el, i) => onScroll({ target: el, enter: 'center top', leave: 'center bottom',
+    onEnter: () => { els.forEach(e => e.classList.toggle('is-active', e === el)); fn(i); } }));
+  return els.length;
+}
+// continuous position in "steps", for scrubbed chapters
+// continuous position in "steps", for scrubbed chapters: 0 = first step centred, 1 = second…
+function scrub(root, fn) {
+  const els = $$('.step', root);
+  const where = () => {
+    const c = innerHeight / 2, m = els.map(e => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; });
+    if (c <= m[0]) return (c - m[0]) / els[0].offsetHeight;
+    for (let i = 0; i < m.length - 1; i++) if (c < m[i + 1]) return i + (c - m[i]) / (m[i + 1] - m[i]);
+    return m.length - 1 + (c - m.at(-1)) / els.at(-1).offsetHeight;
+  };
+  onScroll({ target: $('.steps', root), enter: 'center top', leave: 'center bottom', onUpdate: () => fn(where()) });
+}
+// run a loop only while its chapter is on screen
+function whileVisible(el, timer) {
+  onScroll({ target: el, enter: 'bottom top', leave: 'top bottom', onEnter: () => timer.play(), onLeave: () => timer.pause() });
+}
+const resizers = [];
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => resizers.forEach(f => f()), 200); });
+
+/* ── header, toc, chapter heads ── */
+const chapters = $$('.chapter, #ch-close');
+$('#toc').innerHTML = chapters.map(c => `<a href="#${c.id}"><em>${c.dataset.title}</em><i></i></a>`).join('');
+const tocLinks = $$('#toc a');
+chapters.forEach((c, i) => onScroll({ target: c, enter: 'center top', leave: 'center bottom',
+  onEnter: () => { $('#hd-ch').textContent = c.dataset.title; tocLinks.forEach((a, j) => a.setAttribute('aria-current', i === j)); },
+  onLeaveBackward: () => { if (i === 0) { $('#hd-ch').textContent = 'CJP protests · India · 2026'; tocLinks[0].setAttribute('aria-current', false); } } }));
+onScroll({ target: document.body, enter: 'top top', leave: 'bottom bottom', onUpdate: o => utils.set('#prog', { scaleX: o.progress }) });
+
+function signal(on) {
+  animate('#sig i', { opacity: on ? 1 : .18, delay: stagger(60, { reversed: on }), duration: 200 });
+  $('#sig-t').textContent = on ? '4G' : 'NO SERVICE';
+  $('#sig-t').style.color = on ? '' : C.state;
+}
+
+$$('.ch-head h2').forEach(h => {
+  const { words } = splitText(h, { words: { wrap: 'clip' } });
+  const rest = $$('.kicker, .rule, .dek', h.parentNode);
+  if (REDUCED) return;
+  utils.set(words, { y: '105%' }); utils.set(rest, { opacity: 0 });
+  onScroll({ target: h, enter: 'bottom-=80 top', repeat: false, onEnter: () => {
+    animate(words, { y: ['105%', '0%'], delay: stagger(55), duration: 1000, ease: 'outExpo' });
+    animate(rest, { opacity: [0, 1], y: [12, 0], delay: stagger(90, { start: 250 }), duration: 900, ease: 'outExpo' });
+    animate($('.rule', h.parentNode), { scaleX: [0, 1], duration: 900, delay: 400, ease: 'outExpo' });
+  } });
+});
+
+/* ───────────────────────── HERO ───────────────────────── */
+(() => {
+  const cv = $('#hero-cv'), { ctx, fit } = hiDPI(cv), hero = $('#top');
+  let W = 0, H = 0, bugs = [], mouse = { x: -999, y: -999 };
+  function layout() {
+    const r = fit(); W = r.width; H = r.height;
+    const n = Math.round(utils.clamp(W * H / 9000, 40, 160));
+    bugs = Array.from({ length: n }, () => ({ x: rng() * W, y: rng() * H, a: rng() * TAU, v: .3 + rng() * .7, s: 5 + rng() * 6, ph: rng() * TAU, o: .18 + rng() * .3 }));
+  }
+  layout(); resizers.push(layout);
+  hero.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); mouse = { x: e.clientX - r.left, y: e.clientY - r.top }; });
+  hero.addEventListener('pointerleave', () => mouse = { x: -999, y: -999 });
+  const timer = createTimer({ onUpdate: () => {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = ctx.strokeStyle = C.ink;
+    for (const b of bugs) {
+      const dx = b.x - mouse.x, dy = b.y - mouse.y, d = Math.hypot(dx, dy);
+      let sp = b.v;
+      if (d < 160) {                                  // flee the cursor
+        const away = Math.atan2(dy, dx), diff = Math.atan2(Math.sin(away - b.a), Math.cos(away - b.a));
+        b.a += diff * .25; sp = b.v * 5;
+      } else b.a += (rng() - .5) * .25;
+      if (!REDUCED) { b.x += Math.cos(b.a) * sp; b.y += Math.sin(b.a) * sp; b.ph += sp * .6; }
+      if (b.x < -30) b.x = W + 30; if (b.x > W + 30) b.x = -30; if (b.y < -30) b.y = H + 30; if (b.y > H + 30) b.y = -30;
+      ctx.globalAlpha = b.o; roach(ctx, b.x, b.y, b.a, b.s, b.ph);
+    }
+    ctx.globalAlpha = 1;
+  } });
+  whileVisible(hero, timer);
+  const { chars: words } = splitText('#hero-h', { chars: { wrap: 'clip' } });
+  animate(words, { y: ['110%', '0%'], delay: stagger(40, { start: 200 }), duration: 1100, ease: 'outExpo' });
+  animate($$('.hero-copy > :not(h1)'), { opacity: [0, 1], y: [14, 0], delay: stagger(110, { start: 700 }), duration: 900, ease: 'outExpo' });
+  if (!REDUCED) animate('.cta span', { y: [0, 4], duration: 900, loop: true, alternate: true, ease: 'inOutSine' });
+})();
+
+/* ───────────────────────── 01 SWARM ───────────────────────── */
+(() => {
+  const root = $('#sw'), stage = $('#sw-stage'), cv = $('#sw-cv'), { ctx, fit } = hiDPI(cv);
+  const N = 1500, FOLLOWERS = 15_000_000;
+  let W = 0, H = 0, pts = [], labels = [], step = -1, scatter = [];
+  const counter = { v: 1 };
+  const SPLITS = {
+    2: { split: .49, tint: C.state, tintSide: 1, left: ['India', '51%'], right: ['Pakistan', '49%, as claimed'] },
+    3: { split: .06, tint: C.move, tintSide: 0, left: ['India', '94%+'], right: ['Elsewhere', '6% or less'] },
+  };
+  function layout() {
+    const r = fit(); W = r.width; H = r.height;
+    scatter = Array.from({ length: N }, (_, i) => {
+      const rr = Math.sqrt(rng()), t = rng() * TAU, wob = 1 + .1 * Math.sin(t * 3 + 1);
+      return [W * .5 + Math.cos(t) * rr * W * .46 * wob, H * .55 + Math.sin(t) * rr * H * .4 * wob];
+    });
+    if (!pts.length) pts = Array.from({ length: N }, () => ({ x: W / 2, y: H / 2, a: 0, c: 0, s: 3, tint: C.state, ph: rng() * TAU, v: .4 + rng(), rot: rng() * TAU }));
+    if (step >= 0) go(step, true);
+  }
+  function setLabels(list) {
+    labels.forEach(l => l.remove());
+    labels = list.map(([x, y, a, b]) => {
+      const d = document.createElement('div');
+      d.className = 'label'; d.innerHTML = `${a}<small>${b}</small>`;
+      d.style.left = x + 'px'; d.style.top = y + 'px';
+      stage.append(d); return d;
+    });
+    if (labels.length) animate(labels, { opacity: [0, 1], y: [8, 0], delay: stagger(120, { start: 600 }), duration: 600, ease: 'outExpo' });
+  }
+  function count(to, unit) {
+    animate(counter, { v: to, duration: to > counter.v ? 2600 : 600, ease: 'inOut(3)', modifier: utils.round(0),
+      onRender: () => $('#sw-count').textContent = fmtIN(counter.v) });
+    $('#sw-unit').textContent = unit;
+  }
+  function go(i, instant) {
+    step = i;
+    const d = instant ? 0 : 1;
+    if (i === 0) {
+      setLabels([[W / 2, H / 2 + 60, 'Abhijeet Dipke', '16 May · one account']]);
+      animate(pts, { x: W / 2, y: H / 2, a: (_, j) => j ? 0 : 1, s: (_, j) => j ? 3 : 22, c: 0, duration: 800 * d, ease: 'inOutQuart' });
+      count(1, 'account · 16 May');
+    } else if (i === 1 || i === 4) {
+      setLabels([]);
+      animate(pts, { x: (_, j) => scatter[j][0], y: (_, j) => scatter[j][1], s: 3, c: 0, a: i === 4 ? .22 : 1,
+        duration: 1200 * d, delay: i === 1 ? stagger([0, 2400 * d], { ease: 'in(2)' }) : 0, ease: 'outQuart' });
+      count(FOLLOWERS, 'followers · 22 May · 1.5 crore');
+    } else {
+      const m = SPLITS[i];
+      const nR = Math.round(N * m.split), nL = N - nR, gap = Math.max(28, W * .06), narrow = W < 600;
+      const s = Math.min(Math.min(W, H) * 0.0118, (W * .94 - gap) / (2 * (Math.sqrt(nL) + Math.sqrt(nR))));
+      const rL = s * Math.sqrt(nL), rR = s * Math.sqrt(nR);
+      const cxL = (W - (rL * 2 + gap + rR * 2)) / 2 + rL, cxR = cxL + rL + gap + rR, cy = H * (narrow ? .38 : .5);
+      const targets = [...phyllo(nL, cxL, cy, s).map(p => [...p, 0]), ...phyllo(nR, cxR, cy, s).map(p => [...p, 1])];
+      shuffle([...pts.keys()]).forEach((pi, k) => { pts[pi]._t = targets[k]; pts[pi].tint = m.tint; });
+      animate(pts, { x: p => p._t[0], y: p => p._t[1], a: 1, s: 3, c: p => p._t[2] === m.tintSide ? 1 : 0,
+        duration: () => utils.random(900, 1500) * d, delay: stagger([0, 700 * d], { from: 'random' }), ease: 'inOutQuart' });
+      const clampX = v => utils.clamp(v, 64, W - 64);
+      setLabels([[clampX(cxL), cy + rL + 14, ...m.left], [clampX(cxR), cy + Math.max(rR, narrow ? rL : 0) + 14, ...m.right]]);
+      count(FOLLOWERS, 'followers · 1.5 crore');
+    }
+  }
+  const timer = createTimer({ onUpdate: s => {
+    ctx.clearRect(0, 0, W, H);
+    const k = REDUCED ? 0 : s.currentTime * .0006;
+    ctx.strokeStyle = C.ink;
+    for (const p of pts) {
+      if (p.a <= .01) continue;
+      const x = p.x + Math.cos(p.ph + k * p.v) * 1.6, y = p.y + Math.sin(p.ph + k * p.v * 1.4) * 1.6, rot = p.rot + Math.sin(k * p.v) * .6;
+      ctx.globalAlpha = p.a * (1 - p.c); ctx.fillStyle = C.ink; roach(ctx, x, y, rot, p.s, k * 20);
+      if (p.c > 0) { ctx.globalAlpha = p.a * p.c; ctx.fillStyle = p.tint; roach(ctx, x, y, rot, p.s, k * 20); }
+    }
+    ctx.globalAlpha = 1;
+  } });
+  layout(); resizers.push(layout);
+  whileVisible(root, timer);
+  wireSteps(root, i => go(i));
+})();
+
+/* ───────────────────────── 02 WITHHELD ───────────────────────── */
+(() => {
+  const root = $('#wh'), tally = $('#tally'), notice = $('#ph-notice');
+  $('.ph-feed').innerHTML = Array.from({ length: 4 }, (_, i) => `<div class="post"><i style="width:${80 - i * 7}%"></i><i style="width:${55 + i * 9}%"></i>${i % 2 ? '' : '<div class="img"></div>'}</div>`).join('');
+  // tally marks, prison-wall style: four strokes and a slash
+  const lines = [];
+  for (let d = 0; d < 48; d++) {
+    const g = Math.floor(d / 5), k = d % 5, x0 = g * 56;
+    lines.push(k < 4 ? `<line x1="${x0 + 6 + k * 9}" y1="12" x2="${x0 + 6 + k * 9}" y2="60"/>` : `<line x1="${x0}" y1="50" x2="${x0 + 40}" y2="20"/>`);
+  }
+  tally.innerHTML = `<g stroke="${C.state}" stroke-width="3" stroke-linecap="round" fill="none">${lines.join('')}</g>`;
+  const marks = svg.createDrawable($$('line', tally));
+  utils.set(marks, { draw: '0 0' });
+  const EV = [[1, '21 May', 'X account withheld'], [17, '6 Jun', 'First street protest'], [31, '20 Jun', 'Sit-in begins'], [39, '28 Jun', 'Hunger strike begins'], [48, '7 Jul', 'Court orders it restored']];
+  $('#wh-ev').innerHTML = EV.map(([, d, t]) => `<li><span>${d}</span>${t}</li>`).join('');
+  const evEls = $$('#wh-ev li');
+  const KNOTS = [1, 17, 31, 39, 48];
+  let withheld = false, lastDay = -1;
+  scrub(root, f => {
+    const day = f < -.4 ? 0 : atStep(f, KNOTS, 48);
+    marks.forEach((m, j) => utils.set(m, { draw: `0 ${utils.clamp(day - j, 0, 1)}` }));
+    const whole = Math.min(48, Math.floor(day + 1e-3));
+    if (whole !== lastDay) {
+      lastDay = whole;
+      $('#wh-day').textContent = whole;
+      const dt = new Date(Date.UTC(2026, 4, 20 + Math.max(1, whole)));
+      $('#wh-date').textContent = whole ? dt.toLocaleString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }) + ' 2026' : '—';
+      evEls.forEach((li, j) => li.classList.toggle('on', whole >= EV[j][0]));
+    }
+    const w = day >= 1 && f < KNOTS.length - 1.05;
+    if (w !== withheld) {
+      withheld = w;
+      animate(notice, { opacity: w ? 1 : 0, duration: 400, ease: 'out(2)' });
+      if (w) animate($('b', notice), { innerHTML: scrambleText({ text: 'Account withheld', chars: 'A-Za-z' }) });
+    }
+  });
+  wireSteps(root, () => {});
+})();
+
+/* ───────────────────────── 03 BLACKOUT ───────────────────────── */
+(() => {
+  const root = $('#bo'), cv = $('#bo-cv'), { ctx, fit } = hiDPI(cv), metro = $('#bo-metro'), ruler = $('#bo-ruler');
+  const HOURS = 120, CUTS = [[10, 18], [81.5, 88]], KNOTS = [6, 10, 14, 18, 24, 48, 81.5, 88, 96];
+  const DAYS = ['MON 20', 'TUE 21', 'WED 22', 'THU 23', 'FRI 24'], METRO = [5, 5, 16, 17, 18];
+  let W = 0, H = 0, R = 0, phones = [], packets = [], isCut = null, lastM = -1, stamp;
+  const pad = n => String(n).padStart(2, '0');
+  function layout() {
+    const r = fit(); W = r.width; H = r.height; R = Math.min(W, H) * .46;
+    const old = phones;
+    const s = R / Math.sqrt(260) * .95;
+    phones = phyllo(260, W / 2, H / 2, s).map(([x, y], i) => ({ x, y, d: Math.hypot(x - W / 2, y - H / 2) / R, on: old[i]?.on ?? 1, fl: rng() }));
+  }
+  // ruler
+  DAYS.forEach((d, i) => ruler.insertAdjacentHTML('beforeend', `<span class="tick" style="left:${i * 20}%">${d}</span>`));
+  CUTS.forEach(([a, b]) => ruler.insertAdjacentHTML('beforeend', `<span class="cut" style="left:${a / HOURS * 100}%;width:${(b - a) / HOURS * 100}%"></span>`));
+  // metro: 18 stations on one schematic line
+  const st = Array.from({ length: 18 }, (_, i) => 12 + i * (576 / 17));
+  metro.innerHTML = `<line x1="12" y1="22" x2="588" y2="22" stroke="${C['ink-3']}" stroke-width="3"/>
+    ${st.map(x => `<circle cx="${x}" cy="22" r="6" fill="${C.bg}" stroke="${C['ink-2']}" stroke-width="2"/>`).join('')}
+    <text id="bo-mtxt" x="12" y="54" font-family="ui-monospace,Menlo" font-size="11" letter-spacing=".6" fill="${C['ink-2']}">METRO STATIONS SHUT · 0 (SCHEMATIC)</text>`;
+  const stations = $$('circle', metro);
+  function render(h) {
+    h = utils.clamp(h, 0, HOURS - .01);
+    const d = Math.floor(h / 24), hh = Math.floor(h % 24), mm = Math.floor((h % 1) * 6) * 10;
+    $('#bo-clock').textContent = `${DAYS[d]} JUL · ${pad(hh)}:${pad(mm)}`;
+    utils.set('#bo-head', { left: (h / HOURS * 100) + '%' });
+    const cut = CUTS.some(([a, b]) => h >= a && h < b);
+    if (cut !== isCut) {
+      const first = isCut === null; isCut = cut;
+      // the cut ripples out from the site
+      animate(phones, { on: cut ? 0 : 1, delay: p => first ? 0 : p.d * 900, duration: first ? 0 : 260, ease: 'out(2)' });
+      animate('#grain', { opacity: cut ? 1 : 0, duration: cut ? 900 : 500, ease: 'out(2)' });
+      signal(!cut);
+      stamp?.pause();
+      if (cut) stamp = animate('#bo-stamp', { innerHTML: scrambleText({ text: h > 80 ? 'NO SIGNAL · HOME MINISTRY ORDER' : 'NO SIGNAL · NO PUBLISHED ORDER', chars: 'A-Z' }) });
+      else $('#bo-stamp').textContent = '';
+    }
+    const m = d === 0 && h < 10 ? 0 : METRO[d];
+    if (m !== lastM) {
+      lastM = m;
+      $('#bo-mtxt').textContent = `METRO STATIONS SHUT · ${m}${d === 1 ? ' (AS OF 20 JUL)' : ''} · SCHEMATIC`;
+      animate(stations, { fill: (_, i) => i < m ? C.state : C.bg, stroke: (_, i) => i < m ? C.state : C['ink-2'], r: (_, i) => i < m ? [9, 6] : 6, delay: stagger(22), duration: 320, ease: 'outQuad' });
+    }
+  }
+  const timer = createTimer({ onUpdate: s => {
+    const t = s.currentTime;
+    ctx.clearRect(0, 0, W, H);
+    // 1.5 km ring
+    ctx.setLineDash([3, 5]); ctx.strokeStyle = C['ink-3']; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(W / 2, H / 2, R, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '10.5px ui-monospace, Menlo, monospace'; ctx.fillStyle = C['ink-2']; ctx.fillText('1.5 KM', W / 2 + R * .72, H / 2 - R * .74);
+    // traffic
+    const live = phones.filter(p => p.on > .9);
+    if (!REDUCED && live.length > 20) for (let k = 0; k < 3; k++) {
+      const a = live[Math.floor(rng() * live.length)], b = live[Math.floor(rng() * live.length)];
+      packets.push({ a, b, t0: t, dur: 500 + rng() * 700 });
+    }
+    packets = packets.filter(p => t - p.t0 < p.dur);
+    ctx.lineWidth = 1;
+    for (const p of packets) {
+      const u = (t - p.t0) / p.dur, x = p.a.x + (p.b.x - p.a.x) * u, y = p.a.y + (p.b.y - p.a.y) * u;
+      ctx.globalAlpha = Math.sin(u * Math.PI) * .5 * Math.min(p.a.on, p.b.on);
+      ctx.strokeStyle = C.move; ctx.beginPath(); ctx.moveTo(p.a.x, p.a.y); ctx.lineTo(x, y); ctx.stroke();
+    }
+    // phones: lit screens, or dark outlines
+    for (const p of phones) {
+      const flick = .75 + .25 * Math.sin(t * .004 + p.fl * 40);
+      if (p.on > .02) {
+        ctx.globalAlpha = .1 * p.on; ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, TAU); ctx.fill();
+        ctx.globalAlpha = p.on * flick; ctx.fillRect(p.x - 2, p.y - 3.5, 4, 7);
+      }
+      if (p.on < .98) { ctx.globalAlpha = 1 - p.on; ctx.strokeStyle = C['ink-3']; ctx.strokeRect(p.x - 2, p.y - 3.5, 4, 7); }
+    }
+    ctx.globalAlpha = 1;
+    // the site
+    ctx.fillStyle = C.bg; ctx.strokeStyle = C.state; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(W / 2, H / 2, 7, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.font = '11px ui-monospace, Menlo, monospace'; ctx.lineWidth = 5; ctx.strokeStyle = C.bg; ctx.strokeText('JANTAR MANTAR', W / 2 + 14, H / 2 + 4);
+    ctx.fillStyle = C.ink; ctx.fillText('JANTAR MANTAR', W / 2 + 14, H / 2 + 4);
+  } });
+  layout(); resizers.push(layout);
+  whileVisible(root, timer);
+  render(0);
+  scrub(root, f => render(atStep(f, KNOTS, HOURS)));
+  // leaving the chapter always brings the signal back
+  onScroll({ target: root, enter: 'bottom top', leave: 'top bottom', onLeave: () => {
+    if (!isCut) return;
+    isCut = null; signal(true); stamp?.pause(); $('#bo-stamp').textContent = '';
+    animate('#grain', { opacity: 0, duration: 300 });
+  } });
+  wireSteps(root, () => {});
+})();
+
+/* ───────────────────────── 04 WHO COUNTS ───────────────────────── */
+(() => {
+  const root = $('#ct'), sv = $('#ct-svg');
+  // phones get a narrower drawing so the type stays legible
+  const COMPACT = $('.stage', root).clientWidth < 600;
+  const X0 = COMPACT ? 6 : 170, X1 = COMPACT ? 434 : 690;
+  const ROWS = [
+    { name: 'Injured', unit: 'people', max: 160, ticks: [0, 80, 160], y: COMPACT ? 80 : 80,
+      v: [{ who: 'state', n: 118, t: '118 police hurt' }, { who: 'rec', n: 65, t: '65 cases at RML' }, { who: 'move', n: 150, t: '~150 hospitalised' }] },
+    { name: 'Detained', unit: 'people', max: 80, ticks: [0, 40, 80], y: COMPACT ? 215 : 230,
+      v: [{ who: 'state', n: 0, t: '0 · “no protesters”' }, { who: 'rec', n: null, t: 'Records: no public figure' }, { who: 'move', n: 70, t: '~70 detained' }] },
+    { name: 'Pellets', unit: 'rounds fired', max: 4, ticks: [0, 2, 4], y: COMPACT ? 350 : 380,
+      v: [{ who: 'state', n: 0, t: '0 · “completely false”' }, { who: 'rec', n: 2, t: '2 rounds · RAF diary' }, { who: 'move', n: null, t: 'Movement: alleged live fire, no count' }] },
+  ];
+  const FILL = { state: C.state, rec: 'url(#hatch)', move: C.move };
+  const x = (r, n) => X0 + n / r.max * (X1 - X0);
+  sv.innerHTML = `<defs><pattern id="hatch" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)"><rect width="1.6" height="4" fill="${C['ink-2']}"/></pattern></defs>` +
+    ROWS.map((r, ri) => {
+      let missing = 0;
+      return `<g class="row" data-r="${ri}">
+      ${COMPACT ? `<text x="0" y="${r.y - 58}" fill="${C.ink}" font-size="13" font-weight="600">${r.name.toUpperCase()} <tspan fill="${C['ink-2']}" font-size="10.5" font-weight="400">· ${r.unit}</tspan></text>`
+        : `<text x="0" y="${r.y + 4}" fill="${C.ink}" font-size="13" font-weight="600">${r.name.toUpperCase()}</text>
+      <text x="0" y="${r.y + 22}" fill="${C['ink-2']}" font-size="10.5">${r.unit}</text>`}
+      <line class="axis" x1="${X0}" y1="${r.y}" x2="${X1}" y2="${r.y}" stroke="${C['ink-3']}" stroke-width="1.5"/>
+      ${r.ticks.map(t => `<line x1="${x(r, t)}" y1="${r.y - 4}" x2="${x(r, t)}" y2="${r.y + 4}" stroke="${C['ink-3']}"/><text x="${x(r, t)}" y="${r.y + 20}" text-anchor="middle" fill="${C['ink-2']}" font-size="10">${t}</text>`).join('')}
+      ${(() => { const boxes = []; return r.v.map(v => {
+        if (v.n === null) { missing++; return `<text class="mk" x="${X0}" y="${r.y + 60 + (missing - 1) * 16}" fill="${C['ink-2']}" font-size="10.5">${v.t.toUpperCase()}</text>`; }
+        const cx = x(r, v.n), w = v.t.length * 7.2;
+        // state labels hang left of their dot, movement labels right, records below; flip at the axis ends
+        let anchor = v.who === 'rec' ? 'middle' : v.who === 'state' ? (cx < X0 + w ? 'start' : 'end') : (cx > X1 - w ? 'end' : 'start');
+        const tx = anchor === 'end' ? cx + 6 : anchor === 'start' ? cx - 6 : cx;
+        const x0 = anchor === 'end' ? tx - w : anchor === 'start' ? tx : tx - w / 2;
+        let ty = v.who === 'rec' ? r.y + 40 : r.y - 18;
+        while (boxes.some(b => b.ty === ty && x0 < b.x1 && x0 + w > b.x0)) ty -= 16;
+        boxes.push({ ty, x0, x1: x0 + w });
+        return `<g class="mk" data-tip="${v.t}" data-who="${v.who}">
+          <circle cx="${cx}" cy="${r.y}" r="18" fill="transparent"/>
+          <circle cx="${cx}" cy="${r.y}" r="8" fill="${FILL[v.who]}" stroke="${v.who === 'rec' ? C['ink-2'] : C.bg}" stroke-width="${v.who === 'rec' ? 1.2 : 2}"/>
+          <text x="${tx}" y="${ty}" text-anchor="${anchor}" fill="${C.ink}" font-size="11">${v.t.toUpperCase()}</text></g>`;
+      }).join(''); })()}</g>`;
+    }).join('');
+  if (COMPACT) { sv.setAttribute('viewBox', '0 0 440 420'); sv.setAttribute('preserveAspectRatio', 'xMidYMin meet'); }
+  const rows = $$('.row', sv), axes = svg.createDrawable($$('.axis', sv));
+  $$('.mk[data-tip]', sv).forEach(m => {
+    m.onpointerenter = e => showTip(e, { state: 'State says', rec: 'Records show', move: 'Movement says' }[m.dataset.who], m.dataset.tip);
+    m.onpointerleave = hideTip;
+  });
+  let shown = new Set();
+  function go(i) {
+    // step 0: axes; 1–3 reveal a row each; rows already seen stay, dimmed
+    if (i >= 1) shown.add(i - 1);
+    rows.forEach((r, ri) => {
+      const on = ri === i - 1 || (i === 0 && false);
+      animate(r, { opacity: i === 0 ? .35 : on ? 1 : shown.has(ri) ? .4 : .12, duration: 500, ease: 'out(2)' });
+    });
+    animate(axes, { draw: ['0 0', '0 1'], duration: 900, delay: stagger(150), ease: 'inOutQuart' });
+    if (i >= 1) {
+      const marks = $$('.mk', rows[i - 1]);
+      animate(marks, { opacity: [0, 1], translateY: [-14, 0], delay: stagger(220, { start: 200 }), duration: 700, ease: 'outBack(1.6)' });
+    }
+  }
+  utils.set(axes, { draw: '0 0' });
+  wireSteps(root, go);
+})();
+
+/* ───────────────────────── 05 DETAINED ───────────────────────── */
+(() => {
+  const root = $('#dt'), cv = $('#dt-cv'), { ctx, fit } = hiDPI(cv), cell = $('#dt-cell');
+  const SIDE = 100, N = SIDE * SIDE, REPORTED = 1200;
+  // shell order: the first n people always form a near-square in the top-left corner
+  const order = [];
+  for (let s = 0; s < SIDE; s++) { for (let y = 0; y <= s; y++) order.push([s, y]); for (let x = s - 1; x >= 0; x--) order.push([x, s]); }
+  const view = { n: 0, side: 1 };
+  let W = 0, H = 0, dirty = true;
+  const STEPS = [{ n: 500, unit: 'Delhi · 2 Oct · reportedly held' }, { n: 1100, unit: 'Delhi + Mumbai' }, { n: 1200, unit: 'documented across three cities' }, { n: 10000, unit: 'claimed by the CJP · unverified' }];
+  function layout() { const r = fit(); W = r.width; H = r.height; dirty = true; }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const top = 112, bottom = 40, box = Math.min(W, H - top - bottom), cs = box / view.side;
+    const ox = (W - box) / 2, oy = top + (H - top - bottom - box) / 2;
+    const n = Math.ceil(view.n), detail = cs > 9;
+    for (let i = 0; i < n; i++) {
+      const [cx, cy] = order[i]; if (cx >= view.side + 1 || cy >= view.side + 1) continue;
+      const px = ox + (cx + .5) * cs, py = oy + (cy + .5) * cs, claim = i >= REPORTED;
+      ctx.globalAlpha = i >= n - 1 ? view.n - Math.floor(view.n) || 1 : 1;
+      if (claim) { ctx.strokeStyle = C.move; ctx.lineWidth = Math.max(.6, cs * .07); }
+      else ctx.fillStyle = C.ink;
+      if (detail) {
+        ctx.beginPath(); ctx.arc(px, py - cs * .2, cs * .15, 0, TAU); claim ? ctx.stroke() : ctx.fill();
+        ctx.beginPath(); ctx.ellipse(px, py + cs * .28, cs * .26, cs * .26, 0, Math.PI, 0); ctx.closePath(); claim ? ctx.stroke() : ctx.fill();
+      } else {
+        const r = Math.max(.6, cs * .32);
+        if (claim) { ctx.beginPath(); ctx.arc(px, py, r, 0, TAU); ctx.stroke(); } else ctx.fillRect(px - r, py - r, r * 2, r * 2);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  const timer = createTimer({ onUpdate: () => { if (dirty) { draw(); dirty = false; } } });
+  const count = { v: 0 };
+  let countAnim;
+  function go(i) {
+    const inCell = i >= 4;
+    countAnim?.pause();
+    animate(cv, { opacity: inCell ? .08 : 1, duration: 500 });
+    animate(cell, { opacity: inCell ? 1 : 0, duration: 500 });
+    animate('#dt-bars', { y: inCell ? ['-100%', '0%'] : '-100%', duration: inCell ? 900 : 300, ease: 'outBounce' });
+    if (inCell) {
+      const d = { v: 0 };
+      animate(d, { v: 7, duration: 1400, delay: 600, modifier: utils.round(0), ease: 'out(2)', onRender: () => $('#dt-days').textContent = d.v });
+      $('#dt-count').textContent = '2'; $('#dt-unit').textContent = 'leaders arrested · 13 Oct';
+      return;
+    }
+    const s = STEPS[i];
+    animate(view, { n: s.n, side: Math.ceil(Math.sqrt(s.n)), duration: s.n > 2000 ? 2600 : 1500, ease: 'inOutQuart', onUpdate: () => dirty = true });
+    countAnim = animate(count, { v: s.n, duration: 1500, ease: 'inOutQuart', modifier: utils.round(0), onRender: () => $('#dt-count').textContent = (s.n >= 10000 ? '10,000+' : fmtIN(count.v) + (count.v === s.n ? '+' : '')) });
+    $('#dt-unit').textContent = s.unit;
+  }
+  layout(); resizers.push(layout);
+  utils.set('#dt-bars', { y: '-100%' });
+  whileVisible(root, timer);
+  wireSteps(root, go);
+})();
+
+/* ───────────────────────── 06 EVERY NAME ───────────────────────── */
+(() => {
+  const root = $('#nm'), people = $('#nm-people'), cv = $('#nm-cv'), { ctx, fit } = hiDPI(cv);
+  const P = 'M-6.5 -15 a6.5 6.5 0 1 0 13 0 a6.5 6.5 0 1 0 -13 0 Z M-11 16 Q-11 -4 0 -4 Q11 -4 11 16 Z';
+  people.innerHTML = Array.from({ length: 100 }, (_, i) => {
+    const x = 28 + (i % 10) * 56, y = 46 + Math.floor(i / 10) * 58;
+    return `<g class="p" data-i="${i}" tabindex="0" role="button" aria-label="Voter ${i + 1}" transform="translate(${x} ${y})">
+      <rect x="-24" y="-28" width="48" height="50" fill="transparent"/><path d="${P}" fill="${C['ink-2']}"/>
+      <text class="you" y="30" text-anchor="middle" font-family="ui-monospace,Menlo" font-size="10" letter-spacing="1" fill="${C.ink}" opacity="0">YOU</text></g>`;
+  }).join('');
+  const figs = $$('.p', people);
+  let you = -1, removed = [], step = -1;
+  function pick(i, auto) {
+    if (removed.length) return;                          // the draw has happened
+    you = i;
+    figs.forEach((g, j) => {
+      animate($('path', g), { fill: j === i ? C.ink : C['ink-2'], scale: j === i ? [1.6, 1] : 1, duration: 500, ease: 'outBack(2)' });
+      $('.you', g).setAttribute('opacity', j === i ? 1 : 0);
+    });
+    $('#nm-pick').textContent = auto ? 'You didn’t pick, so we picked voter ' + (i + 1) + ' for you.' : `You are voter ${i + 1}. Keep scrolling.`;
+  }
+  figs.forEach((g, i) => {
+    g.onclick = () => pick(i);
+    g.onkeydown = e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), pick(i));
+  });
+  function draw13() {
+    if (you < 0) pick(Math.floor(Math.random() * 100), true);
+    if (!removed.length) removed = shuffle([...Array(100).keys()]).slice(0, 13);
+    const gone = removed.map(i => figs[i]);
+    animate(gone.map(g => $('path', g)), { fill: C.state, duration: 300, delay: stagger(120) });
+    animate(gone.map(g => $('path', g)), { opacity: [1, .5], translateY: [0, 8], duration: 900, delay: stagger(120, { start: 900 }), ease: 'in(2)' });
+    const hit = removed.includes(you);
+    $('#nm-verdict').innerHTML = hit ? '<strong style="color:var(--state)">Your name was one of them.</strong> You would find out at the polling booth.' : '<strong>You made it this time.</strong> Thirteen others didn’t.';
+  }
+  function undraw() { animate(figs.map(g => $('path', g)), { opacity: 1, translateY: 0, duration: 300 }); figs.forEach((g, j) => animate($('path', g), { fill: j === you ? C.ink : C['ink-2'], duration: 300 })); }
+  // at scale: 9,690 marks of 100,000 voters, erased by scrolling
+  const COLS = 114, ROWS = 85, GONE = 1300;
+  const goneSet = new Set(shuffle([...Array(COLS * ROWS).keys()]).slice(0, GONE));
+  const goneOrder = [...goneSet];
+  let W = 0, H = 0, erased = -1;
+  function layout() { const r = fit(); W = r.width; H = r.height; const e = erased; erased = -1; drawGrid(Math.max(0, e)); }
+  function drawGrid(k) {
+    if (k === erased) return; erased = k;
+    ctx.clearRect(0, 0, W, H);
+    const top = 112, step = Math.min(W / COLS, (H - top) / ROWS), s = Math.max(1, step * .62);
+    const ox = (W - step * COLS) / 2, oy = top + (H - top - step * ROWS) / 2;
+    const cut = new Set(goneOrder.slice(0, k)), hot = new Set(goneOrder.slice(Math.max(0, k - 60), k));
+    for (let i = 0; i < COLS * ROWS; i++) {
+      const x = ox + (i % COLS) * step, y = oy + Math.floor(i / COLS) * step;
+      if (hot.has(i)) { ctx.globalAlpha = 1; ctx.fillStyle = C.state; ctx.fillRect(x, y, s, s); }
+      else if (cut.has(i)) { ctx.globalAlpha = 1; ctx.strokeStyle = C['ink-3']; ctx.lineWidth = .6; ctx.strokeRect(x + .3, y + .3, s - .6, s - .6); }
+      else { ctx.globalAlpha = .45; ctx.fillStyle = C.ink; ctx.fillRect(x, y, s, s); }
+    }
+    ctx.globalAlpha = 1;
+    $('#nm-count').textContent = fmtIN(k * 100000);
+  }
+  layout(); resizers.push(layout);
+  scrub(root, f => drawGrid(Math.round(utils.clamp((f - 1.6) / 1.2, 0, 1) * GONE)));
+  wireSteps(root, i => {
+    const prev = step; step = i;
+    const scale = i >= 2;
+    animate('#nm-a', { opacity: scale ? 0 : 1, duration: 500 });
+    animate([cv, '#nm-hud'], { opacity: scale ? 1 : 0, duration: 500 });
+    if (i === 1 && prev < 1) draw13();
+    if (i === 0 && prev > 0) undraw();
+  });
+})();
+
+/* ───────────────────────── 07 APPARATUS ───────────────────────── */
+(() => {
+  const root = $('#ap'), sv = $('#ap-svg'), card = $('#ap-card');
+  const N = [
+    { id: 'Delhi Police', k: 'street', acts: [['20 Jul', 'Section 163 orders; baton charges and tear gas'], ['12 Oct', 'Strikes Jantar Mantar off the permitted protest sites'], ['13 Oct', 'Arrests CJP leaders Das and Ranka']], src: 'Wikipedia · Amnesty' },
+    { id: 'Rapid Action Force', k: 'street', acts: [['20 Jul', 'Station diary records two rounds of pellets fired'], ['20 Jul', 'Police call pellet reports “completely false and misleading”']], src: 'Wikipedia (GD entry)' },
+    { id: 'CRPF', k: 'street', acts: [['22 Jul', '20 companies airlifted from Kolkata to Delhi on Home Ministry orders']], src: 'Wikipedia' },
+    { id: 'Delhi Metro', k: 'street', acts: [['20–24 Jul', 'Shuts 5, then 16, 17, 18 central stations'], ['2 Oct', 'At least 11 stations near Jantar Mantar closed']], src: 'Wikipedia · Al Jazeera' },
+    { id: 'Mumbai Police', k: 'street', acts: [['Jul–Aug', 'FIRs against 400 people for protesting without permission'], ['10 Oct', 'Detains more than 600 people']], src: 'Wikipedia · Amnesty' },
+    { id: 'Bengaluru Police', k: 'street', acts: [['12 Oct', 'Detains at least 100 marching to the state electoral office']], src: 'Amnesty' },
+    { id: 'Home Ministry', k: 'digital', acts: [['22 Jul', 'Orders CRPF deployment to Delhi'], ['23 Jul', 'Suspends mobile internet within 1.5 km of Jantar Mantar, 09:30–16:00']], src: 'Wikipedia · Internet Society Pulse' },
+    { id: 'MeitY', k: 'digital', acts: [['21 May', 'Withholds the CJP’s X account in India under Sec. 69A, IT Act'], ['7 Jul', 'Tells court it has “no difficulty” with unblocking once exams end']], src: 'MediaNama · LawBeat' },
+    { id: 'Intelligence Bureau', k: 'digital', acts: [['May', 'Reportedly flags the X account over “inflammatory content”']], src: 'India.com (reported)' },
+    { id: 'Telecom operators', k: 'digital', acts: [['20 Jul', 'Cut mobile data on a government directive; no order is published'], ['2 Oct', 'Mobile internet off near Connaught Place before the protest starts']], src: 'IFF · The Wire' },
+    { id: 'Delhi High Court', k: 'courts', acts: [['7 Jul', 'Orders the X account restored'], ['18–21 Jul', 'Orders hunger-striker Sonam Wangchuk removed from the site, then to hospital']], src: 'MediaNama · Wikipedia' },
+    { id: 'Election Commission', k: 'politics', acts: [['2025–26', 'Voter-roll revision removes 130M+ names'], ['10 months', 'Two commissioners raise concerns at least 14 times']], src: 'Al Jazeera · Indian Express' },
+    { id: 'Union ministers', k: 'politics', acts: [['23 May', 'Sukanta Majumdar claims 49% of followers are Pakistani'], ['25 Jul', 'Dharmendra Pradhan resigns as Education Minister']], src: 'The Telegraph · Wikipedia' },
+  ];
+  const W = 720, H = 560, CX = W / 2, CY = H / 2, R = 200;
+  const pos = N.map((_, i) => { const a = -Math.PI / 2 + i / N.length * TAU; return [CX + Math.cos(a) * R, CY + Math.sin(a) * R, a]; });
+  const courts = i => N[i].k === 'courts';
+  sv.innerHTML = `<g>${pos.map(([x, y], i) => `<line class="edge" x1="${CX}" y1="${CY}" x2="${x}" y2="${y}" stroke="${courts(i) ? C['ink-2'] : C.state}" stroke-width="1.2" ${courts(i) ? 'stroke-dasharray="3 4"' : ''}/>`).join('')}</g>
+    <g>${pos.map(([x, y, a], i) => {
+      const anchor = Math.cos(a) > .15 ? 'start' : Math.cos(a) < -.15 ? 'end' : 'middle';
+      return `<g class="node" data-i="${i}" tabindex="0" role="button" aria-label="${N[i].id}">
+        <circle cx="${x}" cy="${y}" r="16" fill="transparent"/>
+        <circle class="dot" cx="${x}" cy="${y}" r="6.5" fill="${courts(i) ? C.bg : C.state}" stroke="${courts(i) ? C.ink : 'none'}" stroke-width="1.5"/>
+        <text x="${x + Math.cos(a) * 16}" y="${y + Math.sin(a) * 16 + 4}" text-anchor="${anchor}">${N[i].id}</text></g>`; }).join('')}</g>
+    <circle id="ap-pulse" cx="${CX}" cy="${CY}" r="34" fill="none" stroke="${C.move}"/>
+    <circle cx="${CX}" cy="${CY}" r="34" fill="${C.move}"/><text x="${CX}" y="${CY + 4}" text-anchor="middle" font-family="ui-monospace,Menlo" font-size="12" font-weight="600" fill="#fff" letter-spacing="1">CJP</text>`;
+  const lines = $$('.edge', sv), nodes = $$('.node', sv), drawables = svg.createDrawable(lines);
+  utils.set(drawables, { draw: '0 0' }); utils.set(nodes, { opacity: 0 });
+  let drawn = false;
+  function open(i) {
+    const n = N[i];
+    card.innerHTML = `<div class="kicker">${n.k}</div><h3 style="margin-top:6px">${n.id}</h3><ul>${n.acts.map(([d, t]) => `<li><em>${d}</em>${t}</li>`).join('')}</ul><span class="src">${n.src}</span>`;
+    animate($$('*', card).filter(e => e.parentNode === card || e.tagName === 'LI'), { opacity: [0, 1], x: [-8, 0], delay: stagger(50), duration: 500, ease: 'outExpo' });
+    animate($$('.dot', sv), { r: (_, j) => j === i ? 10 : 6.5, duration: 700, ease: 'outElastic(1, .5)' });
+    animate(drawables[i], { draw: ['1 1', '0 1'], duration: 600, ease: 'inOutQuad' });
+    animate(lines, { strokeWidth: (_, j) => j === i ? 2.6 : 1.2, duration: 300 });
+  }
+  function filter(kind) {
+    const on = i => kind === 'all' || N[i].k === kind;
+    animate(nodes, { opacity: (_, i) => on(i) ? 1 : .15, duration: 400, ease: 'out(2)' });
+    animate(lines, { opacity: (_, i) => on(i) ? 1 : .08, duration: 400, ease: 'out(2)' });
+  }
+  nodes.forEach((g, i) => {
+    g.onclick = () => { filter('all'); open(i); };
+    g.onkeydown = e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), filter('all'), open(i));
+  });
+  $('#ap-all').onclick = () => { filter('all'); card.innerHTML = '<p class="note">All thirteen. Select a node to read its record.</p>'; };
+  const KINDS = [['street', 0], ['digital', 7], ['courts', 10], ['politics', 11], ['all', -1]];
+  card.innerHTML = '<p class="note">Select a node to read its record.</p>';
+  if (!REDUCED) animate('#ap-pulse', { r: [34, 80], opacity: [.6, 0], duration: 2200, loop: true, ease: 'out(2)' });
+  wireSteps(root, i => {
+    if (!drawn) {
+      drawn = true;
+      animate(drawables, { draw: ['0 0', '0 1'], duration: 900, delay: stagger(60), ease: 'outExpo' });
+      animate(nodes, { opacity: [0, 1], duration: 500, delay: stagger(60, { start: 300 }) });
+    }
+    const [kind, first] = KINDS[i];
+    setTimeout(() => { filter(kind); if (first >= 0) open(first); }, drawn ? 0 : 900);
+  });
+})();
+
+/* ───────────────────────── SOURCES ───────────────────────── */
+$('#sources').innerHTML = [
+  ['The movement', [
+    ['Cockroach Janta Party', 'https://en.wikipedia.org/wiki/Cockroach_Janta_Party', 'Wikipedia (page flags parts as unverified)'],
+    ['2026 Delhi Jantar Mantar protests', 'https://en.wikipedia.org/wiki/2026_Delhi_Jantar_Mantar_protests', 'Wikipedia'],
+    ['India’s CJP protests: why Gen-Z’s political fury is boiling over', 'https://www.cnn.com/2026/07/22/india/india-cockroach-party-protest-anger-intl-hnk', 'CNN, 22 Jul'],
+  ]],
+  ['Detention & assembly', [
+    ['India: Release CJP leaders arrested at Jantar Mantar', 'https://www.amnesty.org/en/latest/news/2026/10/india-release-cjp-leaders-arrested-after-attempting-peaceful-protests-at-jantar-mantar/', 'Amnesty, 14 Oct'],
+    ['Authorities clamp down as ‘cockroach’ movement launches new protests', 'https://www.aljazeera.com/news/2026/10/2/indian-authorities-clamp-down-as-cockroach-movement-launches-new-protests', 'Al Jazeera, 2 Oct'],
+    ['‘Cockroach’ movement says members detained as protests continue', 'https://www.aljazeera.com/news/2026/10/8/indias-cockroach-movement-says-members-detained-as-protests-continue', 'Al Jazeera, 8 Oct'],
+  ]],
+  ['Platforms & shutdowns', [
+    ['Delhi HC orders unblocking of CJP X account', 'https://www.medianama.com/2026/07/223-delhi-hc-cockroach-janta-party-x-account-unblocked/', 'MediaNama'],
+    ['Delhi High Court orders restoration of CJP’s X account', 'https://lawbeat.in/news-updates/delhi-high-court-orders-restoration-of-cockroach-janta-partys-x-account-1610149', 'LawBeat'],
+    ['X account blocked over IB security concerns', 'https://www.india.com/news/india/cockroach-janta-party-x-account-blocked-india-over-alleged-security-concerns-by-intelligence-bureau-abhijeet-dipke-receives-death-threats-8423047/', 'India.com'],
+    ['Instagram account blocked for two hours', 'https://www.outlookindia.com/national/cockroach-janta-partys-instagram-account-blocked-in-india-for-two-hours', 'Outlook'],
+    ['IFF condemns internet shutdown in central Delhi', 'https://internetfreedom.in/iff-condemns-the-internet-shutdown-in-parts-of-central-delhi-no-suspension-order-has-been-made-public/', 'Internet Freedom Foundation'],
+    ['Shutdown before the first protester arrived', 'https://internetfreedom.in/shutdown-before-the-first-protester-arrived-iff-condemns-the-internet-suspension-in-connaught-place/', 'IFF, Oct'],
+    ['Internet suspended in New Delhi, 23 July', 'https://pulse.internetsociety.org/en/shutdowns/internet-suspended-in-new-dehli-nct-india-23-july-2026/', 'Internet Society Pulse'],
+    ['Blanket blackout, no order', 'https://www.theweek.in/news/india/2026/07/22/blanket-blackout-no-order-sudden-internet-shutdown-amid-cjp-s-chalo-sansad-protest-raises-questions.html', 'The Week'],
+  ]],
+  ['Form references', [
+    ['Repression and Death in the Streets of Colombia', 'https://www.bellingcat.com/news/americas/2021/05/10/a-new-platform-maps-colombias-escalating-police-violence', 'Bellingcat × Forensic Architecture × Cerosetenta'],
+    ['SITU Research', 'https://situ.nyc/research/profile', 'visual investigations, protest policing'],
+    ['The Pudding', 'https://pudding.cool/', 'visual essays'],
+  ]],
+].map(([h, list]) => `<h4>${h}</h4><ol>${list.map(([t, u, s]) => `<li><a href="${u}" target="_blank" rel="noopener">${t}</a> · ${s}</li>`).join('')}</ol>`).join('');
+</script>
+</body>
+</html>
